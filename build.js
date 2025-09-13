@@ -1,4 +1,4 @@
-// build.js - Fixed version with better error handling
+// build.js - Fixed version with proper variable scoping
 const fs = require('fs');
 const path = require('path');
 
@@ -29,11 +29,15 @@ function processMarkdownFiles(dir) {
         // Simple frontmatter extraction (without gray-matter for now)
         let title = file.replace('.md', '');
         let frontmatter = {};
+        let bodyContent = content; // Initialize with full content by default
         
         if (content.startsWith('---')) {
           const endIndex = content.indexOf('---', 3);
           if (endIndex > 0) {
             const yamlContent = content.substring(3, endIndex);
+            // Extract body content (everything after frontmatter)
+            bodyContent = content.substring(endIndex + 3).trim();
+            
             // Basic YAML parsing
             yamlContent.split('\n').forEach(line => {
               const colonIndex = line.indexOf(':');
