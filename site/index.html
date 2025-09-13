@@ -244,6 +244,11 @@
             color: #856404;
         }
        
+        .pill-new {
+            background: #dc3545;
+            color: white;
+        }
+       
         .message-preview {
             font-size: 13px;
             color: #6c757d;
@@ -509,36 +514,7 @@
                 <button class="lens-tab" data-lens="cognition">Cognition</button>
                 <button class="lens-tab" data-lens="cs-math">CS/Math</button>
             </div>
-           
-            <div class="doc-category">
-                <h3>Core Theory</h3>
-                <div id="core-docs">
-                    <div class="document-item active" data-lens="cognition">
-                        <div>Pattern Recognition Identity</div>
-                        <span style="font-size: 11px; color: #28a745;">● developing</span>
-                    </div>
-                </div>
-            </div>
-           
-            <div class="doc-category">
-                <h3>Evidence</h3>
-                <div id="evidence-docs">
-                    <div class="document-item" data-lens="cs-math">
-                        <div>Semantic Embeddings</div>
-                        <span style="font-size: 11px; color: #ffc107;">● draft</span>
-                    </div>
-                </div>
-            </div>
-           
-            <div class="doc-category">
-                <h3>References</h3>
-                <div id="reference-docs">
-                    <div class="document-item" data-lens="philosophy">
-                        <div>Dennett's Real Patterns</div>
-                        <span style="font-size: 11px; color: #0066cc;">● stable</span>
-                    </div>
-                </div>
-            </div>
+            <!-- Categories will be added dynamically -->
         </div>
        
         <!-- Center - Main content -->
@@ -685,58 +661,106 @@
     </div>
    
     <script>
-        // Simulated document contents (in a real app, load from files/API)
-        const docContents = {
-            'Pattern Recognition Identity': [
-                'This is a placeholder paragraph for "Pattern Recognition Identity". In a real implementation, load actual document content here, ensuring paragraphs have the \'commentable\' class for the comment menu to work.',
-                'Another example paragraph to demonstrate clicking and adding comments like [? text], [! text], or [✓].'
-            ],
-            'Semantic Embeddings': [
-                'Placeholder for Semantic Embeddings paragraph 1.',
-                'Placeholder for Semantic Embeddings paragraph 2.'
-            ],
-            'Dennett\'s Real Patterns': [
-                'Placeholder for Dennett\'s Real Patterns paragraph 1.',
-                'Placeholder for Dennett\'s Real Patterns paragraph 2.'
-            ]
-        };
+        // User email (fetched from API; in real deployment, create /api/user Pages Function returning {email: request.headers.get('Cf-Access-Authenticated-User-Email')})
+        let userEmail = 'you@example.com'; // Placeholder; replace with fetch
+        async function fetchUserEmail() {
+            try {
+                const res = await fetch('/api/user');
+                const data = await res.json();
+                userEmail = data.email || 'anonymous';
+            } catch {
+                userEmail = 'anonymous';
+            }
+        }
+        fetchUserEmail();
 
-        // Simulated thread data: {subject: {topic: '', messages: [{text: '', date: ''}]}}
+        // Simulated thread data: {subject: {topic: '', timestamp: number, messages: [{text: '', timestamp: number, user: ''}]}}
         const threads = {
             'Eastern Philosophy Connection': {
                 topic: 'Core Theory',
-                date: 'Nov 13',
+                timestamp: Date.now() - 86400000 * 2, // e.g., Nov 13
                 messages: [
-                    {text: "I've been thinking about how PRI relates to Buddhist dependent origination...", date: 'Nov 13'},
-                    {text: 'Interesting point.', date: '2 hours ago'},
-                    {text: 'More details here.', date: '1 hour ago'},
-                    {text: 'Agreement.', date: '30 min ago'}
+                    {text: "I've been thinking about how PRI relates to Buddhist dependent origination...", timestamp: Date.now() - 86400000 * 2, user: 'supervisor@example.com'},
+                    {text: 'Interesting point.', timestamp: Date.now() - 7200000, user: 'you@example.com'},
+                    {text: 'More details here.', timestamp: Date.now() - 3600000, user: 'supervisor@example.com'},
+                    {text: 'Agreement.', timestamp: Date.now() - 1800000, user: 'you@example.com'}
                 ]
             },
             'Symbol Grounding Dissolution': {
                 topic: 'Problems',
-                date: 'Nov 10',
+                timestamp: Date.now() - 86400000 * 5, // e.g., Nov 10
                 messages: [
-                    {text: "The dissolution seems compelling but I'm not sure about the linguistic aspects...", date: 'Nov 10'},
-                    {text: 'Reply 1', date: 'Yesterday'},
-                    {text: 'Reply 2', date: 'Yesterday'},
-                    {text: 'Reply 3', date: 'Yesterday'},
-                    {text: 'Reply 4', date: 'Yesterday'},
-                    {text: 'Reply 5', date: 'Yesterday'}
+                    {text: "The dissolution seems compelling but I'm not sure about the linguistic aspects...", timestamp: Date.now() - 86400000 * 5, user: 'you@example.com'},
+                    {text: 'Reply 1', timestamp: Date.now() - 86400000, user: 'supervisor@example.com'},
+                    {text: 'Reply 2', timestamp: Date.now() - 86400000, user: 'you@example.com'},
+                    {text: 'Reply 3', timestamp: Date.now() - 86400000, user: 'supervisor@example.com'},
+                    {text: 'Reply 4', timestamp: Date.now() - 86400000, user: 'you@example.com'},
+                    {text: 'Reply 5', timestamp: Date.now() - 86400000, user: 'supervisor@example.com'}
                 ]
             },
             'Meeting Notes': {
                 topic: 'Admin',
-                date: 'Nov 5',
+                timestamp: Date.now() - 86400000 * 10, // e.g., Nov 5
                 messages: [
-                    {text: "Summary of our discussion about the empirical evidence section...", date: 'Nov 5'},
-                    {text: 'One reply.', date: 'Nov 6'}
+                    {text: "Summary of our discussion about the empirical evidence section...", timestamp: Date.now() - 86400000 * 10, user: 'supervisor@example.com'},
+                    {text: 'One reply.', timestamp: Date.now() - 86400000 * 9, user: 'you@example.com'}
                 ]
             }
         };
 
-        // LocalStorage key for comments
+        // LocalStorage keys
         const COMMENTS_KEY = 'doc_comments';
+        const READ_STATUS_KEY = 'thread_read_status_' + userEmail; // Per user
+
+        // Document metadata list (update this with actual docs from /content; in a full setup, this could be loaded from an index.json)
+        const categoryMap = {
+            "core": "Core Theory",
+            "evidence": "Evidence",
+            "references": "References"
+        };
+        const statusColors = {
+            "developing": "#28a745",
+            "draft": "#ffc107",
+            "stable": "#0066cc"
+        };
+        const docs = [
+            {title: "Pattern Recognition Identity", slug: "pattern-recognition-identity", category: "core", lenses: "philosophy cognition", status: "developing"},
+            {title: "Semantic Embeddings", slug: "semantic-embeddings", category: "evidence", lenses: "cs-math", status: "draft"},
+            {title: "Dennett's Real Patterns", slug: "dennetts-real-patterns", category: "references", lenses: "philosophy", status: "stable"}
+        ];
+
+        // Slugify function
+        function slugify(str) {
+            return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        }
+
+        // Parse frontmatter and content
+        function parseFrontmatter(text) {
+            if (!text.startsWith('---')) return {meta: {}, content: text};
+            const end = text.indexOf('---', 3);
+            if (end === -1) return {meta: {}, content: text};
+            const yamlText = text.substring(3, end).trim();
+            const meta = {};
+            yamlText.split('\n').forEach(line => {
+                const colon = line.indexOf(':');
+                if (colon > 0) {
+                    const key = line.substring(0, colon).trim();
+                    let val = line.substring(colon + 1).trim();
+                    if (val.startsWith('[')) {
+                        try {
+                            val = JSON.parse(val.replace(/'/g, '"'));
+                        } catch {
+                            val = val.replace(/[\[\]"]/g, '').split(',').map(s => s.trim());
+                        }
+                    } else if (val.startsWith('"')) {
+                        val = val.replace(/"/g, '');
+                    }
+                    meta[key] = val;
+                }
+            });
+            const content = text.substring(end + 3).trim();
+            return {meta, content};
+        }
 
         // Get stored comments
         function getStoredComments() {
@@ -747,6 +771,58 @@
         // Save comments to localStorage
         function saveComments(comments) {
             localStorage.setItem(COMMENTS_KEY, JSON.stringify(comments));
+        }
+
+        // Get read status
+        function getReadStatus() {
+            const stored = localStorage.getItem(READ_STATUS_KEY);
+            return stored ? JSON.parse(stored) : {};
+        }
+
+        // Save read status
+        function saveReadStatus(status) {
+            localStorage.setItem(READ_STATUS_KEY, JSON.stringify(status));
+        }
+
+        // Build left panel dynamically
+        function buildLeftPanel() {
+            const left = document.querySelector('.left-panel');
+            const categories = {};
+            docs.forEach(doc => {
+                categories[doc.category] = categories[doc.category] || [];
+                categories[doc.category].push(doc);
+            });
+            Object.keys(categories).sort().forEach(cat => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'doc-category';
+                const h3 = document.createElement('h3');
+                h3.textContent = categoryMap[cat] || cat.toUpperCase();
+                categoryDiv.appendChild(h3);
+                const docsDiv = document.createElement('div');
+                docsDiv.id = cat + '-docs';
+                categories[cat].forEach((doc, idx) => {
+                    const color = statusColors[doc.status] || '#6c757d';
+                    const item = document.createElement('div');
+                    item.className = 'document-item' + (idx === 0 ? ' active' : '');
+                    item.dataset.lenses = Array.isArray(doc.lenses) ? doc.lenses.join(' ') : doc.lenses;
+                    item.dataset.slug = doc.slug;
+                    item.innerHTML = `<div>${doc.title}</div><span style="font-size: 11px; color: ${color};">● ${doc.status}</span>`;
+                    docsDiv.appendChild(item);
+                });
+                categoryDiv.appendChild(docsDiv);
+                left.appendChild(categoryDiv);
+            });
+            // Attach click listeners
+            document.querySelectorAll('.document-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    const title = item.querySelector('div').textContent;
+                    loadDocContent(title, item.dataset.slug);
+                });
+            });
+            // Load first doc
+            document.querySelector('.document-item').click();
         }
 
         // Initialize topic filters
@@ -781,60 +857,72 @@
             });
         }
 
-        // Update thread preview
+        // Update thread preview and check for new
         function updateThreadPreview(subject) {
             const threadElem = [...document.querySelectorAll('.message-thread')].find(t => t.querySelector('.pill-subject').textContent === subject);
             if (!threadElem) return;
             const data = threads[subject];
             const repliesCount = data.messages.length - 1;
+            const lastDate = new Date(data.messages[data.messages.length - 1].timestamp).toLocaleString();
+            threadElem.querySelector('.pill-date').textContent = new Date(data.timestamp).toLocaleDateString();
             threadElem.querySelector('.message-preview').textContent = data.messages[0].text.substring(0, 100) + '...';
-            threadElem.querySelector('.message-replies').textContent = `${repliesCount} repl${repliesCount === 1 ? 'y' : 'ies'} · Last: ${data.messages[data.messages.length - 1].date}`;
+            threadElem.querySelector('.message-replies').textContent = `${repliesCount} repl${repliesCount === 1 ? 'y' : 'ies'} · Last: ${lastDate}`;
+
+            // Check if new
+            const readStatus = getReadStatus()[subject] || 0;
+            const lastMsgTime = data.messages[data.messages.length - 1].timestamp;
+            if (lastMsgTime > readStatus) {
+                const newPill = document.createElement('span');
+                newPill.className = 'pill pill-new';
+                newPill.textContent = 'new';
+                threadElem.querySelector('.message-pills').appendChild(newPill);
+            }
         }
 
-        // Document selection handling
-        document.querySelectorAll('.document-item').forEach(item => {
-            item.addEventListener('click', () => {
-                // Remove active from all items and threads
-                document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
-                // Add active to clicked item
-                item.classList.add('active');
-                // Load content
-                const title = item.querySelector('div').textContent;
-                loadDocContent(title);
-            });
-        });
-
-        // Thread selection handling
-        function attachThreadListeners() {
-            document.querySelectorAll('.message-thread').forEach(thread => {
-                thread.addEventListener('click', () => {
-                    // Remove active from all items and threads
-                    document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
-                    // Add active to clicked thread
-                    thread.classList.add('active');
-                    // Load thread content
-                    const subject = thread.querySelector('.pill-subject').textContent;
-                    loadThreadContent(subject);
-                });
-            });
+        // Update all previews
+        function updateAllPreviews() {
+            Object.keys(threads).forEach(updateThreadPreview);
         }
 
         // Load document content with comments
-        function loadDocContent(title) {
-            const paragraphs = docContents[title] || ['No content available.'];
-            const comments = getStoredComments()[title] || {};
-            let html = `<div style="max-width: 700px;"><h2>${title}</h2>`;
-            paragraphs.forEach((para, index) => {
-                html += `<p class="commentable" data-para-index="${index}">${para}`;
-                (comments[index] || []).forEach(c => {
-                    html += ` <span style="color: #0066cc; font-size: 12px;">[${c.marker}${c.text ? ' ' + c.text : ''}]</span>`;
+        async function loadDocContent(title, slug) {
+            try {
+                const res = await fetch(`/content/${slug}.md`);
+                if (!res.ok) throw new Error('Not found');
+                const text = await res.text();
+                const {meta, content} = parseFrontmatter(text);
+                let paragraphs = [];
+                content.split('\n\n').forEach(paraText => {
+                    const comments = [];
+                    paraText = paraText.replace(/<!-- ([\?!V])( (.*?))? \| (.*?) \| (\d+) -->/g, (_, prefix, __, text, user, timestamp) => {
+                        const marker = prefix === '?' ? '?' : prefix === '!' ? '!' : '✓';
+                        comments.push({marker, text: text || '', user, timestamp: parseInt(timestamp)});
+                        return '';
+                    }).trim();
+                    if (paraText) paragraphs.push({text: paraText, comments});
                 });
-                html += '</p>';
-            });
-            html += '</div>';
-            const center = document.getElementById('center-panel');
-            center.innerHTML = html;
-            attachCommentListeners();
+                // Merge with local comments (for unsaved changes)
+                const localComments = getStoredComments()[title] || {};
+                paragraphs.forEach((para, index) => {
+                    para.comments = para.comments.concat(localComments[index] || []);
+                });
+                let html = `<div style="max-width: 700px;"><h2>${meta.title || title}</h2>`;
+                paragraphs.forEach((para, index) => {
+                    html += `<p class="commentable" data-para-index="${index}">${para.text}`;
+                    para.comments.forEach(c => {
+                        const dateStr = new Date(c.timestamp).toLocaleString();
+                        html += ` <span style="color: #0066cc; font-size: 12px;" title="By ${c.user} at ${dateStr}">[${c.marker}${c.text ? ' ' + c.text : ''}]</span>`;
+                    });
+                    html += '</p>';
+                });
+                html += '</div>';
+                const center = document.getElementById('center-panel');
+                center.innerHTML = html;
+                attachCommentListeners();
+            } catch (e) {
+                const center = document.getElementById('center-panel');
+                center.innerHTML = `<div style="max-width: 700px;"><h2>${title}</h2><p>Error loading document: ${e.message}</p></div>`;
+            }
         }
 
         // Load thread content
@@ -842,7 +930,8 @@
             const data = threads[subject] || {messages: []};
             let html = `<div style="max-width: 700px;"><h2>${subject}</h2><div class="thread-messages">`;
             data.messages.forEach(msg => {
-                html += `<div class="thread-message"><p>${msg.text}</p><small>${msg.date}</small></div>`;
+                const dateStr = new Date(msg.timestamp).toLocaleString();
+                html += `<div class="thread-message"><p>${msg.text}</p><small>By ${msg.user} at ${dateStr}</small></div>`;
             });
             html += `</div><div class="reply-form"><textarea id="reply-text" placeholder="Add a reply..."></textarea><button onclick="addReply('${subject}')">Reply</button></div></div>`;
             const center = document.getElementById('center-panel');
@@ -854,10 +943,13 @@
             const text = document.getElementById('reply-text').value.trim();
             if (!text) return;
             const data = threads[subject];
-            data.messages.push({text, date: 'Now'});
+            const now = Date.now();
+            data.messages.push({text, timestamp: now, user: userEmail});
+            if (data.messages.length > 1) data.timestamp = now; // Update thread timestamp if reply
             document.getElementById('reply-text').value = '';
-            loadThreadContent(subject); // Reload to show new reply
+            loadThreadContent(subject);
             updateThreadPreview(subject);
+            // Since new reply, other users will see 'new' on refresh
         }
 
         // Lens tab switching
@@ -867,7 +959,8 @@
                 tab.classList.add('active');
                 const lens = tab.dataset.lens;
                 document.querySelectorAll('.document-item').forEach(doc => {
-                    doc.style.display = (lens === 'all' || doc.dataset.lens === lens) ? 'block' : 'none';
+                    const lenses = doc.dataset.lenses.split(' ');
+                    doc.style.display = (lens === 'all' || lenses.includes(lens)) ? 'block' : 'none';
                 });
             });
         });
@@ -913,24 +1006,28 @@
                     text = prompt(`Enter ${type} text:`) || '';
                 }
 
-                // Add visual marker
+                const now = Date.now();
+                const dateStr = new Date(now).toLocaleString();
+
+                // Add visual marker with tooltip
                 const span = document.createElement('span');
                 span.style.cssText = 'color: #0066cc; font-size: 12px; margin-left: 5px;';
+                span.title = `By ${userEmail} at ${dateStr}`;
                 span.textContent = ` [${marker}${text ? ' ' + text : ''}]`;
                 target.appendChild(span);
 
-                // Save to storage
+                // Save to local for persistence
                 const title = document.querySelector('h2').textContent;
                 const paraIndex = target.dataset.paraIndex;
                 const comments = getStoredComments();
                 comments[title] = comments[title] || {};
                 comments[title][paraIndex] = comments[title][paraIndex] || [];
-                comments[title][paraIndex].push({marker, text});
+                comments[title][paraIndex].push({marker, text, user: userEmail, timestamp: now});
                 saveComments(comments);
 
-                // Simulate saving to markdown
-                const mdComment = `<!-- ${prefix}${text ? ' ' + text : ''} -->`;
-                console.log('Save to GitHub markdown:', mdComment, 'at paragraph', paraIndex, 'in', title);
+                // Simulate saving to markdown (log the comment to append)
+                const mdComment = `<!-- ${prefix}${text ? ' ' + text : ''} | ${userEmail} | ${now} -->`;
+                console.log('Append to paragraph', paraIndex, 'in /content/' + slugify(title) + '.md:', mdComment);
 
                 menu.classList.remove('show');
             });
@@ -960,11 +1057,13 @@
             const message = document.getElementById('thread-message').value.trim();
             if (!subject || !topic || !message) return;
 
+            const now = Date.now();
+
             // Add to threads data
             threads[subject] = {
                 topic,
-                date: 'Now',
-                messages: [{text: message, date: 'Now'}]
+                timestamp: now,
+                messages: [{text: message, timestamp: now, user: userEmail}]
             };
 
             // Create new thread element
@@ -975,7 +1074,7 @@
                 <div class="message-pills">
                     <span class="pill pill-subject">${subject}</span>
                     <span class="pill pill-topic">${topic}</span>
-                    <span class="pill pill-date">Now</span>
+                    <span class="pill pill-date">${new Date(now).toLocaleDateString()}</span>
                 </div>
                 <div class="message-preview">${message.substring(0, 100)}...</div>
                 <div class="message-replies">0 replies · Last: Now</div>
@@ -993,6 +1092,11 @@
                 initTopicFilters();
             }
 
+            // Mark as read for creator
+            const status = getReadStatus();
+            status[subject] = now;
+            saveReadStatus(status);
+
             // Clear form and hide
             document.getElementById('thread-subject').value = '';
             document.getElementById('thread-topic').value = '';
@@ -1002,9 +1106,30 @@
             console.log('Thread created:', { subject, topic, message });
         }
 
+        // Thread selection handling
+        function attachThreadListeners() {
+            document.querySelectorAll('.message-thread').forEach(thread => {
+                thread.addEventListener('click', () => {
+                    document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
+                    thread.classList.add('active');
+                    const subject = thread.querySelector('.pill-subject').textContent;
+                    loadThreadContent(subject);
+                    // Mark as read
+                    const status = getReadStatus();
+                    status[subject] = Date.now();
+                    saveReadStatus(status);
+                    // Remove new pill if present
+                    const newPill = thread.querySelector('.pill-new');
+                    if (newPill) newPill.remove();
+                });
+            });
+        }
+
         // Initial setup
+        buildLeftPanel();
         initTopicFilters();
         attachThreadListeners();
+        updateAllPreviews();
     </script>
 </body>
 </html>
