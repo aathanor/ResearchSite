@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pattern Recognition Research</title>
+    <title>Pattern Constellations</title>
     <style>
         * {
             margin: 0;
@@ -20,39 +20,38 @@
             flex-direction: column;
         }
         
-        /* Header with lens tabs */
+        /* Header */
         .header {
             background: #f8f9fa;
             border-bottom: 2px solid #dee2e6;
             padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .header h1 {
             font-size: 18px;
             color: #495057;
-            margin-bottom: 10px;
         }
         
-        .lens-tabs {
+        .header-actions {
             display: flex;
-            gap: 5px;
+            gap: 15px;
         }
         
-        .lens-tab {
-            padding: 8px 20px;
-            background: white;
-            border: 1px solid #dee2e6;
-            border-bottom: none;
-            cursor: pointer;
-            color: #6c757d;
-            transition: all 0.2s;
-            border-radius: 5px 5px 0 0;
-        }
-        
-        .lens-tab.active {
+        .btn-overview {
+            padding: 8px 16px;
             background: #0066cc;
             color: white;
-            border-color: #0066cc;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-overview:hover {
+            background: #0052a3;
         }
         
         /* Main layout */
@@ -69,6 +68,28 @@
             border-right: 1px solid #dee2e6;
             overflow-y: auto;
             padding: 15px;
+        }
+        
+        .lens-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .lens-tab {
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #6c757d;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .lens-tab.active {
+            color: #0066cc;
+            border-bottom-color: #0066cc;
         }
         
         .doc-category {
@@ -102,188 +123,303 @@
             border-color: #0066cc;
         }
         
-        .document-title {
-            font-size: 14px;
-            color: #212529;
-            margin-bottom: 2px;
-        }
-        
-        .document-status {
-            font-size: 11px;
-            padding: 2px 6px;
-            border-radius: 3px;
-            display: inline-block;
-        }
-        
-        .status-developing {
-            background: #cce5ff;
-            color: #004085;
-        }
-        
-        .status-stable {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-draft {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
         /* Center - Main content */
         .center-panel {
             flex: 1;
             padding: 30px;
             overflow-y: auto;
             background: white;
+            position: relative;
         }
         
-        .document-header {
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-        
-        .document-header h1 {
-            font-size: 24px;
-            color: #212529;
-            margin-bottom: 5px;
-        }
-        
-        .document-meta {
-            font-size: 13px;
-            color: #6c757d;
-        }
-        
-        .document-body {
-            line-height: 1.7;
-            font-size: 15px;
-            color: #495057;
-            max-width: 700px;
-        }
-        
-        .document-body h1 { font-size: 20px; margin: 25px 0 10px 0; }
-        .document-body h2 { font-size: 18px; margin: 20px 0 10px 0; }
-        .document-body h3 { font-size: 16px; margin: 15px 0 8px 0; }
-        .document-body p { margin-bottom: 15px; }
-        
-        /* Text selection for comments */
-        .commentable {
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .commentable:hover {
-            background: #fffbf0;
-        }
-        
-        /* Right panel - Emails */
+        /* Right panel - Messages */
         .right-panel {
-            width: 25%;
+            width: 30%;
             background: #f8f9fa;
             border-left: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .messages-header {
+            padding: 15px;
+            background: white;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .messages-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .new-thread-btn {
+            padding: 6px 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .messages-list {
+            flex: 1;
             overflow-y: auto;
             padding: 15px;
         }
         
-        .emails-header {
-            font-size: 12px;
-            text-transform: uppercase;
-            color: #6c757d;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        .email-item {
+        .message-thread {
             background: white;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 4px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 12px;
             cursor: pointer;
             border: 1px solid #e9ecef;
             transition: all 0.2s;
         }
         
-        .email-item:hover {
+        .message-thread:hover {
             border-color: #0066cc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .email-date {
+        .message-pills {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .pill {
+            padding: 3px 8px;
+            border-radius: 12px;
             font-size: 11px;
-            color: #6c757d;
-            margin-bottom: 3px;
-        }
-        
-        .email-subject {
-            font-size: 13px;
-            color: #212529;
             font-weight: 500;
-            margin-bottom: 3px;
         }
         
-        .email-preview {
-            font-size: 12px;
+        .pill-subject {
+            background: #e7f3ff;
+            color: #0066cc;
+        }
+        
+        .pill-topic {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .pill-date {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .message-preview {
+            font-size: 13px;
             color: #6c757d;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            margin-top: 5px;
         }
         
-        /* Comment popup */
-        .comment-popup {
+        .message-replies {
+            font-size: 11px;
+            color: #28a745;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+        
+        /* Comment Menu - VERTICAL */
+        .comment-menu {
             position: absolute;
             background: white;
             border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 5px;
+            border-radius: 6px;
+            padding: 8px;
             display: none;
             z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 180px;
         }
         
-        .comment-popup.show {
+        .comment-menu.show {
+            display: block;
+        }
+        
+        .comment-option {
             display: flex;
-            gap: 5px;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+            font-size: 14px;
+            color: #495057;
         }
         
-        .comment-btn {
-            width: 30px;
-            height: 30px;
-            border: 1px solid #dee2e6;
-            background: white;
-            cursor: pointer;
-            border-radius: 3px;
-            font-size: 16px;
+        .comment-option:hover {
+            background: #f8f9fa;
+        }
+        
+        .comment-option-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .comment-option-text {
+            flex: 1;
+        }
+        
+        /* Overview Modal */
+        .overview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+        
+        .overview-modal.show {
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .comment-btn:hover {
-            background: #f8f9fa;
+        .overview-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            height: 80%;
+            padding: 30px;
+            position: relative;
+            overflow: auto;
         }
         
-        .comment-marker {
-            display: inline-block;
-            font-size: 12px;
-            margin: 0 2px;
-            cursor: help;
-        }
-        
-        .comment-marker.question { color: #dc3545; }
-        .comment-marker.exclamation { color: #ffc107; }
-        .comment-marker.check { color: #28a745; }
-        
-        /* Welcome state */
-        .welcome {
-            text-align: center;
-            padding: 60px;
+        .overview-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
             color: #6c757d;
         }
         
-        .welcome h2 {
-            color: #495057;
+        .overview-graph {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .overview-section {
+            border-left: 3px solid #0066cc;
+            padding-left: 20px;
+        }
+        
+        .overview-section h3 {
+            color: #0066cc;
             margin-bottom: 10px;
+        }
+        
+        .overview-items {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .overview-item {
+            padding: 8px 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 13px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .overview-item.stable {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .overview-item.developing {
+            background: #cce5ff;
+            border-color: #0066cc;
+        }
+        
+        .overview-item.draft {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+        
+        /* New thread form */
+        .new-thread-form {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 3000;
+            display: none;
+            width: 400px;
+        }
+        
+        .new-thread-form.show {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #0066cc;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
         }
     </style>
 </head>
@@ -291,301 +427,300 @@
     <!-- Header -->
     <div class="header">
         <h1>Pattern Recognition Identity Research</h1>
-        <div class="lens-tabs">
-            <button class="lens-tab active" data-lens="all">All</button>
-            <button class="lens-tab" data-lens="philosophy">Philosophy</button>
-            <button class="lens-tab" data-lens="cognition">Cognition</button>
-            <button class="lens-tab" data-lens="cs-math">CS/Math</button>
+        <div class="header-actions">
+            <button class="btn-overview" onclick="showOverview()">📊 Project Overview</button>
         </div>
     </div>
     
     <!-- Main container -->
     <div class="main-container">
         <!-- Left Panel - Documents -->
-        <div class="left-panel" id="left-panel">
+        <div class="left-panel">
+            <div class="lens-tabs">
+                <button class="lens-tab active" data-lens="all">All</button>
+                <button class="lens-tab" data-lens="philosophy">Philosophy</button>
+                <button class="lens-tab" data-lens="cognition">Cognition</button>
+                <button class="lens-tab" data-lens="cs-math">CS/Math</button>
+            </div>
+            
             <div class="doc-category">
                 <h3>Core Theory</h3>
-                <div id="core-docs"></div>
+                <div id="core-docs">
+                    <div class="document-item active">
+                        <div>Pattern Recognition Identity</div>
+                        <span style="font-size: 11px; color: #28a745;">● developing</span>
+                    </div>
+                </div>
             </div>
+            
             <div class="doc-category">
                 <h3>Evidence</h3>
-                <div id="evidence-docs"></div>
+                <div id="evidence-docs">
+                    <div class="document-item">
+                        <div>Semantic Embeddings</div>
+                        <span style="font-size: 11px; color: #ffc107;">● draft</span>
+                    </div>
+                </div>
             </div>
+            
             <div class="doc-category">
                 <h3>References</h3>
-                <div id="reference-docs"></div>
+                <div id="reference-docs">
+                    <div class="document-item">
+                        <div>Dennett's Real Patterns</div>
+                        <span style="font-size: 11px; color: #0066cc;">● stable</span>
+                    </div>
+                </div>
             </div>
         </div>
         
         <!-- Center - Main content -->
         <div class="center-panel" id="center-panel">
-            <div class="welcome">
-                <h2>Select a document to begin</h2>
-                <p>Click on any document in the left panel</p>
+            <div style="max-width: 700px;">
+                <div style="text-align: center; padding: 60px; color: #6c757d;">
+                    <h2 style="color: #495057; margin-bottom: 10px;">Select a document to begin</h2>
+                    <p>Choose a document from the left panel</p>
+                </div>
             </div>
         </div>
         
-        <!-- Right Panel - Emails -->
-        <div class="right-panel" id="right-panel">
-            <div class="emails-header">Email Correspondence</div>
-            <div id="emails-list">
-                <div class="email-item">
-                    <div class="email-date">Nov 13, 2024</div>
-                    <div class="email-subject">Re: PRI and Eastern Philosophy</div>
-                    <div class="email-preview">I've been thinking about the connection...</div>
+        <!-- Right Panel - Messages -->
+        <div class="right-panel">
+            <div class="messages-header">
+                <h3>Discussion Threads</h3>
+                <button class="new-thread-btn" onclick="showNewThreadForm()">+ New Thread</button>
+            </div>
+            
+            <div class="messages-list">
+                <div class="message-thread">
+                    <div class="message-pills">
+                        <span class="pill pill-subject">Eastern Philosophy Connection</span>
+                        <span class="pill pill-topic">Core Theory</span>
+                        <span class="pill pill-date">Nov 13</span>
+                    </div>
+                    <div class="message-preview">
+                        I've been thinking about how PRI relates to Buddhist dependent origination...
+                    </div>
+                    <div class="message-replies">3 replies · Last: 2 hours ago</div>
                 </div>
-                <div class="email-item">
-                    <div class="email-date">Nov 10, 2024</div>
-                    <div class="email-subject">Symbol Grounding Problem</div>
-                    <div class="email-preview">The dissolution seems compelling but...</div>
+                
+                <div class="message-thread">
+                    <div class="message-pills">
+                        <span class="pill pill-subject">Symbol Grounding Dissolution</span>
+                        <span class="pill pill-topic">Problems</span>
+                        <span class="pill pill-date">Nov 10</span>
+                    </div>
+                    <div class="message-preview">
+                        The dissolution seems compelling but I'm not sure about the linguistic aspects...
+                    </div>
+                    <div class="message-replies">5 replies · Last: Yesterday</div>
+                </div>
+                
+                <div class="message-thread">
+                    <div class="message-pills">
+                        <span class="pill pill-subject">Meeting Notes</span>
+                        <span class="pill pill-topic">Admin</span>
+                        <span class="pill pill-date">Nov 5</span>
+                    </div>
+                    <div class="message-preview">
+                        Summary of our discussion about the empirical evidence section...
+                    </div>
+                    <div class="message-replies">1 reply</div>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Comment popup -->
-    <div class="comment-popup" id="comment-popup">
-        <button class="comment-btn" data-type="?">❓</button>
-        <button class="comment-btn" data-type="!">❗</button>
-        <button class="comment-btn" data-type="✓">✅</button>
+    <!-- Comment Menu - VERTICAL with TEXT -->
+    <div class="comment-menu" id="comment-menu">
+        <div class="comment-option" data-type="question">
+            <span class="comment-option-icon">❓</span>
+            <span class="comment-option-text">Ask question</span>
+        </div>
+        <div class="comment-option" data-type="clarification">
+            <span class="comment-option-icon">❗</span>
+            <span class="comment-option-text">Needs clarification</span>
+        </div>
+        <div class="comment-option" data-type="approved">
+            <span class="comment-option-icon">✅</span>
+            <span class="comment-option-text">Approved / Keep</span>
+        </div>
+    </div>
+    
+    <!-- Overview Modal -->
+    <div class="overview-modal" id="overview-modal">
+        <div class="overview-content">
+            <span class="overview-close" onclick="hideOverview()">×</span>
+            <h2>Project Overview - Pattern Recognition Identity</h2>
+            
+            <div class="overview-graph">
+                <div class="overview-section">
+                    <h3>🎯 Core Theory</h3>
+                    <div class="overview-items">
+                        <div class="overview-item developing">PRI Main Thesis</div>
+                        <div class="overview-item developing">Pattern-Recognition Unity</div>
+                        <div class="overview-item draft">Consciousness as Reflexive PR</div>
+                    </div>
+                </div>
+                
+                <div class="overview-section">
+                    <h3>💡 Problem Dissolutions</h3>
+                    <div class="overview-items">
+                        <div class="overview-item stable">Hard Problem</div>
+                        <div class="overview-item developing">Symbol Grounding</div>
+                        <div class="overview-item draft">Quantum Measurement</div>
+                        <div class="overview-item draft">Causation Problem</div>
+                    </div>
+                </div>
+                
+                <div class="overview-section">
+                    <h3>📊 Empirical Evidence</h3>
+                    <div class="overview-items">
+                        <div class="overview-item developing">Semantic Embeddings</div>
+                        <div class="overview-item developing">Rod-Cap Structure</div>
+                        <div class="overview-item draft">LLM Analysis</div>
+                    </div>
+                </div>
+                
+                <div class="overview-section">
+                    <h3>🔗 Connections</h3>
+                    <div class="overview-items">
+                        <div class="overview-item stable">Eastern Philosophy</div>
+                        <div class="overview-item developing">Transformer Architecture</div>
+                        <div class="overview-item draft">Hopfield Networks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- New Thread Form -->
+    <div class="new-thread-form" id="new-thread-form">
+        <h3 style="margin-bottom: 20px;">Start New Discussion Thread</h3>
+        <div class="form-group">
+            <label>Subject</label>
+            <input type="text" id="thread-subject" placeholder="Brief topic...">
+        </div>
+        <div class="form-group">
+            <label>Topic Category</label>
+            <input type="text" id="thread-topic" placeholder="e.g., Core Theory, Evidence, Questions...">
+        </div>
+        <div class="form-group">
+            <label>Message</label>
+            <textarea id="thread-message" placeholder="Your thoughts..."></textarea>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-secondary" onclick="hideNewThreadForm()">Cancel</button>
+            <button class="btn btn-primary" onclick="createThread()">Create Thread</button>
+        </div>
     </div>
     
     <script>
-        // Global state
-        let documents = {};
-        let emails = {};
-        let currentLens = 'all';
-        let selectedDoc = null;
-        let selectedText = '';
-        let selectedRange = null;
+        // Make paragraphs clickable for comments
+        document.querySelectorAll('.commentable').forEach(p => {
+            p.style.cursor = 'pointer';
+            p.addEventListener('click', showCommentMenu);
+        });
         
-        // Initialize
-        async function init() {
-            try {
-                // Load documents
-                const response = await fetch('./data/documents.json');
-                if (response.ok) {
-                    const data = await response.json();
-                    documents = data.documents || {};
-                }
-                
-                // Load emails (if exists)
-                try {
-                    const emailResponse = await fetch('./data/emails.json');
-                    if (emailResponse.ok) {
-                        const emailData = await emailResponse.json();
-                        emails = emailData.emails || {};
-                    }
-                } catch (e) {
-                    console.log('No emails file yet');
-                }
-                
-                // Setup event listeners
-                setupEventListeners();
-                
-                // Initial render
-                renderDocuments();
-                renderEmails();
-                
-            } catch (error) {
-                console.error('Failed to initialize:', error);
-            }
+        function showCommentMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('comment-menu');
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            menu.classList.add('show');
+            
+            // Store the clicked element for later
+            menu.targetElement = e.target;
         }
         
-        function setupEventListeners() {
-            // Lens tabs
-            document.querySelectorAll('.lens-tab').forEach(tab => {
-                tab.addEventListener('click', (e) => {
-                    document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
-                    e.target.classList.add('active');
-                    currentLens = e.target.dataset.lens;
-                    renderDocuments();
-                });
-            });
-            
-            // Comment buttons
-            document.querySelectorAll('.comment-btn').forEach(btn => {
-                btn.addEventListener('click', handleComment);
-            });
-            
-            // Hide comment popup on click outside
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.comment-popup') && !e.target.closest('.commentable')) {
-                    document.getElementById('comment-popup').classList.remove('show');
+        // Hide menu on outside click
+        document.addEventListener('click', () => {
+            document.getElementById('comment-menu').classList.remove('show');
+        });
+        
+        // Handle comment selection
+        document.querySelectorAll('.comment-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const type = option.dataset.type;
+                const menu = document.getElementById('comment-menu');
+                
+                // Add visual marker to the text
+                if (menu.targetElement) {
+                    const marker = document.createElement('span');
+                    marker.style.cssText = 'color: #0066cc; font-size: 12px; margin-left: 5px;';
+                    
+                    if (type === 'question') marker.textContent = ' [?]';
+                    if (type === 'clarification') marker.textContent = ' [!]';
+                    if (type === 'approved') marker.textContent = ' [✓]';
+                    
+                    menu.targetElement.appendChild(marker);
                 }
+                
+                menu.classList.remove('show');
+                
+                // Here you'd save to GitHub
+                console.log('Comment added:', type);
             });
+        });
+        
+        // Lens tab switching
+        document.querySelectorAll('.lens-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Filter documents based on lens
+            });
+        });
+        
+        // Overview modal
+        function showOverview() {
+            document.getElementById('overview-modal').classList.add('show');
         }
         
-        function renderDocuments() {
-            const coreContainer = document.getElementById('core-docs');
-            const evidenceContainer = document.getElementById('evidence-docs');
-            const referenceContainer = document.getElementById('reference-docs');
-            
-            // Clear containers
-            coreContainer.innerHTML = '';
-            evidenceContainer.innerHTML = '';
-            referenceContainer.innerHTML = '';
-            
-            // Filter and render documents
-            Object.values(documents).forEach(doc => {
-                // Filter by lens
-                if (currentLens !== 'all' && (!doc.lens || !doc.lens.includes(currentLens))) {
-                    return;
-                }
-                
-                // Create document element
-                const docEl = document.createElement('div');
-                docEl.className = 'document-item';
-                docEl.innerHTML = `
-                    <div class="document-title">${doc.title}</div>
-                    <span class="document-status status-${doc.status}">${doc.status}</span>
-                `;
-                
-                docEl.addEventListener('click', () => displayDocument(doc));
-                
-                // Add to appropriate category
-                const category = doc.frontmatter.category || 'core';
-                if (category === 'core') {
-                    coreContainer.appendChild(docEl);
-                } else if (category === 'evidence') {
-                    evidenceContainer.appendChild(docEl);
-                } else if (category === 'reference') {
-                    referenceContainer.appendChild(docEl);
-                } else {
-                    coreContainer.appendChild(docEl); // default
-                }
-            });
+        function hideOverview() {
+            document.getElementById('overview-modal').classList.remove('show');
         }
         
-        function displayDocument(doc) {
-            selectedDoc = doc;
-            const centerPanel = document.getElementById('center-panel');
+        // Thread form
+        function showNewThreadForm() {
+            document.getElementById('new-thread-form').classList.add('show');
+        }
+        
+        function hideNewThreadForm() {
+            document.getElementById('new-thread-form').classList.remove('show');
+        }
+        
+        function createThread() {
+            const subject = document.getElementById('thread-subject').value;
+            const topic = document.getElementById('thread-topic').value;
+            const message = document.getElementById('thread-message').value;
             
-            // Mark active document
-            document.querySelectorAll('.document-item').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            // Get clean content
-            let content = doc.fullContent || doc.content || '';
-            
-            // Convert markdown to HTML (basic)
-            let htmlContent = content
-                .split('\n\n')
-                .map(para => {
-                    if (para.startsWith('# ')) return `<h1>${para.slice(2)}</h1>`;
-                    if (para.startsWith('## ')) return `<h2>${para.slice(3)}</h2>`;
-                    if (para.startsWith('### ')) return `<h3>${para.slice(4)}</h3>`;
-                    if (para.trim()) return `<p class="commentable">${para}</p>`;
-                    return '';
-                })
-                .join('');
-            
-            // Add existing comment markers
-            if (doc.comments && doc.comments.length > 0) {
-                doc.comments.forEach(comment => {
-                    const marker = `<span class="comment-marker ${
-                        comment.type === '?' ? 'question' : 
-                        comment.type === '!' ? 'exclamation' : 'check'
-                    }" title="Comment">${comment.type}</span>`;
-                    // This is simplified - would need better positioning
-                });
-            }
-            
-            // Build metadata
-            const meta = [];
-            if (doc.frontmatter.date) meta.push(doc.frontmatter.date);
-            if (doc.lens && doc.lens.length > 0) meta.push(doc.lens.join(', '));
-            
-            centerPanel.innerHTML = `
-                <div class="document-header">
-                    <h1>${doc.title}</h1>
-                    <div class="document-meta">${meta.join(' • ')}</div>
+            // Create new thread element
+            const thread = document.createElement('div');
+            thread.className = 'message-thread';
+            thread.innerHTML = `
+                <div class="message-pills">
+                    <span class="pill pill-subject">${subject}</span>
+                    <span class="pill pill-topic">${topic}</span>
+                    <span class="pill pill-date">Now</span>
                 </div>
-                <div class="document-body">
-                    ${htmlContent}
-                </div>
+                <div class="message-preview">${message.substring(0, 100)}...</div>
+                <div class="message-replies">New thread</div>
             `;
             
-            // Add click handlers to paragraphs
-            centerPanel.querySelectorAll('.commentable').forEach(el => {
-                el.addEventListener('click', showCommentPopup);
-            });
+            // Add to top of list
+            document.querySelector('.messages-list').prepend(thread);
+            
+            // Clear form and hide
+            document.getElementById('thread-subject').value = '';
+            document.getElementById('thread-topic').value = '';
+            document.getElementById('thread-message').value = '';
+            hideNewThreadForm();
+            
+            // Save to GitHub (implement this)
+            console.log('Thread created:', { subject, topic, message });
         }
-        
-        function showCommentPopup(e) {
-            e.stopPropagation();
-            
-            const popup = document.getElementById('comment-popup');
-            const selection = window.getSelection();
-            
-            // If there's selected text, use it
-            if (selection.toString()) {
-                selectedText = selection.toString();
-                selectedRange = selection.getRangeAt(0);
-            } else {
-                // Otherwise, use the whole paragraph
-                selectedText = e.target.textContent;
-                selectedRange = e.target;
-            }
-            
-            // Position popup near click
-            popup.style.left = e.pageX + 'px';
-            popup.style.top = (e.pageY - 40) + 'px';
-            popup.classList.add('show');
-        }
-        
-        async function handleComment(e) {
-            const type = e.target.dataset.type;
-            
-            if (!selectedDoc) return;
-            
-            // Add visual marker immediately
-            const marker = document.createElement('span');
-            marker.className = `comment-marker ${
-                type === '?' ? 'question' : 
-                type === '!' ? 'exclamation' : 'check'
-            }`;
-            marker.textContent = type;
-            
-            if (selectedRange && selectedRange.insertNode) {
-                selectedRange.insertNode(marker);
-            } else if (selectedRange) {
-                selectedRange.innerHTML += marker.outerHTML;
-            }
-            
-            // Hide popup
-            document.getElementById('comment-popup').classList.remove('show');
-            
-            // Send to backend
-            try {
-                const response = await fetch('./api/comment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        file: selectedDoc.id,
-                        type: type,
-                        text: selectedText,
-                        lineNumber: 0 // Would need to calculate
-                    })
-                });
-                
-                if (!response.ok) {
-                    console.error('Failed to save comment');
-                }
-            } catch (error) {
-                console.error('Error saving comment:', error);
-            }
-        }
-        
-        function renderEmails() {
-            const emailsList = document.getElementById('emails-list');
-            
-            // For now, just show placeholder emails
-            // Later, these would come from emails.json
-        }
-        
-        // Start
-        init();
     </script>
 </body>
 </html>
