@@ -724,9 +724,7 @@
             "stable": "#0066cc"
         };
         const docs = [
-            {title: "Pattern Recognition Identity", slug: "pattern-recognition-identity", category: "core", lenses: "philosophy cognition", status: "developing"},
-            {title: "Semantic Embeddings", slug: "semantic-embeddings", category: "evidence", lenses: "cs-math", status: "draft"},
-            {title: "Dennett's Real Patterns", slug: "dennetts-real-patterns", category: "references", lenses: "philosophy", status: "stable"}
+            {title: "Pattern Recognition Identity", slug: "sample", category: "core", lenses: "philosophy cognition", status: "developing"}
         ];
 
         // Slugify function
@@ -822,7 +820,8 @@
                 });
             });
             // Load first doc
-            document.querySelector('.document-item').click();
+            const firstItem = document.querySelector('.document-item');
+            if (firstItem) firstItem.click();
         }
 
         // Initialize topic filters
