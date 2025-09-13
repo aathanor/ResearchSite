@@ -166,6 +166,29 @@
             font-size: 12px;
         }
        
+        .topic-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+       
+        .topic-pill {
+            padding: 4px 10px;
+            background: #f0f0f0;
+            color: #666;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+       
+        .topic-pill.active {
+            background: #0066cc;
+            color: white;
+        }
+       
         .messages-list {
             flex: 1;
             overflow-y: auto;
@@ -232,6 +255,45 @@
             color: #28a745;
             margin-top: 5px;
             font-weight: 500;
+        }
+       
+        /* Thread view styles */
+        .thread-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+       
+        .thread-message {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+       
+        .reply-form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+       
+        .reply-form textarea {
+            padding: 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 60px;
+        }
+       
+        .reply-form button {
+            align-self: flex-start;
+            padding: 6px 12px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }
        
         /* Comment Menu - VERTICAL */
@@ -495,9 +557,11 @@
                 <h3>Discussion Threads</h3>
                 <button class="new-thread-btn" onclick="showNewThreadForm()">+ New Thread</button>
             </div>
-           
-            <div class="messages-list">
-                <div class="message-thread">
+            <div class="topic-filters" id="topic-filters">
+                <!-- Pills will be added here dynamically -->
+            </div>
+            <div class="messages-list" id="messages-list">
+                <div class="message-thread" data-topic="Core Theory">
                     <div class="message-pills">
                         <span class="pill pill-subject">Eastern Philosophy Connection</span>
                         <span class="pill pill-topic">Core Theory</span>
@@ -509,7 +573,7 @@
                     <div class="message-replies">3 replies · Last: 2 hours ago</div>
                 </div>
                
-                <div class="message-thread">
+                <div class="message-thread" data-topic="Problems">
                     <div class="message-pills">
                         <span class="pill pill-subject">Symbol Grounding Dissolution</span>
                         <span class="pill pill-topic">Problems</span>
@@ -521,7 +585,7 @@
                     <div class="message-replies">5 replies · Last: Yesterday</div>
                 </div>
                
-                <div class="message-thread">
+                <div class="message-thread" data-topic="Admin">
                     <div class="message-pills">
                         <span class="pill pill-subject">Meeting Notes</span>
                         <span class="pill pill-topic">Admin</span>
@@ -637,11 +701,38 @@
             ]
         };
 
-        // Simulated thread contents (in a real app, load from storage)
-        const threadContents = {
-            'Eastern Philosophy Connection': "I've been thinking about how PRI relates to Buddhist dependent origination...\n\nReply 1: Interesting point.\nReply 2: More details here.\nReply 3: Agreement.",
-            'Symbol Grounding Dissolution': "The dissolution seems compelling but I'm not sure about the linguistic aspects...\n\nReplies: 5 total, last yesterday.",
-            'Meeting Notes': "Summary of our discussion about the empirical evidence section...\n\n1 reply."
+        // Simulated thread data: {subject: {topic: '', messages: [{text: '', date: ''}]}}
+        const threads = {
+            'Eastern Philosophy Connection': {
+                topic: 'Core Theory',
+                date: 'Nov 13',
+                messages: [
+                    {text: "I've been thinking about how PRI relates to Buddhist dependent origination...", date: 'Nov 13'},
+                    {text: 'Interesting point.', date: '2 hours ago'},
+                    {text: 'More details here.', date: '1 hour ago'},
+                    {text: 'Agreement.', date: '30 min ago'}
+                ]
+            },
+            'Symbol Grounding Dissolution': {
+                topic: 'Problems',
+                date: 'Nov 10',
+                messages: [
+                    {text: "The dissolution seems compelling but I'm not sure about the linguistic aspects...", date: 'Nov 10'},
+                    {text: 'Reply 1', date: 'Yesterday'},
+                    {text: 'Reply 2', date: 'Yesterday'},
+                    {text: 'Reply 3', date: 'Yesterday'},
+                    {text: 'Reply 4', date: 'Yesterday'},
+                    {text: 'Reply 5', date: 'Yesterday'}
+                ]
+            },
+            'Meeting Notes': {
+                topic: 'Admin',
+                date: 'Nov 5',
+                messages: [
+                    {text: "Summary of our discussion about the empirical evidence section...", date: 'Nov 5'},
+                    {text: 'One reply.', date: 'Nov 6'}
+                ]
+            }
         };
 
         // LocalStorage key for comments
@@ -658,6 +749,48 @@
             localStorage.setItem(COMMENTS_KEY, JSON.stringify(comments));
         }
 
+        // Initialize topic filters
+        function initTopicFilters() {
+            const filters = document.getElementById('topic-filters');
+            filters.innerHTML = '';
+            const allPill = document.createElement('span');
+            allPill.className = 'topic-pill active';
+            allPill.textContent = 'All';
+            allPill.dataset.topic = 'all';
+            filters.appendChild(allPill);
+
+            const uniqueTopics = new Set(Object.values(threads).map(t => t.topic));
+            uniqueTopics.forEach(topic => {
+                const pill = document.createElement('span');
+                pill.className = 'topic-pill';
+                pill.textContent = topic;
+                pill.dataset.topic = topic;
+                filters.appendChild(pill);
+            });
+
+            // Add click listeners
+            filters.querySelectorAll('.topic-pill').forEach(pill => {
+                pill.addEventListener('click', () => {
+                    filters.querySelectorAll('.topic-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    const selected = pill.dataset.topic;
+                    document.querySelectorAll('.message-thread').forEach(thread => {
+                        thread.style.display = (selected === 'all' || thread.dataset.topic === selected) ? 'block' : 'none';
+                    });
+                });
+            });
+        }
+
+        // Update thread preview
+        function updateThreadPreview(subject) {
+            const threadElem = [...document.querySelectorAll('.message-thread')].find(t => t.querySelector('.pill-subject').textContent === subject);
+            if (!threadElem) return;
+            const data = threads[subject];
+            const repliesCount = data.messages.length - 1;
+            threadElem.querySelector('.message-preview').textContent = data.messages[0].text.substring(0, 100) + '...';
+            threadElem.querySelector('.message-replies').textContent = `${repliesCount} repl${repliesCount === 1 ? 'y' : 'ies'} · Last: ${data.messages[data.messages.length - 1].date}`;
+        }
+
         // Document selection handling
         document.querySelectorAll('.document-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -672,17 +805,19 @@
         });
 
         // Thread selection handling
-        document.querySelectorAll('.message-thread').forEach(thread => {
-            thread.addEventListener('click', () => {
-                // Remove active from all items and threads
-                document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
-                // Add active to clicked thread
-                thread.classList.add('active');
-                // Load thread content
-                const subject = thread.querySelector('.pill-subject').textContent;
-                loadThreadContent(subject);
+        function attachThreadListeners() {
+            document.querySelectorAll('.message-thread').forEach(thread => {
+                thread.addEventListener('click', () => {
+                    // Remove active from all items and threads
+                    document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
+                    // Add active to clicked thread
+                    thread.classList.add('active');
+                    // Load thread content
+                    const subject = thread.querySelector('.pill-subject').textContent;
+                    loadThreadContent(subject);
+                });
             });
-        });
+        }
 
         // Load document content with comments
         function loadDocContent(title) {
@@ -702,17 +837,27 @@
             attachCommentListeners();
         }
 
-        // Load thread content (placeholder, no comments for threads)
+        // Load thread content
         function loadThreadContent(subject) {
-            const content = threadContents[subject] || 'No thread content available.';
+            const data = threads[subject] || {messages: []};
+            let html = `<div style="max-width: 700px;"><h2>${subject}</h2><div class="thread-messages">`;
+            data.messages.forEach(msg => {
+                html += `<div class="thread-message"><p>${msg.text}</p><small>${msg.date}</small></div>`;
+            });
+            html += `</div><div class="reply-form"><textarea id="reply-text" placeholder="Add a reply..."></textarea><button onclick="addReply('${subject}')">Reply</button></div></div>`;
             const center = document.getElementById('center-panel');
-            center.innerHTML = `
-                <div style="max-width: 700px;">
-                    <h2>${subject}</h2>
-                    <pre style="white-space: pre-wrap;">${content}</pre>
-                </div>
-            `;
-            // No comment listeners for threads
+            center.innerHTML = html;
+        }
+
+        // Add reply
+        function addReply(subject) {
+            const text = document.getElementById('reply-text').value.trim();
+            if (!text) return;
+            const data = threads[subject];
+            data.messages.push({text, date: 'Now'});
+            document.getElementById('reply-text').value = '';
+            loadThreadContent(subject); // Reload to show new reply
+            updateThreadPreview(subject);
         }
 
         // Lens tab switching
@@ -810,13 +955,22 @@
         }
        
         function createThread() {
-            const subject = document.getElementById('thread-subject').value;
-            const topic = document.getElementById('thread-topic').value;
-            const message = document.getElementById('thread-message').value;
-           
+            const subject = document.getElementById('thread-subject').value.trim();
+            const topic = document.getElementById('thread-topic').value.trim();
+            const message = document.getElementById('thread-message').value.trim();
+            if (!subject || !topic || !message) return;
+
+            // Add to threads data
+            threads[subject] = {
+                topic,
+                date: 'Now',
+                messages: [{text: message, date: 'Now'}]
+            };
+
             // Create new thread element
             const thread = document.createElement('div');
             thread.className = 'message-thread';
+            thread.dataset.topic = topic;
             thread.innerHTML = `
                 <div class="message-pills">
                     <span class="pill pill-subject">${subject}</span>
@@ -824,20 +978,21 @@
                     <span class="pill pill-date">Now</span>
                 </div>
                 <div class="message-preview">${message.substring(0, 100)}...</div>
-                <div class="message-replies">New thread</div>
+                <div class="message-replies">0 replies · Last: Now</div>
             `;
-            thread.addEventListener('click', () => {
-                document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
-                thread.classList.add('active');
-                loadThreadContent(subject);
-            });
            
             // Add to top of list
-            document.querySelector('.messages-list').prepend(thread);
-           
-            // Simulate saving thread content
-            threadContents[subject] = message;
-           
+            document.getElementById('messages-list').prepend(thread);
+
+            // Re-attach listeners
+            attachThreadListeners();
+
+            // Update filters if new topic
+            const uniqueTopics = new Set(Object.values(threads).map(t => t.topic));
+            if (uniqueTopics.size > document.querySelectorAll('.topic-pill:not([data-topic="all"])').length) {
+                initTopicFilters();
+            }
+
             // Clear form and hide
             document.getElementById('thread-subject').value = '';
             document.getElementById('thread-topic').value = '';
@@ -846,6 +1001,10 @@
            
             console.log('Thread created:', { subject, topic, message });
         }
+
+        // Initial setup
+        initTopicFilters();
+        attachThreadListeners();
     </script>
 </body>
 </html>
