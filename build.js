@@ -1,12 +1,16 @@
-// build.js - Processes all markdown files into a single JSON index
+// build.js - Fixed version with better error handling
 const fs = require('fs');
 const path = require('path');
-const matter = require('gray-matter');
-const marked = require('marked');
 
+// Simple build without dependencies first
 function processMarkdownFiles(dir) {
   const documents = {};
   const tree = {};
+  
+  if (!fs.existsSync(dir)) {
+    console.log(`Creating content directory: ${dir}`);
+    fs.mkdirSync(dir, { recursive: true });
+  }
   
   // Recursively read all .md files
   function readDir(currentPath, relativePath = '') {
@@ -20,54 +24,82 @@ function processMarkdownFiles(dir) {
         readDir(fullPath, path.join(relativePath, file));
       } else if (file.endsWith('.md')) {
         const content = fs.readFileSync(fullPath, 'utf8');
-        const parsed = matter(content);
-        const id = relativePath + '/' + file;
+        const id = (relativePath ? relativePath + '/' : '') + file;
         
-        // Extract comments with positions
+        // Simple frontmatter extraction (without gray-matter for now)
+        let title = file.replace('.md', '');
+        let frontmatter = {};
+        
+        if (content.startsWith('---')) {
+          const endIndex = content.indexOf('---', 3);
+          if (endIndex > 0) {
+            const yamlContent = content.substring(3, endIndex);
+            // Basic YAML parsing
+            yamlContent.split('\n').forEach(line => {
+              const colonIndex = line.indexOf(':');
+              if (colonIndex > 0) {
+                const key = line.substring(0, colonIndex).trim();
+                let value = line.substring(colonIndex + 1).trim();
+                
+                // Handle arrays (basic)
+                if (value.startsWith('[') && value.endsWith(']')) {
+                  value = value.slice(1, -1).split(',').map(s => s.trim().replace(/['"]/g, ''));
+                } else {
+                  value = value.replace(/['"]/g, '');
+                }
+                
+                frontmatter[key] = value;
+              }
+            });
+            title = frontmatter.title || title;
+          }
+        }
+        
+        // Extract comments
         const comments = [];
-        const commentRegex = /<!-- ([?!✓]) (.*?) -->/g;
+        const commentRegex = /<!-- ([?!✓]) -->/g;
         let match;
-        while ((match = commentRegex.exec(parsed.content)) !== null) {
+        while ((match = commentRegex.exec(content)) !== null) {
           comments.push({
             type: match[1],
-            text: match[2],
             position: match.index
           });
         }
         
         documents[id] = {
           id,
-          title: parsed.data.title || file,
-          content: parsed.content,
-          html: marked.parse(parsed.content),
-          frontmatter: parsed.data,
-          lens: parsed.data.lens || [],
-          node: parsed.data.node || 'uncategorized',
-          parent: parsed.data.parent || null,
-          status: parsed.data.status || 'draft',
-          related: parsed.data.related || [],
-          comments: comments,
+          title,
+          content: content.substring(0, 500), // First 500 chars for preview
+          frontmatter,
+          lens: frontmatter.lens || [],
+          node: frontmatter.node || 'uncategorized',
+          parent: frontmatter.parent || null,
+          status: frontmatter.status || 'draft',
+          related: frontmatter.related || [],
+          comments,
           lastModified: stat.mtime
         };
         
         // Build tree structure
-        const node = parsed.data.node;
-        if (node) {
-          if (!tree[node]) {
-            tree[node] = {
-              id: node,
-              parent: parsed.data.parent,
-              documents: [],
-              children: []
-            };
-          }
-          tree[node].documents.push(id);
+        const node = frontmatter.node || 'uncategorized';
+        if (!tree[node]) {
+          tree[node] = {
+            id: node,
+            parent: frontmatter.parent,
+            documents: [],
+            children: []
+          };
         }
+        tree[node].documents.push(id);
       }
     });
   }
   
-  readDir(dir);
+  try {
+    readDir(dir);
+  } catch (error) {
+    console.error('Error reading directory:', error);
+  }
   
   // Link parent-child relationships in tree
   Object.values(tree).forEach(node => {
@@ -83,16 +115,23 @@ function processMarkdownFiles(dir) {
 const contentDir = path.join(__dirname, 'content');
 const outputDir = path.join(__dirname, 'site', 'data');
 
+console.log('Content directory:', contentDir);
+console.log('Output directory:', outputDir);
+
+// Create output directory if it doesn't exist
 if (!fs.existsSync(outputDir)) {
+  console.log('Creating output directory...');
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
+// Process markdown files
+console.log('Processing markdown files...');
 const result = processMarkdownFiles(contentDir);
 
-fs.writeFileSync(
-  path.join(outputDir, 'documents.json'),
-  JSON.stringify(result, null, 2)
-);
+// Write JSON file
+const outputPath = path.join(outputDir, 'documents.json');
+fs.writeFileSync(outputPath, JSON.stringify(result, null, 2));
 
-console.log(`Processed ${Object.keys(result.documents).length} documents`);
-console.log(`Created ${Object.keys(result.tree).length} tree nodes`);
+console.log(`✓ Processed ${Object.keys(result.documents).length} documents`);
+console.log(`✓ Created ${Object.keys(result.tree).length} tree nodes`);
+console.log(`✓ Output written to ${outputPath}`);
