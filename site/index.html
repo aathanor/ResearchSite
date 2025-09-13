@@ -187,6 +187,11 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
        
+        .message-thread.active {
+            background: #e7f3ff;
+            border-color: #0066cc;
+        }
+       
         .message-pills {
             display: flex;
             gap: 8px;
@@ -616,47 +621,113 @@
     </div>
    
     <script>
+        // Simulated document contents (in a real app, load from files/API)
+        const docContents = {
+            'Pattern Recognition Identity': [
+                'This is a placeholder paragraph for "Pattern Recognition Identity". In a real implementation, load actual document content here, ensuring paragraphs have the \'commentable\' class for the comment menu to work.',
+                'Another example paragraph to demonstrate clicking and adding comments like [? text], [! text], or [✓].'
+            ],
+            'Semantic Embeddings': [
+                'Placeholder for Semantic Embeddings paragraph 1.',
+                'Placeholder for Semantic Embeddings paragraph 2.'
+            ],
+            'Dennett\'s Real Patterns': [
+                'Placeholder for Dennett\'s Real Patterns paragraph 1.',
+                'Placeholder for Dennett\'s Real Patterns paragraph 2.'
+            ]
+        };
+
+        // Simulated thread contents (in a real app, load from storage)
+        const threadContents = {
+            'Eastern Philosophy Connection': "I've been thinking about how PRI relates to Buddhist dependent origination...\n\nReply 1: Interesting point.\nReply 2: More details here.\nReply 3: Agreement.",
+            'Symbol Grounding Dissolution': "The dissolution seems compelling but I'm not sure about the linguistic aspects...\n\nReplies: 5 total, last yesterday.",
+            'Meeting Notes': "Summary of our discussion about the empirical evidence section...\n\n1 reply."
+        };
+
+        // LocalStorage key for comments
+        const COMMENTS_KEY = 'doc_comments';
+
+        // Get stored comments
+        function getStoredComments() {
+            const stored = localStorage.getItem(COMMENTS_KEY);
+            return stored ? JSON.parse(stored) : {};
+        }
+
+        // Save comments to localStorage
+        function saveComments(comments) {
+            localStorage.setItem(COMMENTS_KEY, JSON.stringify(comments));
+        }
+
         // Document selection handling
         document.querySelectorAll('.document-item').forEach(item => {
             item.addEventListener('click', () => {
-                // Remove active from all items
-                document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
+                // Remove active from all items and threads
+                document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
                 // Add active to clicked item
                 item.classList.add('active');
-                // Load placeholder content with commentable paragraphs (replace with real content loading logic)
+                // Load content
                 const title = item.querySelector('div').textContent;
-                const center = document.getElementById('center-panel');
-                center.innerHTML = `
-                    <div style="max-width: 700px;">
-                        <h2>${title}</h2>
-                        <p class="commentable">This is a placeholder paragraph for "${title}". In a real implementation, load actual document content here, ensuring paragraphs have the 'commentable' class for the comment menu to work.</p>
-                        <p class="commentable">Another example paragraph to demonstrate clicking and adding comments like [?], [!], or [✓].</p>
-                    </div>
-                `;
-                // Re-attach event listeners to new commentable elements
-                attachCommentListeners();
+                loadDocContent(title);
             });
         });
+
+        // Thread selection handling
+        document.querySelectorAll('.message-thread').forEach(thread => {
+            thread.addEventListener('click', () => {
+                // Remove active from all items and threads
+                document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
+                // Add active to clicked thread
+                thread.classList.add('active');
+                // Load thread content
+                const subject = thread.querySelector('.pill-subject').textContent;
+                loadThreadContent(subject);
+            });
+        });
+
+        // Load document content with comments
+        function loadDocContent(title) {
+            const paragraphs = docContents[title] || ['No content available.'];
+            const comments = getStoredComments()[title] || {};
+            let html = `<div style="max-width: 700px;"><h2>${title}</h2>`;
+            paragraphs.forEach((para, index) => {
+                html += `<p class="commentable" data-para-index="${index}">${para}`;
+                (comments[index] || []).forEach(c => {
+                    html += ` <span style="color: #0066cc; font-size: 12px;">[${c.marker}${c.text ? ' ' + c.text : ''}]</span>`;
+                });
+                html += '</p>';
+            });
+            html += '</div>';
+            const center = document.getElementById('center-panel');
+            center.innerHTML = html;
+            attachCommentListeners();
+        }
+
+        // Load thread content (placeholder, no comments for threads)
+        function loadThreadContent(subject) {
+            const content = threadContents[subject] || 'No thread content available.';
+            const center = document.getElementById('center-panel');
+            center.innerHTML = `
+                <div style="max-width: 700px;">
+                    <h2>${subject}</h2>
+                    <pre style="white-space: pre-wrap;">${content}</pre>
+                </div>
+            `;
+            // No comment listeners for threads
+        }
 
         // Lens tab switching
         document.querySelectorAll('.lens-tab').forEach(tab => {
             tab.addEventListener('click', () => {
-                // Update active tab
                 document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                // Filter documents by lens
                 const lens = tab.dataset.lens;
                 document.querySelectorAll('.document-item').forEach(doc => {
-                    if (lens === 'all' || doc.dataset.lens === lens) {
-                        doc.style.display = 'block';
-                    } else {
-                        doc.style.display = 'none';
-                    }
+                    doc.style.display = (lens === 'all' || doc.dataset.lens === lens) ? 'block' : 'none';
                 });
             });
         });
        
-        // Function to attach comment listeners (called initially and after loading new content)
+        // Function to attach comment listeners
         function attachCommentListeners() {
             document.querySelectorAll('.commentable').forEach(p => {
                 p.style.cursor = 'pointer';
@@ -664,21 +735,15 @@
             });
         }
 
-        // Initial attachment (though no commentable elements initially)
-        attachCommentListeners();
-       
         function showCommentMenu(e) {
             e.stopPropagation();
             const menu = document.getElementById('comment-menu');
             menu.style.left = e.pageX + 'px';
             menu.style.top = e.pageY + 'px';
             menu.classList.add('show');
-           
-            // Store the clicked element for later
             menu.targetElement = e.target;
         }
        
-        // Hide menu on outside click
         document.addEventListener('click', () => {
             document.getElementById('comment-menu').classList.remove('show');
         });
@@ -689,23 +754,40 @@
                 e.stopPropagation();
                 const type = option.dataset.type;
                 const menu = document.getElementById('comment-menu');
-               
-                // Add visual marker to the text
-                if (menu.targetElement) {
-                    const marker = document.createElement('span');
-                    marker.style.cssText = 'color: #0066cc; font-size: 12px; margin-left: 5px;';
-                   
-                    if (type === 'question') marker.textContent = ' [?]';
-                    if (type === 'clarification') marker.textContent = ' [!]';
-                    if (type === 'approved') marker.textContent = ' [✓]';
-                   
-                    menu.targetElement.appendChild(marker);
+                const target = menu.targetElement;
+                if (!target) return;
+
+                let marker = '';
+                let prefix = '';
+                if (type === 'question') { marker = '?'; prefix = '?'; }
+                if (type === 'clarification') { marker = '!'; prefix = '!'; }
+                if (type === 'approved') { marker = '✓'; prefix = 'V'; }
+
+                let text = '';
+                if (type !== 'approved') {
+                    text = prompt(`Enter ${type} text:`) || '';
                 }
-               
+
+                // Add visual marker
+                const span = document.createElement('span');
+                span.style.cssText = 'color: #0066cc; font-size: 12px; margin-left: 5px;';
+                span.textContent = ` [${marker}${text ? ' ' + text : ''}]`;
+                target.appendChild(span);
+
+                // Save to storage
+                const title = document.querySelector('h2').textContent;
+                const paraIndex = target.dataset.paraIndex;
+                const comments = getStoredComments();
+                comments[title] = comments[title] || {};
+                comments[title][paraIndex] = comments[title][paraIndex] || [];
+                comments[title][paraIndex].push({marker, text});
+                saveComments(comments);
+
+                // Simulate saving to markdown
+                const mdComment = `<!-- ${prefix}${text ? ' ' + text : ''} -->`;
+                console.log('Save to GitHub markdown:', mdComment, 'at paragraph', paraIndex, 'in', title);
+
                 menu.classList.remove('show');
-               
-                // Here you'd save to GitHub
-                console.log('Comment added:', type);
             });
         });
        
@@ -744,9 +826,17 @@
                 <div class="message-preview">${message.substring(0, 100)}...</div>
                 <div class="message-replies">New thread</div>
             `;
+            thread.addEventListener('click', () => {
+                document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
+                thread.classList.add('active');
+                loadThreadContent(subject);
+            });
            
             // Add to top of list
             document.querySelector('.messages-list').prepend(thread);
+           
+            // Simulate saving thread content
+            threadContents[subject] = message;
            
             // Clear form and hide
             document.getElementById('thread-subject').value = '';
@@ -754,7 +844,6 @@
             document.getElementById('thread-message').value = '';
             hideNewThreadForm();
            
-            // Save to GitHub (implement this)
             console.log('Thread created:', { subject, topic, message });
         }
     </script>
