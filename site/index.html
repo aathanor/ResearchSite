@@ -426,7 +426,7 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <h1>Pattern Recognition Identity Research</h1>
+        <h1>Pattern Constellations Research</h1>
         <div class="header-actions">
             <button class="btn-overview" onclick="showOverview()">📊 Project Overview</button>
         </div>
@@ -623,15 +623,18 @@
                 document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
                 // Add active to clicked item
                 item.classList.add('active');
-                // Load placeholder content (replace with real content loading logic)
+                // Load placeholder content with commentable paragraphs (replace with real content loading logic)
                 const title = item.querySelector('div').textContent;
                 const center = document.getElementById('center-panel');
                 center.innerHTML = `
                     <div style="max-width: 700px;">
                         <h2>${title}</h2>
-                        <p>Content for "${title}" would be loaded here. This is a placeholder; implement actual content fetching (e.g., from Markdown files or API) as needed.</p>
+                        <p class="commentable">This is a placeholder paragraph for "${title}". In a real implementation, load actual document content here, ensuring paragraphs have the 'commentable' class for the comment menu to work.</p>
+                        <p class="commentable">Another example paragraph to demonstrate clicking and adding comments like [?], [!], or [✓].</p>
                     </div>
                 `;
+                // Re-attach event listeners to new commentable elements
+                attachCommentListeners();
             });
         });
 
@@ -653,11 +656,16 @@
             });
         });
        
-        // Make paragraphs clickable for comments
-        document.querySelectorAll('.commentable').forEach(p => {
-            p.style.cursor = 'pointer';
-            p.addEventListener('click', showCommentMenu);
-        });
+        // Function to attach comment listeners (called initially and after loading new content)
+        function attachCommentListeners() {
+            document.querySelectorAll('.commentable').forEach(p => {
+                p.style.cursor = 'pointer';
+                p.addEventListener('click', showCommentMenu);
+            });
+        }
+
+        // Initial attachment (though no commentable elements initially)
+        attachCommentListeners();
        
         function showCommentMenu(e) {
             e.stopPropagation();
