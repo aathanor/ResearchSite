@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pattern Recognition Research Workspace</title>
+    <title>Pattern Recognition Research</title>
     <style>
         * {
             margin: 0;
@@ -13,557 +13,578 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
             background: #ffffff;
             color: #333333;
-        }
-        
-        /* Left Panel */
-        #left-panel {
-            width: 30%;
-            background: #f8f9fa;
-            border-right: 1px solid #dee2e6;
+            height: 100vh;
             display: flex;
             flex-direction: column;
         }
         
-        .tabs {
-            display: flex;
-            background: #ffffff;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            color: #6c757d;
-            transition: all 0.2s;
-            font-size: 14px;
-        }
-        
-        .tab.active {
-            color: #0066cc;
+        /* Header with lens tabs */
+        .header {
             background: #f8f9fa;
-            border-bottom: 2px solid #0066cc;
+            border-bottom: 2px solid #dee2e6;
+            padding: 10px 20px;
         }
         
-        .panel-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
+        .header h1 {
+            font-size: 18px;
+            color: #495057;
+            margin-bottom: 10px;
         }
         
-        .document {
-            background: #ffffff;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #e9ecef;
-        }
-        
-        .document:hover {
-            border-color: #0066cc;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .document h3 {
-            margin-bottom: 8px;
-            color: #0066cc;
-            font-size: 16px;
-        }
-        
-        .document p {
-            color: #6c757d;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        
-        .document-status {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-top: 8px;
-            font-weight: 500;
-        }
-        
-        .status-draft { 
-            background: #fff3cd; 
-            color: #856404;
-        }
-        .status-developing { 
-            background: #cce5ff; 
-            color: #004085;
-        }
-        .status-stable { 
-            background: #d4edda; 
-            color: #155724;
-        }
-        
-        /* Main Canvas */
-        #canvas-container {
-            flex: 1;
-            position: relative;
-            overflow: auto;
-            background: #ffffff;
+        .lens-tabs {
             display: flex;
-            flex-direction: column;
+            gap: 5px;
         }
         
-        /* Lens Selector */
-        .lens-selector {
-            display: flex;
-            gap: 10px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-bottom: 1px solid #dee2e6;
-            justify-content: center;
-        }
-        
-        .lens-btn {
+        .lens-tab {
             padding: 8px 20px;
-            border: 1px solid #dee2e6;
             background: white;
-            color: #6c757d;
-            border-radius: 20px;
+            border: 1px solid #dee2e6;
+            border-bottom: none;
             cursor: pointer;
+            color: #6c757d;
             transition: all 0.2s;
-            font-size: 14px;
+            border-radius: 5px 5px 0 0;
         }
         
-        .lens-btn.active {
+        .lens-tab.active {
             background: #0066cc;
             color: white;
             border-color: #0066cc;
         }
         
-        .lens-btn:hover:not(.active) {
-            border-color: #0066cc;
-            color: #0066cc;
-        }
-        
-        #main-content {
+        /* Main layout */
+        .main-container {
             flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            max-width: 900px;
-            margin: 0 auto;
-            width: 100%;
+            display: flex;
+            overflow: hidden;
         }
         
-        .document-viewer h1 {
+        /* Left panel - Documents */
+        .left-panel {
+            width: 25%;
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .doc-category {
+            margin-bottom: 20px;
+        }
+        
+        .doc-category h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #6c757d;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .document-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .document-item:hover {
+            border-color: #0066cc;
+        }
+        
+        .document-item.active {
+            background: #e7f3ff;
+            border-color: #0066cc;
+        }
+        
+        .document-title {
+            font-size: 14px;
             color: #212529;
-            margin-bottom: 10px;
-            font-size: 28px;
+            margin-bottom: 2px;
+        }
+        
+        .document-status {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+        
+        .status-developing {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-stable {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        /* Center - Main content */
+        .center-panel {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: white;
+        }
+        
+        .document-header {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .document-header h1 {
+            font-size: 24px;
+            color: #212529;
+            margin-bottom: 5px;
         }
         
         .document-meta {
+            font-size: 13px;
             color: #6c757d;
-            font-size: 14px;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #dee2e6;
         }
         
-        .document-content {
+        .document-body {
             line-height: 1.7;
-            font-size: 16px;
+            font-size: 15px;
             color: #495057;
+            max-width: 700px;
         }
         
-        .document-content h1 {
-            font-size: 24px;
-            margin: 30px 0 15px 0;
-            color: #212529;
+        .document-body h1 { font-size: 20px; margin: 25px 0 10px 0; }
+        .document-body h2 { font-size: 18px; margin: 20px 0 10px 0; }
+        .document-body h3 { font-size: 16px; margin: 15px 0 8px 0; }
+        .document-body p { margin-bottom: 15px; }
+        
+        /* Text selection for comments */
+        .commentable {
+            cursor: pointer;
+            transition: background 0.2s;
         }
         
-        .document-content h2 {
-            font-size: 20px;
-            margin: 25px 0 12px 0;
-            color: #343a40;
+        .commentable:hover {
+            background: #fffbf0;
         }
         
-        .document-content p {
-            margin-bottom: 15px;
-        }
-        
-        .tree-view {
+        /* Right panel - Emails */
+        .right-panel {
+            width: 25%;
             background: #f8f9fa;
-            border-radius: 8px;
-            padding: 30px;
+            border-left: 1px solid #dee2e6;
+            overflow-y: auto;
+            padding: 15px;
         }
         
-        .tree-view h2 {
-            color: #212529;
-            margin-bottom: 20px;
-        }
-        
-        .tree-node {
-            padding: 12px;
-            margin: 8px 0;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #dee2e6;
-        }
-        
-        .tree-node strong {
-            color: #0066cc;
-        }
-        
-        .error-message {
-            color: #dc3545;
-            padding: 20px;
-            text-align: center;
-            background: #f8d7da;
-            border-radius: 8px;
-            margin: 20px;
-        }
-        
-        .loading {
-            color: #0066cc;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .welcome-message {
-            text-align: center;
-            padding: 60px 40px;
-        }
-        
-        .welcome-message h1 {
-            color: #0066cc;
-            margin-bottom: 20px;
-        }
-        
-        .welcome-message p {
-            line-height: 1.6;
+        .emails-header {
+            font-size: 12px;
+            text-transform: uppercase;
             color: #6c757d;
+            margin-bottom: 15px;
+            font-weight: 600;
         }
         
-        /* Context Menu */
-        .context-menu {
+        .email-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s;
+        }
+        
+        .email-item:hover {
+            border-color: #0066cc;
+        }
+        
+        .email-date {
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 3px;
+        }
+        
+        .email-subject {
+            font-size: 13px;
+            color: #212529;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .email-preview {
+            font-size: 12px;
+            color: #6c757d;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Comment popup */
+        .comment-popup {
             position: absolute;
             background: white;
             border: 1px solid #dee2e6;
             border-radius: 4px;
-            padding: 4px;
+            padding: 5px;
             display: none;
             z-index: 1000;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
         
-        .context-menu.show {
-            display: block;
+        .comment-popup.show {
+            display: flex;
+            gap: 5px;
         }
         
-        .context-menu-item {
-            padding: 8px 12px;
+        .comment-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #dee2e6;
+            background: white;
             cursor: pointer;
+            border-radius: 3px;
+            font-size: 16px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: #495057;
+            justify-content: center;
         }
         
-        .context-menu-item:hover {
+        .comment-btn:hover {
             background: #f8f9fa;
+        }
+        
+        .comment-marker {
+            display: inline-block;
+            font-size: 12px;
+            margin: 0 2px;
+            cursor: help;
+        }
+        
+        .comment-marker.question { color: #dc3545; }
+        .comment-marker.exclamation { color: #ffc107; }
+        .comment-marker.check { color: #28a745; }
+        
+        /* Welcome state */
+        .welcome {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+        
+        .welcome h2 {
+            color: #495057;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- Left Panel -->
-    <div id="left-panel">
-        <div class="tabs">
-            <button class="tab active" data-tab="core">Core Texts</button>
-            <button class="tab" data-tab="sources">Sources</button>
-            <button class="tab" data-tab="notes">Working Notes</button>
-        </div>
-        <div class="panel-content" id="panel-content">
-            <div class="loading">Loading documents...</div>
+    <!-- Header -->
+    <div class="header">
+        <h1>Pattern Recognition Identity Research</h1>
+        <div class="lens-tabs">
+            <button class="lens-tab active" data-lens="all">All</button>
+            <button class="lens-tab" data-lens="philosophy">Philosophy</button>
+            <button class="lens-tab" data-lens="cognition">Cognition</button>
+            <button class="lens-tab" data-lens="cs-math">CS/Math</button>
         </div>
     </div>
     
-    <!-- Main Canvas -->
-    <div id="canvas-container">
-        <!-- Lens Selector -->
-        <div class="lens-selector">
-            <button class="lens-btn active" data-lens="philosophy">Philosophy</button>
-            <button class="lens-btn" data-lens="cognition">Cognition</button>
-            <button class="lens-btn" data-lens="cs-math">CS/Math</button>
+    <!-- Main container -->
+    <div class="main-container">
+        <!-- Left Panel - Documents -->
+        <div class="left-panel" id="left-panel">
+            <div class="doc-category">
+                <h3>Core Theory</h3>
+                <div id="core-docs"></div>
+            </div>
+            <div class="doc-category">
+                <h3>Evidence</h3>
+                <div id="evidence-docs"></div>
+            </div>
+            <div class="doc-category">
+                <h3>References</h3>
+                <div id="reference-docs"></div>
+            </div>
         </div>
         
-        <div id="main-content">
-            <div class="welcome-message">
-                <h1>Pattern Recognition Research Workspace</h1>
-                <p>Select a document from the left panel to begin.</p>
+        <!-- Center - Main content -->
+        <div class="center-panel" id="center-panel">
+            <div class="welcome">
+                <h2>Select a document to begin</h2>
+                <p>Click on any document in the left panel</p>
+            </div>
+        </div>
+        
+        <!-- Right Panel - Emails -->
+        <div class="right-panel" id="right-panel">
+            <div class="emails-header">Email Correspondence</div>
+            <div id="emails-list">
+                <div class="email-item">
+                    <div class="email-date">Nov 13, 2024</div>
+                    <div class="email-subject">Re: PRI and Eastern Philosophy</div>
+                    <div class="email-preview">I've been thinking about the connection...</div>
+                </div>
+                <div class="email-item">
+                    <div class="email-date">Nov 10, 2024</div>
+                    <div class="email-subject">Symbol Grounding Problem</div>
+                    <div class="email-preview">The dissolution seems compelling but...</div>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Context Menu -->
-    <div class="context-menu" id="context-menu">
-        <div class="context-menu-item" data-action="question">
-            <span>❓</span> Question to ask
-        </div>
-        <div class="context-menu-item" data-action="clarification">
-            <span>❗</span> Needs clarification
-        </div>
-        <div class="context-menu-item" data-action="validated">
-            <span>✅</span> OK, to keep
-        </div>
+    <!-- Comment popup -->
+    <div class="comment-popup" id="comment-popup">
+        <button class="comment-btn" data-type="?">❓</button>
+        <button class="comment-btn" data-type="!">❗</button>
+        <button class="comment-btn" data-type="✓">✅</button>
     </div>
     
     <script>
         // Global state
         let documents = {};
-        let tree = {};
-        let currentLens = 'philosophy';
-        let selectedFile = null;
+        let emails = {};
+        let currentLens = 'all';
+        let selectedDoc = null;
+        let selectedText = '';
+        let selectedRange = null;
         
         // Initialize
         async function init() {
-            console.log('Initializing workspace...');
-            
             try {
                 // Load documents
                 const response = await fetch('./data/documents.json');
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    documents = data.documents || {};
                 }
                 
-                const data = await response.json();
-                console.log('Loaded data:', data);
-                
-                documents = data.documents || {};
-                tree = data.tree || {};
+                // Load emails (if exists)
+                try {
+                    const emailResponse = await fetch('./data/emails.json');
+                    if (emailResponse.ok) {
+                        const emailData = await emailResponse.json();
+                        emails = emailData.emails || {};
+                    }
+                } catch (e) {
+                    console.log('No emails file yet');
+                }
                 
                 // Setup event listeners
                 setupEventListeners();
                 
                 // Initial render
-                renderDocumentList('core');
-                renderMainContent();
+                renderDocuments();
+                renderEmails();
                 
             } catch (error) {
-                console.error('Failed to load documents:', error);
-                document.getElementById('panel-content').innerHTML = `
-                    <div class="error-message">
-                        <strong>Failed to load documents</strong><br>
-                        ${error.message}
-                    </div>
-                `;
+                console.error('Failed to initialize:', error);
             }
         }
         
         function setupEventListeners() {
-            // Tab switching
-            document.querySelectorAll('.tab').forEach(tab => {
+            // Lens tabs
+            document.querySelectorAll('.lens-tab').forEach(tab => {
                 tab.addEventListener('click', (e) => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    e.target.classList.add('active');
-                    renderDocumentList(e.target.dataset.tab);
-                });
-            });
-            
-            // Lens switching
-            document.querySelectorAll('.lens-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('.lens-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
                     e.target.classList.add('active');
                     currentLens = e.target.dataset.lens;
-                    renderMainContent();
+                    renderDocuments();
                 });
             });
             
-            // Context menu
-            document.addEventListener('contextmenu', handleContextMenu);
-            document.addEventListener('click', () => {
-                document.getElementById('context-menu').classList.remove('show');
+            // Comment buttons
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                btn.addEventListener('click', handleComment);
             });
             
-            // Context menu actions
-            document.querySelectorAll('.context-menu-item').forEach(item => {
-                item.addEventListener('click', handleCommentAction);
+            // Hide comment popup on click outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.comment-popup') && !e.target.closest('.commentable')) {
+                    document.getElementById('comment-popup').classList.remove('show');
+                }
             });
         }
         
-        function renderDocumentList(tab = 'core') {
-            const content = document.getElementById('panel-content');
+        function renderDocuments() {
+            const coreContainer = document.getElementById('core-docs');
+            const evidenceContainer = document.getElementById('evidence-docs');
+            const referenceContainer = document.getElementById('reference-docs');
             
-            if (Object.keys(documents).length === 0) {
-                content.innerHTML = '<div class="loading">No documents found</div>';
-                return;
-            }
+            // Clear containers
+            coreContainer.innerHTML = '';
+            evidenceContainer.innerHTML = '';
+            referenceContainer.innerHTML = '';
             
-            content.innerHTML = '';
-            
-            // Filter documents based on tab
+            // Filter and render documents
             Object.values(documents).forEach(doc => {
-                // TODO: Add proper filtering based on tab type
-                // For now, show all documents
+                // Filter by lens
+                if (currentLens !== 'all' && (!doc.lens || !doc.lens.includes(currentLens))) {
+                    return;
+                }
                 
+                // Create document element
                 const docEl = document.createElement('div');
-                docEl.className = 'document';
-                
-                // Use the content field for preview (already cleaned in build.js)
-                let cleanContent = doc.content || '';
-                
-                // Remove markdown headers from preview
-                cleanContent = cleanContent.replace(/^#+\s+/gm, '');
-                
+                docEl.className = 'document-item';
                 docEl.innerHTML = `
-                    <h3>${doc.title}</h3>
-                    <p>${cleanContent.substring(0, 100)}${cleanContent.length > 100 ? '...' : ''}</p>
+                    <div class="document-title">${doc.title}</div>
                     <span class="document-status status-${doc.status}">${doc.status}</span>
                 `;
                 
                 docEl.addEventListener('click', () => displayDocument(doc));
-                content.appendChild(docEl);
+                
+                // Add to appropriate category
+                const category = doc.frontmatter.category || 'core';
+                if (category === 'core') {
+                    coreContainer.appendChild(docEl);
+                } else if (category === 'evidence') {
+                    evidenceContainer.appendChild(docEl);
+                } else if (category === 'reference') {
+                    referenceContainer.appendChild(docEl);
+                } else {
+                    coreContainer.appendChild(docEl); // default
+                }
             });
         }
         
         function displayDocument(doc) {
-            selectedFile = doc.id;
-            const mainContent = document.getElementById('main-content');
+            selectedDoc = doc;
+            const centerPanel = document.getElementById('center-panel');
             
-            // Extract content without frontmatter
-            let cleanContent = doc.content;
-            if (cleanContent.startsWith('---')) {
-                const endIndex = cleanContent.indexOf('---', 3);
-                if (endIndex > 0) {
-                    cleanContent = cleanContent.substring(endIndex + 3).trim();
-                }
+            // Mark active document
+            document.querySelectorAll('.document-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            // Get clean content
+            let content = doc.fullContent || doc.content || '';
+            
+            // Convert markdown to HTML (basic)
+            let htmlContent = content
+                .split('\n\n')
+                .map(para => {
+                    if (para.startsWith('# ')) return `<h1>${para.slice(2)}</h1>`;
+                    if (para.startsWith('## ')) return `<h2>${para.slice(3)}</h2>`;
+                    if (para.startsWith('### ')) return `<h3>${para.slice(4)}</h3>`;
+                    if (para.trim()) return `<p class="commentable">${para}</p>`;
+                    return '';
+                })
+                .join('');
+            
+            // Add existing comment markers
+            if (doc.comments && doc.comments.length > 0) {
+                doc.comments.forEach(comment => {
+                    const marker = `<span class="comment-marker ${
+                        comment.type === '?' ? 'question' : 
+                        comment.type === '!' ? 'exclamation' : 'check'
+                    }" title="Comment">${comment.type}</span>`;
+                    // This is simplified - would need better positioning
+                });
             }
             
-            // Convert basic markdown to HTML (simple conversion)
-            let htmlContent = cleanContent
-                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                .replace(/\*\*(.*)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*)\*/g, '<em>$1</em>')
-                .replace(/\n\n/g, '</p><p>')
-                .replace(/\n/g, '<br>');
+            // Build metadata
+            const meta = [];
+            if (doc.frontmatter.date) meta.push(doc.frontmatter.date);
+            if (doc.lens && doc.lens.length > 0) meta.push(doc.lens.join(', '));
             
-            htmlContent = '<p>' + htmlContent + '</p>';
-            
-            // Build metadata display
-            const metadata = [];
-            if (doc.frontmatter.date) metadata.push(`Date: ${doc.frontmatter.date}`);
-            if (doc.lens && doc.lens.length > 0) metadata.push(`Lens: ${doc.lens.join(', ')}`);
-            if (doc.status) metadata.push(`Status: ${doc.status}`);
-            
-            mainContent.innerHTML = `
-                <div class="document-viewer">
+            centerPanel.innerHTML = `
+                <div class="document-header">
                     <h1>${doc.title}</h1>
-                    <div class="document-meta">
-                        ${metadata.join(' • ')}
-                    </div>
-                    <div class="document-content">
-                        ${htmlContent}
-                        ${doc.comments.length > 0 ? '<br><br><strong>Comments:</strong> ' + doc.comments.length : ''}
-                    </div>
+                    <div class="document-meta">${meta.join(' • ')}</div>
+                </div>
+                <div class="document-body">
+                    ${htmlContent}
                 </div>
             `;
-        }
-        
-        function renderMainContent() {
-            if (selectedFile) return; // Don't override if document is displayed
             
-            const mainContent = document.getElementById('main-content');
-            
-            if (Object.keys(tree).length === 0) {
-                mainContent.innerHTML = `
-                    <div class="welcome-message">
-                        <h1>Pattern Recognition Research</h1>
-                        <p>Select a document from the left panel to begin.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Show tree structure
-            let html = '<div class="tree-view">';
-            html += `<h2>Research Structure (${currentLens} view)</h2>`;
-            
-            Object.values(tree).forEach(node => {
-                const relevantDocs = node.documents.filter(docId => {
-                    const doc = documents[docId];
-                    return doc && (doc.lens.length === 0 || doc.lens.includes(currentLens));
-                });
-                
-                if (relevantDocs.length > 0) {
-                    html += `<div class="tree-node">
-                        <strong>${node.id}</strong>: 
-                        ${relevantDocs.length} document${relevantDocs.length > 1 ? 's' : ''}
-                    </div>`;
-                }
+            // Add click handlers to paragraphs
+            centerPanel.querySelectorAll('.commentable').forEach(el => {
+                el.addEventListener('click', showCommentPopup);
             });
-            
-            html += '</div>';
-            mainContent.innerHTML = html;
         }
         
-        function handleContextMenu(e) {
+        function showCommentPopup(e) {
+            e.stopPropagation();
+            
+            const popup = document.getElementById('comment-popup');
             const selection = window.getSelection();
-            if (selection.toString().length > 0) {
-                e.preventDefault();
-                
-                const menu = document.getElementById('context-menu');
-                menu.style.left = e.pageX + 'px';
-                menu.style.top = e.pageY + 'px';
-                menu.classList.add('show');
+            
+            // If there's selected text, use it
+            if (selection.toString()) {
+                selectedText = selection.toString();
+                selectedRange = selection.getRangeAt(0);
+            } else {
+                // Otherwise, use the whole paragraph
+                selectedText = e.target.textContent;
+                selectedRange = e.target;
             }
+            
+            // Position popup near click
+            popup.style.left = e.pageX + 'px';
+            popup.style.top = (e.pageY - 40) + 'px';
+            popup.classList.add('show');
         }
         
-        async function handleCommentAction(e) {
-            const action = e.currentTarget.dataset.action;
-            const typeMap = {
-                'question': '?',
-                'clarification': '!',
-                'validated': '✓'
-            };
+        async function handleComment(e) {
+            const type = e.target.dataset.type;
             
-            if (!selectedFile) {
-                alert('Please select a document first');
-                return;
+            if (!selectedDoc) return;
+            
+            // Add visual marker immediately
+            const marker = document.createElement('span');
+            marker.className = `comment-marker ${
+                type === '?' ? 'question' : 
+                type === '!' ? 'exclamation' : 'check'
+            }`;
+            marker.textContent = type;
+            
+            if (selectedRange && selectedRange.insertNode) {
+                selectedRange.insertNode(marker);
+            } else if (selectedRange) {
+                selectedRange.innerHTML += marker.outerHTML;
             }
             
+            // Hide popup
+            document.getElementById('comment-popup').classList.remove('show');
+            
+            // Send to backend
             try {
                 const response = await fetch('./api/comment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        file: selectedFile,
-                        position: 0,
-                        type: typeMap[action],
-                        lineNumber: 0
+                        file: selectedDoc.id,
+                        type: type,
+                        text: selectedText,
+                        lineNumber: 0 // Would need to calculate
                     })
                 });
                 
-                if (response.ok) {
-                    alert('Comment added! The page will refresh to show changes.');
-                    setTimeout(() => window.location.reload(), 2000);
-                } else {
-                    const error = await response.json();
-                    alert('Failed to add comment: ' + error.message);
+                if (!response.ok) {
+                    console.error('Failed to save comment');
                 }
             } catch (error) {
-                console.error('Failed to add comment:', error);
-                alert('Failed to add comment. Check console for details.');
+                console.error('Error saving comment:', error);
             }
         }
         
-        // Start the app
+        function renderEmails() {
+            const emailsList = document.getElementById('emails-list');
+            
+            // For now, just show placeholder emails
+            // Later, these would come from emails.json
+        }
+        
+        // Start
         init();
     </script>
 </body>
