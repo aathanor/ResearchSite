@@ -1,6 +1,6 @@
 ---
 title: "Pattern Recognition Identity"
-date: 2024-01-01
+category: "core" 
 lens: ["philosophy", "cognition"]
 node: "pri-core"
 status: "developing"

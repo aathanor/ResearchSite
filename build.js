@@ -55,11 +55,11 @@ function processMarkdownFiles(dir) {
           }
         }
         
-        // Extract comments
+        // Extract comments from body content (not full content with YAML)
         const comments = [];
         const commentRegex = /<!-- ([?!✓]) -->/g;
         let match;
-        while ((match = commentRegex.exec(content)) !== null) {
+        while ((match = commentRegex.exec(bodyContent)) !== null) {
           comments.push({
             type: match[1],
             position: match.index
@@ -69,7 +69,8 @@ function processMarkdownFiles(dir) {
         documents[id] = {
           id,
           title,
-          content: content.substring(0, 500), // First 500 chars for preview
+          content: bodyContent.substring(0, 500), // First 500 chars of body for preview
+          fullContent: bodyContent, // Full body content without frontmatter
           frontmatter,
           lens: frontmatter.lens || [],
           node: frontmatter.node || 'uncategorized',

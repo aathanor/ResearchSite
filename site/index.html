@@ -16,23 +16,23 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
-            background: #1a1a1a;
-            color: #e0e0e0;
+            background: #ffffff;
+            color: #333333;
         }
         
         /* Left Panel */
         #left-panel {
             width: 30%;
-            background: #242424;
-            border-right: 1px solid #333;
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
             display: flex;
             flex-direction: column;
         }
         
         .tabs {
             display: flex;
-            background: #1a1a1a;
-            border-bottom: 1px solid #333;
+            background: #ffffff;
+            border-bottom: 1px solid #dee2e6;
         }
         
         .tab {
@@ -42,14 +42,15 @@
             cursor: pointer;
             border: none;
             background: transparent;
-            color: #888;
+            color: #6c757d;
             transition: all 0.2s;
+            font-size: 14px;
         }
         
         .tab.active {
-            color: #fff;
-            background: #242424;
-            border-bottom: 2px solid #4a9eff;
+            color: #0066cc;
+            background: #f8f9fa;
+            border-bottom: 2px solid #0066cc;
         }
         
         .panel-content {
@@ -59,21 +60,30 @@
         }
         
         .document {
-            background: #2a2a2a;
+            background: #ffffff;
             padding: 15px;
             margin-bottom: 15px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
+            border: 1px solid #e9ecef;
         }
         
         .document:hover {
-            background: #333;
+            border-color: #0066cc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .document h3 {
             margin-bottom: 8px;
-            color: #4a9eff;
+            color: #0066cc;
+            font-size: 16px;
+        }
+        
+        .document p {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.4;
         }
         
         .document-status {
@@ -82,76 +92,172 @@
             border-radius: 4px;
             font-size: 12px;
             margin-top: 8px;
+            font-weight: 500;
         }
         
-        .status-draft { background: #444; }
-        .status-developing { background: #4a5f00; }
-        .status-stable { background: #1a4f1a; }
+        .status-draft { 
+            background: #fff3cd; 
+            color: #856404;
+        }
+        .status-developing { 
+            background: #cce5ff; 
+            color: #004085;
+        }
+        .status-stable { 
+            background: #d4edda; 
+            color: #155724;
+        }
         
         /* Main Canvas */
         #canvas-container {
             flex: 1;
             position: relative;
-            overflow: hidden;
-        }
-        
-        #canvas {
-            width: 100%;
-            height: 100%;
+            overflow: auto;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
         }
         
         /* Lens Selector */
         .lens-selector {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
             display: flex;
             gap: 10px;
-            background: rgba(36, 36, 36, 0.9);
-            padding: 8px;
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            justify-content: center;
         }
         
         .lens-btn {
-            padding: 8px 16px;
-            border: 1px solid #444;
-            background: transparent;
-            color: #888;
-            border-radius: 4px;
+            padding: 8px 20px;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: #6c757d;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 14px;
         }
         
         .lens-btn.active {
-            background: #4a9eff;
+            background: #0066cc;
             color: white;
-            border-color: #4a9eff;
+            border-color: #0066cc;
         }
         
-        /* Comment Markers */
-        .comment-marker {
-            position: absolute;
+        .lens-btn:hover:not(.active) {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        #main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .document-viewer h1 {
+            color: #212529;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .document-meta {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .document-content {
+            line-height: 1.7;
             font-size: 16px;
-            cursor: pointer;
-            user-select: none;
-            z-index: 100;
+            color: #495057;
         }
         
-        .comment-marker.question { color: #ff4444; }
-        .comment-marker.clarification { color: #4444ff; }
-        .comment-marker.validated { color: #44ff44; }
+        .document-content h1 {
+            font-size: 24px;
+            margin: 30px 0 15px 0;
+            color: #212529;
+        }
+        
+        .document-content h2 {
+            font-size: 20px;
+            margin: 25px 0 12px 0;
+            color: #343a40;
+        }
+        
+        .document-content p {
+            margin-bottom: 15px;
+        }
+        
+        .tree-view {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+        }
+        
+        .tree-view h2 {
+            color: #212529;
+            margin-bottom: 20px;
+        }
+        
+        .tree-node {
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .tree-node strong {
+            color: #0066cc;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            padding: 20px;
+            text-align: center;
+            background: #f8d7da;
+            border-radius: 8px;
+            margin: 20px;
+        }
+        
+        .loading {
+            color: #0066cc;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            padding: 60px 40px;
+        }
+        
+        .welcome-message h1 {
+            color: #0066cc;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-message p {
+            line-height: 1.6;
+            color: #6c757d;
+        }
         
         /* Context Menu */
         .context-menu {
             position: absolute;
-            background: #2a2a2a;
-            border: 1px solid #444;
+            background: white;
+            border: 1px solid #dee2e6;
             border-radius: 4px;
             padding: 4px;
             display: none;
             z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
         
         .context-menu.show {
@@ -161,42 +267,14 @@
         .context-menu-item {
             padding: 8px 12px;
             cursor: pointer;
-            transition: background 0.2s;
             display: flex;
             align-items: center;
             gap: 8px;
+            color: #495057;
         }
         
         .context-menu-item:hover {
-            background: #333;
-        }
-        
-        /* Document Viewer */
-        .document-viewer {
-            padding: 20px;
-            line-height: 1.6;
-            max-width: 800px;
-        }
-        
-        .document-viewer h1 { 
-            margin-bottom: 20px; 
-            color: #4a9eff;
-        }
-        
-        .document-viewer h2 { 
-            margin: 20px 0 10px 0;
-            color: #6ab7ff;
-        }
-        
-        .document-viewer p {
-            margin-bottom: 15px;
-        }
-        
-        .inline-comment {
-            display: inline-block;
-            margin: 0 4px;
-            font-size: 14px;
-            vertical-align: super;
+            background: #f8f9fa;
         }
     </style>
 </head>
@@ -209,7 +287,7 @@
             <button class="tab" data-tab="notes">Working Notes</button>
         </div>
         <div class="panel-content" id="panel-content">
-            <!-- Documents will be loaded here -->
+            <div class="loading">Loading documents...</div>
         </div>
     </div>
     
@@ -222,7 +300,12 @@
             <button class="lens-btn" data-lens="cs-math">CS/Math</button>
         </div>
         
-        <canvas id="canvas"></canvas>
+        <div id="main-content">
+            <div class="welcome-message">
+                <h1>Pattern Recognition Research Workspace</h1>
+                <p>Select a document from the left panel to begin.</p>
+            </div>
+        </div>
     </div>
     
     <!-- Context Menu -->
@@ -243,52 +326,42 @@
         let documents = {};
         let tree = {};
         let currentLens = 'philosophy';
-        let selectedNode = null;
-        let selectedText = null;
         let selectedFile = null;
-        let canvas, ctx;
-        let zoom = 1;
-        let panX = 0, panY = 0;
         
         // Initialize
         async function init() {
-            // Load documents
+            console.log('Initializing workspace...');
+            
             try {
-                const response = await fetch('/data/documents.json');
-                const data = await response.json();
-                documents = data.documents;
-                tree = data.tree;
+                // Load documents
+                const response = await fetch('./data/documents.json');
                 
-                // Setup canvas
-                setupCanvas();
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Loaded data:', data);
+                
+                documents = data.documents || {};
+                tree = data.tree || {};
                 
                 // Setup event listeners
                 setupEventListeners();
                 
                 // Initial render
-                renderDocumentList();
-                renderCanvas();
+                renderDocumentList('core');
+                renderMainContent();
                 
             } catch (error) {
                 console.error('Failed to load documents:', error);
+                document.getElementById('panel-content').innerHTML = `
+                    <div class="error-message">
+                        <strong>Failed to load documents</strong><br>
+                        ${error.message}
+                    </div>
+                `;
             }
-        }
-        
-        function setupCanvas() {
-            canvas = document.getElementById('canvas');
-            ctx = canvas.getContext('2d');
-            
-            // Set canvas size
-            const container = document.getElementById('canvas-container');
-            canvas.width = container.offsetWidth;
-            canvas.height = container.offsetHeight;
-            
-            // Handle resize
-            window.addEventListener('resize', () => {
-                canvas.width = container.offsetWidth;
-                canvas.height = container.offsetHeight;
-                renderCanvas();
-            });
         }
         
         function setupEventListeners() {
@@ -307,13 +380,9 @@
                     document.querySelectorAll('.lens-btn').forEach(b => b.classList.remove('active'));
                     e.target.classList.add('active');
                     currentLens = e.target.dataset.lens;
-                    renderCanvas();
+                    renderMainContent();
                 });
             });
-            
-            // Canvas interaction
-            canvas.addEventListener('click', handleCanvasClick);
-            canvas.addEventListener('wheel', handleCanvasZoom);
             
             // Context menu
             document.addEventListener('contextmenu', handleContextMenu);
@@ -329,17 +398,31 @@
         
         function renderDocumentList(tab = 'core') {
             const content = document.getElementById('panel-content');
+            
+            if (Object.keys(documents).length === 0) {
+                content.innerHTML = '<div class="loading">No documents found</div>';
+                return;
+            }
+            
             content.innerHTML = '';
             
-            // Filter documents based on tab and selected node
+            // Filter documents based on tab
             Object.values(documents).forEach(doc => {
-                if (selectedNode && doc.node !== selectedNode) return;
+                // TODO: Add proper filtering based on tab type
+                // For now, show all documents
                 
                 const docEl = document.createElement('div');
                 docEl.className = 'document';
+                
+                // Use the content field for preview (already cleaned in build.js)
+                let cleanContent = doc.content || '';
+                
+                // Remove markdown headers from preview
+                cleanContent = cleanContent.replace(/^#+\s+/gm, '');
+                
                 docEl.innerHTML = `
                     <h3>${doc.title}</h3>
-                    <p>${doc.frontmatter.description || doc.content.substring(0, 100) + '...'}</p>
+                    <p>${cleanContent.substring(0, 100)}${cleanContent.length > 100 ? '...' : ''}</p>
                     <span class="document-status status-${doc.status}">${doc.status}</span>
                 `;
                 
@@ -349,113 +432,91 @@
         }
         
         function displayDocument(doc) {
-            const content = document.getElementById('panel-content');
             selectedFile = doc.id;
+            const mainContent = document.getElementById('main-content');
             
-            let html = `<div class="document-viewer">`;
-            html += `<h1>${doc.title}</h1>`;
+            // Extract content without frontmatter
+            let cleanContent = doc.content;
+            if (cleanContent.startsWith('---')) {
+                const endIndex = cleanContent.indexOf('---', 3);
+                if (endIndex > 0) {
+                    cleanContent = cleanContent.substring(endIndex + 3).trim();
+                }
+            }
             
-            // Process content with comments
-            let processedContent = doc.html;
-            doc.comments.forEach(comment => {
-                const marker = `<span class="inline-comment comment-marker ${
-                    comment.type === '?' ? 'question' : 
-                    comment.type === '!' ? 'clarification' : 
-                    'validated'
-                }">${comment.type}</span>`;
-                
-                // This is simplified - in reality you'd need better position mapping
-                processedContent = processedContent.replace(
-                    `<!-- ${comment.type} ${comment.text} -->`,
-                    marker
-                );
-            });
+            // Convert basic markdown to HTML (simple conversion)
+            let htmlContent = cleanContent
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/\*\*(.*)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*)\*/g, '<em>$1</em>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
             
-            html += processedContent;
-            html += `</div>`;
+            htmlContent = '<p>' + htmlContent + '</p>';
             
-            content.innerHTML = html;
+            // Build metadata display
+            const metadata = [];
+            if (doc.frontmatter.date) metadata.push(`Date: ${doc.frontmatter.date}`);
+            if (doc.lens && doc.lens.length > 0) metadata.push(`Lens: ${doc.lens.join(', ')}`);
+            if (doc.status) metadata.push(`Status: ${doc.status}`);
+            
+            mainContent.innerHTML = `
+                <div class="document-viewer">
+                    <h1>${doc.title}</h1>
+                    <div class="document-meta">
+                        ${metadata.join(' • ')}
+                    </div>
+                    <div class="document-content">
+                        ${htmlContent}
+                        ${doc.comments.length > 0 ? '<br><br><strong>Comments:</strong> ' + doc.comments.length : ''}
+                    </div>
+                </div>
+            `;
         }
         
-        function renderCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function renderMainContent() {
+            if (selectedFile) return; // Don't override if document is displayed
             
-            // Save context
-            ctx.save();
+            const mainContent = document.getElementById('main-content');
             
-            // Apply transformations
-            ctx.translate(panX, panY);
-            ctx.scale(zoom, zoom);
+            if (Object.keys(tree).length === 0) {
+                mainContent.innerHTML = `
+                    <div class="welcome-message">
+                        <h1>Pattern Recognition Research</h1>
+                        <p>Select a document from the left panel to begin.</p>
+                    </div>
+                `;
+                return;
+            }
             
-            // Render nodes based on current lens
-            const centerX = canvas.width / 2 / zoom;
-            const centerY = canvas.height / 2 / zoom;
-            
-            renderNodes(centerX, centerY);
-            
-            // Restore context
-            ctx.restore();
-        }
-        
-        function renderNodes(centerX, centerY) {
-            // This is simplified - you'd implement proper tree layout
-            let angle = 0;
-            const radius = 200;
+            // Show tree structure
+            let html = '<div class="tree-view">';
+            html += `<h2>Research Structure (${currentLens} view)</h2>`;
             
             Object.values(tree).forEach(node => {
-                // Check if node is relevant to current lens
                 const relevantDocs = node.documents.filter(docId => {
                     const doc = documents[docId];
-                    return doc && doc.lens.includes(currentLens);
+                    return doc && (doc.lens.length === 0 || doc.lens.includes(currentLens));
                 });
                 
-                if (relevantDocs.length === 0) return;
-                
-                // Calculate position
-                const x = centerX + Math.cos(angle) * radius;
-                const y = centerY + Math.sin(angle) * radius;
-                
-                // Draw node
-                ctx.fillStyle = selectedNode === node.id ? '#4a9eff' : '#444';
-                ctx.beginPath();
-                ctx.arc(x, y, 30, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Draw label
-                ctx.fillStyle = '#fff';
-                ctx.font = '14px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(node.id, x, y + 50);
-                
-                angle += (Math.PI * 2) / Object.keys(tree).length;
+                if (relevantDocs.length > 0) {
+                    html += `<div class="tree-node">
+                        <strong>${node.id}</strong>: 
+                        ${relevantDocs.length} document${relevantDocs.length > 1 ? 's' : ''}
+                    </div>`;
+                }
             });
-        }
-        
-        function handleCanvasClick(e) {
-            // Simplified - would need proper hit detection
-            // For now, just cycle through nodes
-            const nodes = Object.keys(tree);
-            const currentIndex = nodes.indexOf(selectedNode);
-            selectedNode = nodes[(currentIndex + 1) % nodes.length];
             
-            renderDocumentList();
-            renderCanvas();
-        }
-        
-        function handleCanvasZoom(e) {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            zoom *= delta;
-            zoom = Math.max(0.5, Math.min(3, zoom));
-            renderCanvas();
+            html += '</div>';
+            mainContent.innerHTML = html;
         }
         
         function handleContextMenu(e) {
-            e.preventDefault();
-            
             const selection = window.getSelection();
             if (selection.toString().length > 0) {
-                selectedText = selection.toString();
+                e.preventDefault();
                 
                 const menu = document.getElementById('context-menu');
                 menu.style.left = e.pageX + 'px';
@@ -472,31 +533,33 @@
                 'validated': '✓'
             };
             
-            if (!selectedFile || !selectedText) return;
+            if (!selectedFile) {
+                alert('Please select a document first');
+                return;
+            }
             
             try {
-                // Find line number (simplified)
-                const lineNumber = 0; // Would need proper calculation
-                
-                const response = await fetch('/api/comment', {
+                const response = await fetch('./api/comment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         file: selectedFile,
                         position: 0,
                         type: typeMap[action],
-                        lineNumber: lineNumber
+                        lineNumber: 0
                     })
                 });
                 
                 if (response.ok) {
-                    // Reload documents after GitHub rebuild
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 5000);
+                    alert('Comment added! The page will refresh to show changes.');
+                    setTimeout(() => window.location.reload(), 2000);
+                } else {
+                    const error = await response.json();
+                    alert('Failed to add comment: ' + error.message);
                 }
             } catch (error) {
                 console.error('Failed to add comment:', error);
+                alert('Failed to add comment. Check console for details.');
             }
         }
         
