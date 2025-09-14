@@ -916,7 +916,7 @@ async function buildLeftPanel() {
         categories[cat].forEach(doc => {
             const item = document.createElement('div');
             item.className = 'document-item';
-            // Store the document id (e.g. sample.md) and lenses for filtering
+            // Use only the document from loadDocuments(), not the local fallback
             item.dataset.id = doc.id;
             item.dataset.lenses = doc.lens ? doc.lens.join(' ') : '';
             item.innerHTML = `
@@ -924,6 +924,14 @@ async function buildLeftPanel() {
                 <span style="font-size: 11px; color: #6c757d;">● ${doc.status}</span>
             `;
             docsDiv.appendChild(item);
+    
+            // Pass the entire doc object to loadDocContent
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                loadDocContent(doc);
+            });
+        });
             
             item.addEventListener('click', () => {
                 document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
@@ -1008,10 +1016,15 @@ async function buildLeftPanel() {
         }
 
         // FIXED: Load document content properly
-        async function loadDocContent(title, docId) {
+        async function loadDocContent(doc) {
             try {
-                const res = await fetch(`/content/${docId}`);
-                const text = await res.text();
+                // Use the pre-built fullContent from documents.json if available
+                let text = doc.fullContent;
+                if (!text) {
+                    // Fallback if fullContent is missing (this may fetch index.html on Cloudflare Pages)
+                    const res = await fetch(`/content/${doc.id}`);
+                    text = await res.text();
+                }
                 const { meta, content } = parseFrontmatter(text);
                     
                 // Convert markdown content to HTML.
@@ -1024,17 +1037,29 @@ async function buildLeftPanel() {
                 lines.forEach(line => {
                     line = line.trim();
                     if (!line) {
-                        if (inParagraph) { html += '</p>'; inParagraph = false; }
+                        if (inParagraph) { 
+                            html += '</p>'; 
+                            inParagraph = false; 
+                        }
                         return;
                     }
                     if (line.startsWith('# ')) {
-                        if (inParagraph) { html += '</p>'; inParagraph = false; }
+                        if (inParagraph) { 
+                            html += '</p>'; 
+                            inParagraph = false; 
+                        }
                         html += `<h1>${line.substring(2)}</h1>`;
                     } else if (line.startsWith('## ')) {
-                        if (inParagraph) { html += '</p>'; inParagraph = false; }
+                        if (inParagraph) { 
+                            html += '</p>'; 
+                            inParagraph = false; 
+                        }
                         html += `<h2>${line.substring(3)}</h2>`;
                     } else if (line.startsWith('### ')) {
-                        if (inParagraph) { html += '</p>'; inParagraph = false; }
+                        if (inParagraph) {
+                            html += '</p>';
+                            inParagraph = false;
+                        }
                         html += `<h3>${line.substring(4)}</h3>`;
                     } else {
                         if (!inParagraph) {
@@ -1050,7 +1075,7 @@ async function buildLeftPanel() {
                 if (inParagraph) html += '</p>';
                 html += '</div>';
                 
-                // Optionally prepend some metadata from YAML frontmatter
+                // Optionally prepend metadata from YAML frontmatter
                 let metaHtml = '';
                 if (meta && Object.keys(meta).length) {
                     metaHtml = '<div style="font-size:12px; color:#666; margin-bottom:10px;">';
@@ -1061,11 +1086,11 @@ async function buildLeftPanel() {
                 }
                 
                 document.getElementById('center-panel').innerHTML = metaHtml + html;
-                restoreComments(title);
+                restoreComments(doc.frontmatter.title);
                 attachCommentListeners();
             } catch (e) {
                 console.error('Error loading document:', e);
-                document.getElementById('center-panel').innerHTML = `<div style="max-width: 700px;"><h2>${title}</h2><p style="color: #dc3545;">Error loading document: ${e.message}</p></div>`;
+                document.getElementById('center-panel').innerHTML = `<div style="max-width: 700px;"><h2>${doc.frontmatter.title}</h2><p style="color: #dc3545;">Error loading document: ${e.message}</p></div>`;
             }
         }
 
