@@ -847,9 +847,20 @@ async function buildLeftPanel() {
     leftPanel.querySelectorAll('.doc-category').forEach(cat => cat.remove());
     
     const docsArray = await loadDocuments();
+    
+    // Create a Set to track document IDs and prevent duplicates
+    const seenDocs = new Set();
+    
     // Group docs by frontmatter.category; default to 'uncategorized'
     const categories = {};
+    
     docsArray.forEach(doc => {
+        // Skip if we've already processed this document
+        if (seenDocs.has(doc.id)) {
+            return;
+        }
+        seenDocs.add(doc.id);
+        
         const cat = (doc.frontmatter && doc.frontmatter.category)
             ? doc.frontmatter.category
             : 'uncategorized';
