@@ -1302,14 +1302,13 @@ async function buildLeftPanel() {
             commentSpan.style.backgroundColor = highlightColor;
             commentSpan.style.marginLeft = '5px';
             commentSpan.style.cursor = 'pointer';
-            // Wrap the selected text:
-            try {
-                commentSpan.appendChild(range.extractContents());
-                range.insertNode(commentSpan);
-            } catch (err) {
-                console.error('Error wrapping selection:', err);
-            }
-            // Create tooltip – note: no marker icon is added now.
+            
+            // Store the original text in a data attribute
+            const extractedContent = range.extractContents();
+            commentSpan.dataset.originalText = extractedContent.textContent;
+            commentSpan.appendChild(extractedContent);
+            
+            // Create tooltip - note: no marker icon is added now.
             const tooltip = document.createElement('div');
             tooltip.className = 'comment-tooltip';
             tooltip.style.fontSize = '10px';
@@ -1480,44 +1479,58 @@ async function buildLeftPanel() {
         }
 
         function deleteComment(commentTimestamp) {
-            const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
-            if (!titleElement) {
-                console.error('Cannot find document title');
-                return;
-            }
-            const title = titleElement.textContent;
-            const commentsData = getStoredComments();
-            if (!commentsData[title]) {
-                console.error('No comments for this document');
-                return;
-            }
-            let found = false;
-            for (const paraIndex in commentsData[title]) {
-                const commentsArr = commentsData[title][paraIndex];
-                for (let i = 0; i < commentsArr.length; i++) {
-                    if (commentsArr[i].timestamp == commentTimestamp) {
-                        // Remove the comment entry from storage
-                        commentsArr.splice(i, 1);
-                        if (commentsArr.length === 0) {
-                            delete commentsData[title][paraIndex];
-                        }
-                        found = true;
-                        break;
-                    }
+    const commentSpan = document.querySelector(`[data-comment-id="${commentTimestamp}"]`);
+    if (!commentSpan) {
+        console.error('Comment element not found in DOM');
+        return;
+    }
+    
+    // Get the original text content (without comment markup)
+    const originalText = commentSpan.textContent;
+    
+    // Create a text node with the original text
+    const textNode = document.createTextNode(originalText);
+    
+    // Replace the comment span with the text node
+    commentSpan.parentNode.replaceChild(textNode, commentSpan);
+    
+    // Remove from stored comments
+    const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
+    if (!titleElement) {
+        console.error('Cannot find document title');
+        return;
+    }
+    
+    const title = titleElement.textContent;
+    const commentsData = getStoredComments();
+    
+    if (!commentsData[title]) {
+        console.error('No comments for this document');
+        return;
+    }
+    
+    let found = false;
+    for (const paraIndex in commentsData[title]) {
+        const commentsArr = commentsData[title][paraIndex];
+        for (let i = 0; i < commentsArr.length; i++) {
+            if (commentsArr[i].timestamp == commentTimestamp) {
+                commentsArr.splice(i, 1);
+                if (commentsArr.length === 0) {
+                    delete commentsData[title][paraIndex];
                 }
-                if (found) break;
-            }
-            if (!found) {
-                console.error('Comment not found for deletion');
-                return;
-            }
-            saveComments(commentsData);    
-            // Remove the comment element from the DOM
-            const domElem = document.querySelector(`[data-comment-id="${commentTimestamp}"]`);
-            if (domElem) {
-                domElem.remove();
+                found = true;
+                break;
             }
         }
+        if (found) break;
+    }
+    
+    if (found) {
+        saveComments(commentsData);
+    } else {
+        console.error('Comment not found for deletion in storage');
+    }
+}
 
         function submitComment() {
             const textarea = document.getElementById('comment-dialog-text');
