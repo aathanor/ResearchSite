@@ -872,54 +872,74 @@ Research priorities include:
         }
 
         // Replace your buildLeftPanel() function with this version that loads the manifest dynamically.
-        async function buildLeftPanel() {
-            const leftPanel = document.querySelector('.left-panel');
-            // Clear any existing categories
-            leftPanel.querySelectorAll('.doc-category').forEach(cat => cat.remove());
+        // New function to load documents from documents.json
+async function loadDocuments() {
+    try {
+        const res = await fetch('/site/data/documents.json');
+        const data = await res.json();
+        // Return an array of document objects (values from the "documents" property)
+        return Object.values(data.documents || {});
+    } catch (err) {
+        console.error('Error loading documents.json:', err);
+        return [];
+    }
+}
 
-            const docs = await loadMarkdownManifest();
-            const categories = {};
-            docs.forEach(doc => {
-                categories[doc.category] = categories[doc.category] || [];
-                categories[doc.category].push(doc);
+// Updated buildLeftPanel that groups documents by frontmatter.category
+async function buildLeftPanel() {
+    const leftPanel = document.querySelector('.left-panel');
+    // Remove any existing categories (leaving lens tabs intact)
+    leftPanel.querySelectorAll('.doc-category').forEach(cat => cat.remove());
+    
+    const docsArray = await loadDocuments();
+    // Group docs by frontmatter.category; default to 'uncategorized'
+    const categories = {};
+    docsArray.forEach(doc => {
+        const cat = (doc.frontmatter && doc.frontmatter.category) ? doc.frontmatter.category : 'uncategorized';
+        categories[cat] = categories[cat] || [];
+        categories[cat].push(doc);
+    });
+    
+    // For each category, create a section in the left panel
+    Object.keys(categories).sort().forEach(cat => {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'doc-category';
+        
+        const h3 = document.createElement('h3');
+        h3.textContent = cat.toUpperCase();
+        categoryDiv.appendChild(h3);
+        
+        const docsDiv = document.createElement('div');
+        docsDiv.id = cat + '-docs';
+        
+        categories[cat].forEach(doc => {
+            const item = document.createElement('div');
+            item.className = 'document-item';
+            // Store the document id (e.g. sample.md) and lenses for filtering
+            item.dataset.id = doc.id;
+            item.dataset.lenses = doc.lens ? doc.lens.join(' ') : '';
+            item.innerHTML = `
+                <div>${doc.frontmatter.title}</div>
+                <span style="font-size: 11px; color: #6c757d;">● ${doc.status}</span>
+            `;
+            docsDiv.appendChild(item);
+            
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                // Use the document id to fetch the markdown file from the content folder
+                loadDocContent(doc.frontmatter.title, doc.id);
             });
-
-            Object.keys(categories).sort().forEach(cat => {
-                const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'doc-category';
-                
-                const h3 = document.createElement('h3');
-                h3.textContent = cat.toUpperCase(); // or use some mapping if available in YAML frontmatter
-                categoryDiv.appendChild(h3);
-                
-                const docsDiv = document.createElement('div');
-                docsDiv.id = cat + '-docs';
-                
-                categories[cat].forEach(doc => {
-                    const item = document.createElement('div');
-                    item.className = 'document-item';
-                    item.dataset.slug = doc.slug;
-                    item.innerHTML = `
-                        <div>${doc.title}</div>
-                        <span style="font-size: 11px; color: #6c757d;">● ${doc.status}</span>
-                    `;
-                    docsDiv.appendChild(item);
-
-                    item.addEventListener('click', () => {
-                        document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
-                        item.classList.add('active');
-                        loadDocContent(doc.title, doc.slug);
-                    });
-                });
-                
-                categoryDiv.appendChild(docsDiv);
-                leftPanel.appendChild(categoryDiv);
-            });
-
-            // Optionally, load the first document automatically:
-            const firstItem = document.querySelector('.document-item');
-            if (firstItem) firstItem.click();
-        }
+        });
+        
+        categoryDiv.appendChild(docsDiv);
+        leftPanel.appendChild(categoryDiv);
+    });
+    
+    // Optionally load the first document automatically, if any exist:
+    const firstItem = document.querySelector('.document-item');
+    if (firstItem) firstItem.click();
+}
 
         // Initialize topic filters
         function initTopicFilters() {
@@ -987,9 +1007,9 @@ Research priorities include:
         }
 
         // FIXED: Load document content properly
-        async function loadDocContent(title, slug) {
+        async function loadDocContent(title, docId) {
             try {
-                const res = await fetch(`/content/${slug}.md`);
+                const res = await fetch(`/content/${docId}`);
                 const text = await res.text();
                 const { meta, content } = parseFrontmatter(text);
                     
