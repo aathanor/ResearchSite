@@ -22,6 +22,8 @@ export async function onRequestPost(context) {
     }
     comment = commentParts.join(' | ');
 
+    console.log('Checking JWT header:', request.headers.get('Cf-Access-Jwt-Assertion') ? 'Present (redacted)' : 'Missing');
+    
     if (jwt) {
     const identityUrl = 'https://aathanor.cloudflareaccess.com/cdn-cgi/access/get-identity'; // Or `https://${env.ACCESS_DOMAIN}/cdn-cgi/access/get-identity`
     const identityResponse = await fetch(identityUrl, {
