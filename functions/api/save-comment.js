@@ -30,6 +30,13 @@ export async function onRequestPost(context) {
         }
     });
 
+    console.log('Identity response status:', identityResponse.status);
+    if (identityResponse.ok) {
+        const identity = await identityResponse.json();
+        console.log('Identity data:', identity); // Check for 'email' key
+    } else {
+        console.error('Failed to fetch identity:', await identityResponse.text());
+    }
     if (identityResponse.ok) {
         const identity = await identityResponse.json();
         author = identity.email || author; // Use email; alternatively identity.name if available/preferred
