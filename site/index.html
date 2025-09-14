@@ -943,12 +943,12 @@ async function buildLeftPanel() {
         
         categoryDiv.appendChild(docsDiv);
         leftPanel.appendChild(categoryDiv);
-    });
+    };
     
     // Optionally load the first document automatically, if any exist:
     const firstItem = document.querySelector('.document-item');
     if (firstItem) firstItem.click();
-}
+
 
         // Initialize topic filters
         function initTopicFilters() {
