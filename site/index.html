@@ -859,11 +859,25 @@ Research priorities include:
         }
 
         // Build left panel
-        function buildLeftPanel() {
-            const leftPanel = document.querySelector('.left-panel');
-            const existingCategories = leftPanel.querySelectorAll('.doc-category');
-            existingCategories.forEach(cat => cat.remove());
+        // Add this new function to load a manifest of markdown docs from /content/manifest.json
+        async function loadMarkdownManifest() {
+            try {
+                const res = await fetch('/content/manifest.json');
+                const docsFromManifest = await res.json(); // Expected to be an array of objects with at least: { title, slug, category, lenses, status }
+                return docsFromManifest;
+            } catch (err) {
+                console.error('Error loading markdown manifest:', err);
+                return [];
+            }
+        }
 
+        // Replace your buildLeftPanel() function with this version that loads the manifest dynamically.
+        async function buildLeftPanel() {
+            const leftPanel = document.querySelector('.left-panel');
+            // Clear any existing categories
+            leftPanel.querySelectorAll('.doc-category').forEach(cat => cat.remove());
+
+            const docs = await loadMarkdownManifest();
             const categories = {};
             docs.forEach(doc => {
                 categories[doc.category] = categories[doc.category] || [];
@@ -875,44 +889,36 @@ Research priorities include:
                 categoryDiv.className = 'doc-category';
                 
                 const h3 = document.createElement('h3');
-                h3.textContent = categoryMap[cat] || cat.toUpperCase();
+                h3.textContent = cat.toUpperCase(); // or use some mapping if available in YAML frontmatter
                 categoryDiv.appendChild(h3);
                 
                 const docsDiv = document.createElement('div');
                 docsDiv.id = cat + '-docs';
                 
-                categories[cat].forEach((doc, idx) => {
-                    const color = statusColors[doc.status] || '#6c757d';
+                categories[cat].forEach(doc => {
                     const item = document.createElement('div');
                     item.className = 'document-item';
-                    item.dataset.lenses = Array.isArray(doc.lenses) ? doc.lenses.join(' ') : doc.lenses;
                     item.dataset.slug = doc.slug;
                     item.innerHTML = `
                         <div>${doc.title}</div>
-                        <span style="font-size: 11px; color: ${color};">● ${doc.status}</span>
+                        <span style="font-size: 11px; color: #6c757d;">● ${doc.status}</span>
                     `;
                     docsDiv.appendChild(item);
+
+                    item.addEventListener('click', () => {
+                        document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        loadDocContent(doc.title, doc.slug);
+                    });
                 });
                 
                 categoryDiv.appendChild(docsDiv);
                 leftPanel.appendChild(categoryDiv);
             });
 
-            // Attach click listeners
-            document.querySelectorAll('.document-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                    const title = item.querySelector('div').textContent;
-                    loadDocContent(title, item.dataset.slug);
-                });
-            });
-
-            // Load first document by default
+            // Optionally, load the first document automatically:
             const firstItem = document.querySelector('.document-item');
-            if (firstItem) {
-                firstItem.click();
-            }
+            if (firstItem) firstItem.click();
         }
 
         // Initialize topic filters
@@ -981,57 +987,34 @@ Research priorities include:
         }
 
         // FIXED: Load document content properly
-        function loadDocContent(title, slug) {
+        async function loadDocContent(title, slug) {
             try {
-                const content = documentContent[slug];
-                
-                if (!content) {
-                    const center = document.getElementById('center-panel');
-                    center.innerHTML = `
-                        <div style="max-width: 700px;">
-                            <h2>${title}</h2>
-                            <p style="color: #6c757d; font-style: italic;">
-                                Document content not yet available. This would typically load from /content/${slug}.md
-                            </p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Convert content to HTML with paragraph indexing
+                const res = await fetch(`/content/${slug}.md`);
+                const text = await res.text();
+                const { meta, content } = parseFrontmatter(text);
+                    
+                // Convert markdown content to HTML.
+                // For simplicity, we'll only wrap paragraphs that aren't headings.
                 let html = `<div style="max-width: 700px;">`;
-                const lines = content.content.split('\n');
+                const lines = content.split('\n');
                 let inParagraph = false;
                 let paragraphIndex = 0;
                 
-                lines.forEach((line, index) => {
+                lines.forEach(line => {
                     line = line.trim();
                     if (!line) {
-                        if (inParagraph) {
-                            html += '</p>';
-                            inParagraph = false;
-                        }
+                        if (inParagraph) { html += '</p>'; inParagraph = false; }
                         return;
                     }
-                    
                     if (line.startsWith('# ')) {
-                        if (inParagraph) html += '</p>';
+                        if (inParagraph) { html += '</p>'; inParagraph = false; }
                         html += `<h1>${line.substring(2)}</h1>`;
-                        inParagraph = false;
                     } else if (line.startsWith('## ')) {
-                        if (inParagraph) html += '</p>';
+                        if (inParagraph) { html += '</p>'; inParagraph = false; }
                         html += `<h2>${line.substring(3)}</h2>`;
-                        inParagraph = false;
                     } else if (line.startsWith('### ')) {
-                        if (inParagraph) html += '</p>';
+                        if (inParagraph) { html += '</p>'; inParagraph = false; }
                         html += `<h3>${line.substring(4)}</h3>`;
-                        inParagraph = false;
-                    } else if (line.startsWith('- ')) {
-                        if (inParagraph) {
-                            html += '</p>';
-                            inParagraph = false;
-                        }
-                        html += `<ul><li>${line.substring(2)}</li></ul>`;
                     } else {
                         if (!inParagraph) {
                             html += `<p class="commentable" data-para-index="${paragraphIndex}">`;
@@ -1043,21 +1026,25 @@ Research priorities include:
                         html += line;
                     }
                 });
-                
                 if (inParagraph) html += '</p>';
                 html += '</div>';
-
-                const center = document.getElementById('center-panel');
-                center.innerHTML = html;
                 
-                // Restore saved comments
+                // Optionally prepend some metadata from YAML frontmatter
+                let metaHtml = '';
+                if (meta && Object.keys(meta).length) {
+                    metaHtml = '<div style="font-size:12px; color:#666; margin-bottom:10px;">';
+                    Object.keys(meta).forEach(key => {
+                        metaHtml += `<strong>${key}:</strong> ${meta[key]} &nbsp;&nbsp;`;
+                    });
+                    metaHtml += '</div>';
+                }
+                
+                document.getElementById('center-panel').innerHTML = metaHtml + html;
                 restoreComments(title);
                 attachCommentListeners();
-                
             } catch (e) {
                 console.error('Error loading document:', e);
-                const center = document.getElementById('center-panel');
-                center.innerHTML = `<div style="max-width: 700px;"><h2>${title}</h2><p style="color: #dc3545;">Error loading document: ${e.message}</p></div>`;
+                document.getElementById('center-panel').innerHTML = `<div style="max-width: 700px;"><h2>${title}</h2><p style="color: #dc3545;">Error loading document: ${e.message}</p></div>`;
             }
         }
 
@@ -1186,36 +1173,39 @@ Research priorities include:
         // Comment functionality
         // Replace the attachCommentListeners() function with the following:
         function attachCommentListeners() {
-            // Instead of listening for click on the whole paragraph,
-            // listen for mouseup and check if the user selected some text.
+            // Add a mouseup listener to each commentable paragraph
             document.querySelectorAll('.commentable').forEach(p => {
                 p.style.cursor = 'text';
-                p.addEventListener('mouseup', function(e) {
-                    const selection = window.getSelection();
-                    if (!selection.isCollapsed && selection.toString().trim().length > 0) {
-                        // Only show menu if selection is in a commentable element.
-                        const range = selection.getRangeAt(0);
-                        if (!p.contains(range.commonAncestorContainer)) return;
-                        const rect = range.getBoundingClientRect();
-                        const menu = document.getElementById('comment-menu');
-                        menu.style.left = (rect.left + window.scrollX) + 'px';
-                        menu.style.top = (rect.bottom + window.scrollY) + 'px';
-                        menu.classList.add('show');
-                        // Store the current selection range for later.
-                        menu.selectionRange = range;
-                    }
-                });
+                // Remove existing mouseup listeners if needed
+                p.removeEventListener('mouseup', commentableMouseUpHandler);
+                p.addEventListener('mouseup', commentableMouseUpHandler);
             });
+        }
+
+        function commentableMouseUpHandler(e) {
+            const selection = window.getSelection();
+            if (!selection.isCollapsed && selection.toString().trim().length > 0) {
+                // Only show menu if selection is inside a commentable element.
+                const range = selection.getRangeAt(0);
+                if (!this.contains(range.commonAncestorContainer)) return;
+                const rect = range.getBoundingClientRect();
+                const menu = document.getElementById('comment-menu');
+                menu.style.left = (rect.left + window.scrollX) + 'px';
+                menu.style.top = (rect.bottom + window.scrollY) + 'px';
+                menu.classList.add('show');
+                // Store the current selection range for later use.
+                menu.selectionRange = range;
+            }
         }
         function initializeCommentSystem() {
             attachCommentListeners();
         }
 
-        function init() {
-            buildLeftPanel();
+        async function init() {
+            await buildLeftPanel();
             initTopicFilters();
             buildThreadList();
-            initializeCommentSystem(); // Now properly defined
+            initializeCommentSystem(); // Initialize comment system
         }
 
         function showCommentMenu(e) {
@@ -1718,16 +1708,16 @@ Research priorities include:
         }
 
         // Initialize everything
-        function init() {
-            buildLeftPanel();
-            initTopicFilters();
-            buildThreadList();
-            initializeCommentSystem(); // Initialize comment system
-        }
+        async function init() {
+        await buildLeftPanel();
+        initTopicFilters();
+        buildThreadList();
+        initializeCommentSystem(); // Initialize comment system
+    }
 
         // Start the application only after DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            init();
+        document.addEventListener('DOMContentLoaded', async function() {
+            await init();
         });
         document.getElementById('comment-dialog').addEventListener('click', function(e) {
             // This prevents clicks inside the dialog (e.g. Edit, Cancel, etc.) from bubbling up and showing the comment menu.
