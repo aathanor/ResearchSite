@@ -1088,10 +1088,9 @@ async function buildLeftPanel() {
             if (!comments) return;
             
             Object.keys(comments).forEach(paraIndex => {
-                // Handle general comments (without specific paragraph)
                 if (paraIndex === 'general') {
+                    // Handle general comments
                     comments[paraIndex].forEach(comment => {
-                        // These comments won't be visually restored but remain in storage
                         console.log('General comment found:', comment);
                     });
                     return;
@@ -1101,44 +1100,59 @@ async function buildLeftPanel() {
                 if (!paragraph) return;
                 
                 comments[paraIndex].forEach(comment => {
+                    // Find if this comment already exists in the DOM
+                    const existingComment = document.querySelector(`[data-comment-id="${comment.timestamp}"]`);
+                    if (existingComment) return; // Already restored
+                    
+                    // Create new comment element
                     const commentSpan = document.createElement('span');
                     commentSpan.className = 'comment-marker';
                     commentSpan.dataset.commentId = comment.timestamp;
+                    commentSpan.dataset.originalText = comment.text || ''; // Store original text
                     commentSpan.style.marginLeft = '5px';
                     commentSpan.style.cursor = 'pointer';
                     commentSpan.style.backgroundColor = getHighlightColor(comment.type);
-
-                    // Create icon based on comment type
-                    const iconSpan = document.createElement('span');
-                    iconSpan.textContent = getCommentIcon(comment.type);
-                    iconSpan.style.fontWeight = 'bold';
                     
-                    // Create excerpt
-                    let excerpt = '';
-                    if (comment.text && comment.text.trim()) {
-                        const words = comment.text.trim().split(' ');
-                        excerpt = words.slice(0, Math.min(7, words.length)).join(' ');
-                    }
-                    const excerptSpan = document.createElement('span');
-                    excerptSpan.style.fontSize = '0.8em';
-                    excerptSpan.style.marginLeft = '3px';
-                    excerptSpan.textContent = excerpt;
+                    // Add the comment text (not the tooltip content)
+                    const textNode = document.createTextNode(comment.text || '');
+                    commentSpan.appendChild(textNode);
                     
-                    commentSpan.appendChild(iconSpan);
-                    commentSpan.appendChild(excerptSpan);
-                    
-                    // Create tooltip
+                    // Create tooltip (separate element)
                     const tooltip = document.createElement('div');
                     tooltip.className = 'comment-tooltip';
                     tooltip.style.fontSize = '10px';
                     tooltip.style.marginTop = '4px';
+                    tooltip.style.display = 'none';
+                    
                     const dateStr = new Date(comment.timestamp).toLocaleDateString();
                     tooltip.innerHTML = `<button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
                                         <button onclick="deleteComment(${comment.timestamp})">Delete</button>
                                         <div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
                     
-                    commentSpan.appendChild(tooltip);
+                    // Add hover behavior
+                    commentSpan.addEventListener('mouseenter', () => {
+                        tooltip.style.display = 'block';
+                    });
+                    
+                    commentSpan.addEventListener('mouseleave', () => {
+                        setTimeout(() => {
+                            if (!tooltip.matches(':hover') && !commentSpan.matches(':hover')) {
+                                tooltip.style.display = 'none';
+                            }
+                        }, 100);
+                    });
+                    
+                    tooltip.addEventListener('mouseenter', () => {
+                        tooltip.style.display = 'block';
+                    });
+                    
+                    tooltip.addEventListener('mouseleave', () => {
+                        tooltip.style.display = 'none';
+                    });
+                    
+                    // Add to DOM
                     paragraph.appendChild(commentSpan);
+                    paragraph.appendChild(tooltip);
                 });
             });
         }
@@ -1331,19 +1345,24 @@ async function buildLeftPanel() {
             commentSpan.style.marginLeft = '5px';
             commentSpan.style.cursor = 'pointer';
             
-            // Store the original text in a data attribute
+            // Extract and store the original text content
             const extractedContent = range.extractContents();
-            commentSpan.dataset.originalText = extractedContent.textContent;
+            const originalText = extractedContent.textContent;
+            commentSpan.dataset.originalText = originalText;
+            
+            // Add only the original text to the span
             commentSpan.appendChild(extractedContent);
             
             // Insert the comment span
             range.insertNode(commentSpan);
             
-            // Create tooltip
+            // Create tooltip (separate from the text content)
             const tooltip = document.createElement('div');
             tooltip.className = 'comment-tooltip';
             tooltip.style.fontSize = '10px';
             tooltip.style.marginTop = '4px';
+            tooltip.style.display = 'none'; // Hidden by default
+            
             const dateStr = new Date(now).toLocaleDateString();
             
             let tooltipContent = '';
@@ -1356,7 +1375,31 @@ async function buildLeftPanel() {
                                 <button onclick="deleteComment(${now})">Delete</button>
                             </div>`;
             tooltip.innerHTML = tooltipContent;
-            commentSpan.appendChild(tooltip);
+            
+            // Add tooltip after the comment span, not as a child
+            commentSpan.parentNode.insertBefore(tooltip, commentSpan.nextSibling);
+            
+            // Add hover behavior using JavaScript instead of CSS
+            commentSpan.addEventListener('mouseenter', () => {
+                tooltip.style.display = 'block';
+            });
+            
+            commentSpan.addEventListener('mouseleave', () => {
+                // Small delay to prevent flickering when moving to tooltip
+                setTimeout(() => {
+                    if (!tooltip.matches(':hover') && !commentSpan.matches(':hover')) {
+                        tooltip.style.display = 'none';
+                    }
+                }, 100);
+            });
+            
+            tooltip.addEventListener('mouseenter', () => {
+                tooltip.style.display = 'block';
+            });
+            
+            tooltip.addEventListener('mouseleave', () => {
+                tooltip.style.display = 'none';
+            });
             
             // Save the comment
             const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
@@ -1525,7 +1568,6 @@ async function buildLeftPanel() {
         }
 
         function deleteComment(commentTimestamp) {
-            // Find the comment element in the DOM
             const commentElement = document.querySelector(`[data-comment-id="${commentTimestamp}"]`);
             
             if (!commentElement) {
@@ -1533,10 +1575,17 @@ async function buildLeftPanel() {
                 return;
             }
             
-            // Store the original text before removing the comment
-            const originalText = commentElement.textContent;
+            // Get the original text from the data attribute, not the element content
+            const originalText = commentElement.dataset.originalText || 
+                                // Fallback: try to extract just the highlighted text
+                                Array.from(commentElement.childNodes)
+                                    .filter(node => node.nodeType === Node.TEXT_NODE || 
+                                                    (node.nodeType === Node.ELEMENT_NODE && 
+                                                    !node.classList.contains('comment-tooltip')))
+                                    .map(node => node.textContent)
+                                    .join('');
             
-            // Create a text node with the original text
+            // Create a text node with only the original text
             const textNode = document.createTextNode(originalText);
             
             // Replace the comment element with the text node
@@ -1548,38 +1597,38 @@ async function buildLeftPanel() {
                 console.error('Cannot find document title');
                 return;
             }
-
-        const title = titleElement.textContent;
-        const commentsData = getStoredComments();
-        
-        if (!commentsData[title]) {
-            console.error('No comments for this document');
-            return;
-        }
-        
-        let found = false;
-        for (const paraIndex in commentsData[title]) {
-            const commentsArr = commentsData[title][paraIndex];
-            for (let i = 0; i < commentsArr.length; i++) {
-                if (commentsArr[i].timestamp == commentTimestamp) {
-                    // Remove the comment entry from storage
-                    commentsArr.splice(i, 1);
-                    if (commentsArr.length === 0) {
-                        delete commentsData[title][paraIndex];
-                    }
-                    found = true;
-                    break;
-                }
+            
+            const title = titleElement.textContent;
+            const commentsData = getStoredComments();
+            
+            if (!commentsData[title]) {
+                console.error('No comments for this document');
+                return;
             }
-            if (found) break;
+            
+            let found = false;
+            for (const paraIndex in commentsData[title]) {
+                const commentsArr = commentsData[title][paraIndex];
+                for (let i = 0; i < commentsArr.length; i++) {
+                    if (commentsArr[i].timestamp == commentTimestamp) {
+                        commentsArr.splice(i, 1);
+                        if (commentsArr.length === 0) {
+                            delete commentsData[title][paraIndex];
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+            
+            if (!found) {
+                console.error('Comment not found for deletion in storage');
+            } else {
+                saveComments(commentsData);
+            }
         }
-        
-        if (!found) {
-            console.error('Comment not found for deletion in storage');
-        } else {
-            saveComments(commentsData);
-        }
-    }
+
 
         function submitComment() {
             const textarea = document.getElementById('comment-dialog-text');
