@@ -1092,7 +1092,7 @@ async function buildLeftPanel() {
             Object.keys(comments).forEach(paraIndex => {
                 if (paraIndex === 'general') {
                     // Handle general comments
-                    comments[paraIndex].forEach(comment => {
+                    comments[paraIndex].forEach(comment=> {
                         console.log('General comment found:', comment);
                     });
                     return;
@@ -1101,7 +1101,7 @@ async function buildLeftPanel() {
                 const paragraph = document.querySelector(`[data-para-index="${paraIndex}"]`);
                 if (!paragraph) return;
                 
-                comments[paraIndex].forEach(comment => {
+                comments[paraIndex].forEach(comment=> {
                     // Find if this comment already exists in the DOM
                     const existingComment = document.querySelector(`[data-comment-id="${comment.timestamp}"]`);
                     if (existingComment) return; // Already restored

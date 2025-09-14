@@ -15,6 +15,13 @@ export async function onRequestPost(context) {
     const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
     let author = 'anonymous'; // Fallback
 
+    // Parse, replace author, and rebuild (reassign to comment for no downstream changes)
+    const commentParts = comment.split('|').map(part => part.trim());
+    if (commentParts.length >= 3 && commentParts[1] === 'anonymous') {
+    commentParts[1] = author;
+    }
+    comment = commentParts.join(' | ');
+
     if (jwt) {
     const identityUrl = 'https://your-team-name.cloudflareaccess.com/cdn-cgi/access/get-identity'; // Or `https://${env.ACCESS_DOMAIN}/cdn-cgi/access/get-identity`
     const identityResponse = await fetch(identityUrl, {
