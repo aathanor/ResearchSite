@@ -671,7 +671,16 @@
         }
         fetchUserEmail();
 
-
+        // Add this mapping function to your frontend code
+        function getActualFilename(docId) {
+        const filenameMap = {
+            'pattern-recognition-identity': 'sample.md',
+            'empirical-evidence': 'sample.md',
+            'related-work': 'sample.md'
+        };
+        
+        return filenameMap[docId] || `${docId}.md`;
+        }
 
         // Thread data with better timestamp management
         const threads = {
@@ -1671,7 +1680,7 @@ async function buildLeftPanel() {
 
         async function saveCommentToMarkdown(docTitle, paraIndex, prefix, text, user, timestamp) {
             const slug = slugify(docTitle);
-            const filename = `${slug}.md`;
+            const filename = getActualFilename(slug);
             
             // Format the markdown comment
             const mdComment = text ? 
@@ -1690,14 +1699,52 @@ async function buildLeftPanel() {
                     })
                 });
                 
+                const responseData = await response.json();
+
                 if (!response.ok) {
-                    throw new Error('Failed to save comment');
+                    // Show detailed error from server
+                    showError(
+                        'Error Saving Comment', 
+                        responseData.error || 'Failed to save comment',
+                        responseData.details || `Status: ${response.status}`
+                    );
+                    throw new Error(`Server responded with error: ${response.status}`);
                 }
                 
                 console.log('Comment saved successfully');
+
+                // Show mapping info if applicable
+                if (responseData.mappedFrom && responseData.mappedTo) {
+                    console.log(`Filename mapped from ${responseData.mappedFrom} to ${responseData.mappedTo}`);
+                }
+
+                return responseData;
+
             } catch (error) {
                 console.error('Error saving comment:', error);
+
+                // Show generic error for network issues
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    showError(
+                        'Network Error', 
+                        'Cannot connect to server. Please check your internet connection.',
+                        error.message
+                    );
+                }
+                
                 // Still save locally even if remote save fails
+                const comments = getStoredComments();
+                comments[docTitle] = comments[docTitle] || {};
+                comments[docTitle][paraIndex] = comments[docTitle][paraIndex] || [];
+                comments[docTitle][paraIndex].push({
+                    marker: '',
+                    text: text,
+                    user: user,
+                    timestamp: timestamp,
+                    type: prefix,
+                    needsSync: true // Mark for later sync
+                });
+                saveComments(comments);
             }
         }
 
