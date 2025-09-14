@@ -10,8 +10,8 @@ export async function onRequestPost(context) {
     const body = await request.json();
     console.log('Request body:', body);
     
-    const { filename, paraIndex, comment, docId } = body;
-    
+    const { filename, paraIndex, docId } = body;
+    let comment = body.comment;
     const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
     let author = 'anonymous'; // Fallback
 
