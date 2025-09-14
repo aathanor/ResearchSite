@@ -19,6 +19,28 @@
             display: flex;
             flex-direction: column;
         }
+
+        .comment-marker {
+            position: relative;
+            display: inline-block;
+        }
+
+        .comment-marker .comment-tooltip {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            border: 1px solid #e5e6de;
+            border-radius: 4px;
+            padding: 4px;
+            z-index: 1000;
+            white-space: nowrap;
+        }
+
+        .comment-marker:hover .comment-tooltip {
+            display: block;
+        }
        
         /* Header */
         .header {
@@ -1038,28 +1060,53 @@ Research priorities include:
             }
         }
 
+        // Replace the restoreComments() part with the updated code below
         function restoreComments(title) {
             const comments = getStoredComments()[title];
             if (!comments) return;
-
             Object.keys(comments).forEach(paraIndex => {
                 const paragraph = document.querySelector(`[data-para-index="${paraIndex}"]`);
                 if (!paragraph) return;
-
                 comments[paraIndex].forEach(comment => {
                     const commentSpan = document.createElement('span');
                     commentSpan.className = 'comment-marker';
                     commentSpan.dataset.commentId = comment.timestamp;
-                    const displayText = comment.text && comment.text.length > 20 ? comment.text.substring(0, 20) + '...' : comment.text;
-                    commentSpan.textContent = ` [${comment.marker}${displayText ? ' ' + displayText : ''}]`;
-                    
+                    commentSpan.style.marginLeft = '5px';
+                    commentSpan.style.cursor = 'pointer';
+            
+                    const iconSpan = document.createElement('span');
+                    iconSpan.textContent = comment.marker;
+                    iconSpan.style.fontWeight = 'bold';
+            
+                    // Create excerpt from stored text (first 5–7 words)
+                    let excerpt = '';
+                    if (comment.text && comment.text.trim()) {
+                        const words = comment.text.trim().split(' ');
+                        excerpt = words.slice(0, Math.min(7, words.length)).join(' ');
+                    }
+                    const excerptSpan = document.createElement('span');
+                    excerptSpan.style.fontSize = '0.8em';
+                    excerptSpan.style.marginLeft = '3px';
+                    if (comment.marker === '✓') {
+                        excerptSpan.style.background = 'rgba(244,236,221,0.8)';
+                        excerptSpan.style.borderRadius = '4px';
+                        excerptSpan.style.padding = '1px 3px';
+                    }
+                    excerptSpan.textContent = excerpt;
+            
+                    commentSpan.appendChild(iconSpan);
+                    commentSpan.appendChild(excerptSpan);
+            
                     const tooltip = document.createElement('div');
                     tooltip.className = 'comment-tooltip';
-                    const commentType = comment.marker === '?' ? 'Question' : comment.marker === '!' ? 'Clarification' : 'Approved';
-                    const textDiv = comment.text ? `<div style="margin: 4px 0;">${comment.text}</div>` : '';
-                    tooltip.innerHTML = `<div><strong>${commentType}</strong></div>${textDiv}<div style="font-size: 11px; opacity: 0.8;">By ${comment.user}<br>${new Date(comment.timestamp).toLocaleString()}</div><div style="margin-top: 5px; font-size: 10px;"><button onclick="editComment(${comment.timestamp})" style="margin-right: 5px;">Edit</button><button onclick="deleteComment(${comment.timestamp})">Delete</button></div>`;
+                    tooltip.style.fontSize = '10px';
+                    tooltip.style.marginTop = '4px';
+                    const dateStr = new Date(comment.timestamp).toLocaleDateString();
+                    tooltip.innerHTML = `<button onclick="editComment(${comment.timestamp})" style="margin-right: 5px;">Edit</button>
+                                        <button onclick="deleteComment(${comment.timestamp})">Delete</button>
+                                        <div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
+            
                     commentSpan.appendChild(tooltip);
-                    
                     paragraph.appendChild(commentSpan);
                 });
             });
@@ -1413,6 +1460,7 @@ Research priorities include:
         }
 
         // In addComment, ensure you set a custom data attribute so we can find the comment later:
+        // Replace the existing addComment() function with the one below
         function addComment(text, marker) {
             try {
                 if (!currentCommentTarget) {
@@ -1424,37 +1472,78 @@ Research priorities include:
                     return;
                 }
                 const now = Date.now();
-                const dateStr = new Date(now).toLocaleString();
+                // Only show the date (no hour)
+                const dateStr = new Date(now).toLocaleDateString();
                 const commentSpan = document.createElement('span');
                 commentSpan.className = 'comment-marker';
-                // Only show the marker symbol (without extra text) on the page.
-                commentSpan.textContent = ` [${marker}]`;
+                commentSpan.dataset.commentId = now;
+                commentSpan.style.marginLeft = '5px';
+                commentSpan.style.cursor = 'pointer';
+                
+                // Create an icon element
+                const iconSpan = document.createElement('span');
+                iconSpan.textContent = marker;
+                iconSpan.style.fontWeight = 'bold';
+                
+                // Create an excerpt from the comment text (first 5–7 words)
+                let excerpt = '';
+                if (text && text.trim()) {
+                    const words = text.trim().split(' ');
+                    excerpt = words.slice(0, Math.min(7, words.length)).join(' ');
+                }
+                const excerptSpan = document.createElement('span');
+                excerptSpan.style.fontSize = '0.8em';
+                excerptSpan.style.marginLeft = '3px';
+                // For approved comments, use a very light sepia background with rounded corners
+                if (marker === '✓') {
+                    excerptSpan.style.background = 'rgba(244,236,221,0.8)';
+                    excerptSpan.style.borderRadius = '4px';
+                    excerptSpan.style.padding = '1px 3px';
+                }
+                excerptSpan.textContent = excerpt ? excerpt : '';
+            
+                // Assemble the marker (icon + excerpt)
+                commentSpan.appendChild(iconSpan);
+                commentSpan.appendChild(excerptSpan);
+            
+                // Create a tooltip with edit and delete buttons and metadata
                 const tooltip = document.createElement('div');
                 tooltip.className = 'comment-tooltip';
-                let commentType = marker === '?' ? 'Question' : marker === '!' ? 'Clarification' : 'Approved';
-                tooltip.innerHTML = `<div style="font-size: 13px; margin-bottom: 4px;"><strong>${commentType}</strong></div>`;
-                if (text) {
-                    const textDiv = document.createElement('div');
-                    textDiv.style.margin = '4px 0';
-                    textDiv.textContent = text;
-                    tooltip.appendChild(textDiv);
-                }
-                const metaDiv = document.createElement('div');
-                metaDiv.style.fontSize = '11px';
-                metaDiv.style.opacity = '0.8';
-                metaDiv.innerHTML = `By ${userEmail}<br>${dateStr}`;
-                tooltip.appendChild(metaDiv);
-                // Add edit and delete buttons for all types of comment
-                const btnDiv = document.createElement('div');
-                btnDiv.style.marginTop = '5px';
-                btnDiv.style.fontSize = '10px';
-                btnDiv.innerHTML = `<button onclick="editComment(${now})" style="margin-right: 5px;">Edit</button>
-                    <button onclick="deleteComment(${now})">Delete</button>`;
-                tooltip.appendChild(btnDiv);
-                
+                tooltip.style.fontSize = '10px';
+                tooltip.style.marginTop = '4px';
+                // No hour, only date is shown
+                tooltip.innerHTML = `<button onclick="editComment(${now})" style="margin-right: 5px;">Edit</button>
+                                    <button onclick="deleteComment(${now})">Delete</button>
+                                    <div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>`;
+                // Append tooltip (it may be hidden via CSS until hover)
                 commentSpan.appendChild(tooltip);
+            
                 currentCommentTarget.appendChild(commentSpan);
-                // ...existing storage code...
+            
+                // Save the comment into storage (unchanged)
+                const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
+                if (!titleElement) {
+                    console.error('Could not find document title');
+                    return;
+                }
+                const title = titleElement.textContent;
+                const paraIndex = currentCommentTarget.dataset.paraIndex;
+                if (paraIndex === undefined) {
+                    console.error('Paragraph index not found on target element');
+                    return;
+                }
+                const comments = getStoredComments();
+                comments[title] = comments[title] || {};
+                comments[title][paraIndex] = comments[title][paraIndex] || [];
+                comments[title][paraIndex].push({
+                    marker: marker === '?' ? '?' : marker === '!' ? '!' : '✓',
+                    text: text || '',
+                    user: userEmail,
+                    timestamp: now
+                });
+                saveComments(comments);
+                // Optionally, save as markdown:
+                saveCommentToMarkdown(title, paraIndex, marker === '?' ? '?' : marker === '!' ? '!' : '✓', text || '', userEmail, now);
             } catch (error) {
                 console.error('Error adding comment:', error);
                 alert('Failed to add comment. Please try again.');
