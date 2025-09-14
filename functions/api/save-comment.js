@@ -23,7 +23,7 @@ export async function onRequestPost(context) {
     comment = commentParts.join(' | ');
 
     if (jwt) {
-    const identityUrl = 'https://your-team-name.cloudflareaccess.com/cdn-cgi/access/get-identity'; // Or `https://${env.ACCESS_DOMAIN}/cdn-cgi/access/get-identity`
+    const identityUrl = 'https://aathanor.cloudflareaccess.com/cdn-cgi/access/get-identity'; // Or `https://${env.ACCESS_DOMAIN}/cdn-cgi/access/get-identity`
     const identityResponse = await fetch(identityUrl, {
         headers: {
         'Cf-Access-Jwt-Assertion': jwt
