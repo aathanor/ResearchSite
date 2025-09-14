@@ -1216,11 +1216,14 @@ Research priorities include:
 
             textarea.value = '';
             dialog.classList.add('show');
+            dialog.style.display = 'block';  // SHOW the dialog
             textarea.focus();
         }
 
         function hideCommentDialog() {
-            document.getElementById('comment-dialog').classList.remove('show');
+            const dialog = document.getElementById('comment-dialog');
+            dialog.classList.remove('show');
+            dialog.style.display = 'none';  // HIDE the dialog
             currentCommentTarget = null;
             currentCommentType = '';
         }
