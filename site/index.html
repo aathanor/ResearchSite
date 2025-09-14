@@ -652,6 +652,9 @@
     <script>
         // User email (in real deployment, fetch from API)
         let userEmail = 'you@example.com';
+
+        let currentCommentRange = null;  // store the selection range when showing dialog
+        let currentCommentType = '';     // store type of comment (question, clarification, approved)
         
         async function fetchUserEmail() {
             try {
@@ -1291,75 +1294,99 @@ async function buildLeftPanel() {
         document.querySelectorAll('.comment-option').forEach(option => {
             option.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const type = option.dataset.type;
+                const type = option.dataset.type; 
                 const menu = document.getElementById('comment-menu');
                 const range = menu.selectionRange;
                 if (!range) return;
-                // Determine highlight color based on type.
                 let highlightColor = '';
-                let marker = '';
                 if (type === 'question') { 
                     highlightColor = 'rgba(255, 0, 0, 0.3)'; // red
-                    marker = '?';
+                    currentCommentType = 'question';
+                    // Show dialog to get comment text:
+                    showCommentDialog('question');
+                    currentCommentRange = range;
+                    menu.classList.remove('show');
+                    window.getSelection().removeAllRanges();
+                    return;
                 } else if (type === 'clarification') {
                     highlightColor = 'rgba(255, 255, 0, 0.3)'; // yellow
-                    marker = '!';
+                    currentCommentType = 'clarification';
+                    showCommentDialog('clarification');
+                    currentCommentRange = range;
+                    menu.classList.remove('show');
+                    window.getSelection().removeAllRanges();
+                    return;
                 } else if (type === 'approved') {
                     highlightColor = 'rgba(0, 255, 0, 0.3)'; // green
-                    marker = '✓';
-                }
-                // Wrap the selected text with a span.
-                const commentSpan = document.createElement('span');
-                commentSpan.className = 'comment-marker';
-                const now = Date.now();
-                commentSpan.dataset.commentId = now;
-                commentSpan.style.backgroundColor = highlightColor;
-                // Create a small icon (the marker) that stays visible.
-                const iconSpan = document.createElement('span');
-                iconSpan.textContent = marker;
-                iconSpan.style.fontWeight = 'bold';
-                // For the tooltip, show edit/delete and metadata on mouse-over.
-                const tooltip = document.createElement('div');
-                tooltip.className = 'comment-tooltip';
-                tooltip.style.fontSize = '10px';
-                tooltip.style.marginTop = '4px';
-                const dateStr = new Date(now).toLocaleDateString();
-                tooltip.innerHTML = `<button onclick="editComment(${now})" style="margin-right:5px;">Edit</button>
-                                    <button onclick="deleteComment(${now})">Delete</button>
-                                    <div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>`;
-                commentSpan.appendChild(iconSpan);
-                // Move the selected text into our span.
-                try {
-                    commentSpan.appendChild(range.extractContents());
-                    range.insertNode(commentSpan);
-                } catch(err) {
-                    console.error('Error wrapping selection:', err);
-                }
-                // Optionally, save comment data (using your existing storage functions)
-                // Determine the paragraph target from the selection.
-                let p = commentSpan.closest('.commentable');
-                if (p) {
-                    const paraIndex = p.dataset.paraIndex;
-                    const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
-                    if (titleElement && paraIndex !== undefined) {
-                        const title = titleElement.textContent;
-                        const comments = getStoredComments();
-                        comments[title] = comments[title] || {};
-                        comments[title][paraIndex] = comments[title][paraIndex] || [];
-                        comments[title][paraIndex].push({
-                            marker: marker,
-                            text: commentSpan.innerText,
-                            user: userEmail,
-                            timestamp: now
-                        });
-                        saveComments(comments);
-                        // Optionally call saveCommentToMarkdown(...)
-                    }
+                    currentCommentType = 'approved';
+                    // For approved, we assume no comment text is required.
+                    addHighlight(range, highlightColor, '', currentCommentType);
                 }
                 menu.classList.remove('show');
                 window.getSelection().removeAllRanges();
             });
         });
+
+        function addHighlight(range, highlightColor, commentText, type) {
+            const now = Date.now();
+            const commentSpan = document.createElement('span');
+            commentSpan.className = 'comment-marker';
+            commentSpan.dataset.commentId = now;
+            commentSpan.style.backgroundColor = highlightColor;
+            commentSpan.style.marginLeft = '5px';
+            commentSpan.style.cursor = 'pointer';
+            // Wrap the selected text:
+            try {
+                commentSpan.appendChild(range.extractContents());
+                range.insertNode(commentSpan);
+            } catch (err) {
+                console.error('Error wrapping selection:', err);
+            }
+            // Create tooltip – note: no marker icon is added now.
+            const tooltip = document.createElement('div');
+            tooltip.className = 'comment-tooltip';
+            tooltip.style.fontSize = '10px';
+            tooltip.style.marginTop = '4px';
+            const dateStr = new Date(now).toLocaleDateString();
+            // Tooltip shows comment (if any), author and date, plus buttons.
+            let tooltipContent = '';
+            if (commentText) {
+                tooltipContent += `<div>${commentText}</div>`;
+            }
+            tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>`;
+            tooltipContent += `<div style="margin-top:5px; font-size:10px;">
+                                <button onclick="editComment(${now})" style="margin-right:5px;">Edit</button>
+                                <button onclick="deleteComment(${now})">Delete</button>
+                            </div>`;
+            tooltip.innerHTML = tooltipContent;
+            commentSpan.appendChild(tooltip);
+            
+            // Save the comment (in localStorage and for markdown)
+            const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
+            if (!titleElement) {
+                console.error('Document title not found');
+                return;
+            }
+            const title = titleElement.textContent;
+            const p = commentSpan.closest('.commentable');
+            if (!p) {
+                console.error('Comment target paragraph not found');
+                return;
+            }
+            const paraIndex = p.dataset.paraIndex;
+            const comments = getStoredComments();
+            comments[title] = comments[title] || {};
+            comments[title][paraIndex] = comments[title][paraIndex] || [];
+            comments[title][paraIndex].push({
+                marker: '', // no marker symbol needed
+                text: commentText,
+                user: userEmail,
+                timestamp: now,
+                type: type
+            });
+            saveComments(comments);
+            saveCommentToMarkdown(title, paraIndex, type, commentText, userEmail, now);
+        }
 
         function showCommentDialog(type) {
             const dialog = document.getElementById('comment-dialog');
@@ -1394,18 +1421,21 @@ async function buildLeftPanel() {
         function submitComment() {
             const textarea = document.getElementById('comment-dialog-text');
             const text = textarea.value.trim();
-            
-            if (!text && (currentCommentType === 'question' || currentCommentType === 'clarification')) {
+            if ((currentCommentType === 'question' || currentCommentType === 'clarification') && !text) {
                 alert('Please enter comment text');
                 return;
             }
-
-            let marker = '';
-            if (currentCommentType === 'question') marker = '?';
-            else if (currentCommentType === 'clarification') marker = '!';
-
-            addComment(text, marker);
+            let highlightColor = '';
+            if (currentCommentType === 'question') highlightColor = 'rgba(255, 0, 0, 0.3)';
+            else if (currentCommentType === 'clarification') highlightColor = 'rgba(255, 255, 0, 0.3)';
+            else if (currentCommentType === 'approved') highlightColor = 'rgba(0, 255, 0, 0.3)';
+            
+            if (currentCommentRange) {
+                addHighlight(currentCommentRange, highlightColor, text, currentCommentType);
+            }
             hideCommentDialog();
+            currentCommentRange = null;
+            currentCommentType = '';
         }
         
         // ...code for editing comments
