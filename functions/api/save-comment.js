@@ -12,6 +12,28 @@ export async function onRequestPost(context) {
     
     const { filename, paraIndex, comment, docId } = body;
     
+    const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
+    let author = 'anonymous'; // Fallback
+
+    if (jwt) {
+    const identityUrl = 'https://your-team-name.cloudflareaccess.com/cdn-cgi/access/get-identity'; // Or `https://${env.ACCESS_DOMAIN}/cdn-cgi/access/get-identity`
+    const identityResponse = await fetch(identityUrl, {
+        headers: {
+        'Cf-Access-Jwt-Assertion': jwt
+        }
+    });
+
+    if (identityResponse.ok) {
+        const identity = await identityResponse.json();
+        author = identity.email || author; // Use email; alternatively identity.name if available/preferred
+    } else {
+        console.error('Failed to fetch identity:', await identityResponse.text());
+        }
+    }
+
+    // Modify comment to use the real author
+    const updatedComment = comment.replace('anonymous', author);
+
     // Map document IDs to actual filenames
     const filenameMap = {
       'pattern-recognition-identity': 'sample.md',

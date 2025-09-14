@@ -22,28 +22,28 @@
 
         .comment-marker {
             position: relative;
-            display: inline-block;
+            display: inline;
+            background-color: rgba(255, 0, 0, 0.3); /* Default color, will be overridden by JS */
+            margin-left: 5px;
+            cursor: pointer;
         }
 
-        .comment-marker .comment-tooltip {
-            display: none;
+        .comment-tooltip {
             position: absolute;
-            top: 100%;
+            bottom: 100%;
             left: 0;
-            transform: translateY(-4px);  /* shift up to eliminate gap */
+            z-index: 1000;
             background: #fffeef;
             border: 1px solid #e9e9e9;
             border-radius: 4px;
-            padding: 8px;  /* slightly increased padding */
-            z-index: 1000;
+            padding: 8px;
             white-space: nowrap;
-            pointer-events: auto;  /* allow clicks */
-            font-size: 14px;       /* increased font size */
+            pointer-events: auto;
+            font-size: 14px;
+            display: none;
         }
 
-        .comment-marker:hover .comment-tooltip,
-        .comment-marker:focus-within .comment-tooltip,
-        .comment-tooltip:hover {
+        .comment-marker:hover .comment-tooltip {
             display: block;
         }
        
@@ -520,6 +520,8 @@
             background: #6c757d;
             color: white;
         }
+
+       
     </style>
 </head>
 <body>
@@ -1108,51 +1110,25 @@ async function buildLeftPanel() {
                     const commentSpan = document.createElement('span');
                     commentSpan.className = 'comment-marker';
                     commentSpan.dataset.commentId = comment.timestamp;
-                    commentSpan.dataset.originalText = comment.text || ''; // Store original text
-                    commentSpan.style.marginLeft = '5px';
-                    commentSpan.style.cursor = 'pointer';
+                    commentSpan.dataset.originalText = comment.text || '';
                     commentSpan.style.backgroundColor = getHighlightColor(comment.type);
                     
-                    // Add the comment text (not the tooltip content)
+                    // Add the comment text
                     const textNode = document.createTextNode(comment.text || '');
                     commentSpan.appendChild(textNode);
                     
-                    // Create tooltip (separate element)
+                    // Create tooltip
                     const tooltip = document.createElement('div');
                     tooltip.className = 'comment-tooltip';
-                    tooltip.style.fontSize = '10px';
-                    tooltip.style.marginTop = '4px';
-                    tooltip.style.display = 'none';
                     
                     const dateStr = new Date(comment.timestamp).toLocaleDateString();
                     tooltip.innerHTML = `<button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
                                         <button onclick="deleteComment(${comment.timestamp})">Delete</button>
                                         <div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
                     
-                    // Add hover behavior
-                    commentSpan.addEventListener('mouseenter', () => {
-                        tooltip.style.display = 'block';
-                    });
-                    
-                    commentSpan.addEventListener('mouseleave', () => {
-                        setTimeout(() => {
-                            if (!tooltip.matches(':hover') && !commentSpan.matches(':hover')) {
-                                tooltip.style.display = 'none';
-                            }
-                        }, 100);
-                    });
-                    
-                    tooltip.addEventListener('mouseenter', () => {
-                        tooltip.style.display = 'block';
-                    });
-                    
-                    tooltip.addEventListener('mouseleave', () => {
-                        tooltip.style.display = 'none';
-                    });
-                    
                     // Add to DOM
+                    commentSpan.appendChild(tooltip);
                     paragraph.appendChild(commentSpan);
-                    paragraph.appendChild(tooltip);
                 });
             });
         }
@@ -1337,110 +1313,83 @@ async function buildLeftPanel() {
         });
 
         function addHighlight(range, highlightColor, commentText, type) {
-            const now = Date.now();
-            const commentSpan = document.createElement('span');
-            commentSpan.className = 'comment-marker';
-            commentSpan.dataset.commentId = now;
-            commentSpan.style.backgroundColor = highlightColor;
-            commentSpan.style.marginLeft = '5px';
-            commentSpan.style.cursor = 'pointer';
-            
-            // Extract and store the original text content
-            const extractedContent = range.extractContents();
-            const originalText = extractedContent.textContent;
-            commentSpan.dataset.originalText = originalText;
-            
-            // Add only the original text to the span
-            commentSpan.appendChild(extractedContent);
-            
-            // Insert the comment span
-            range.insertNode(commentSpan);
-            
-            // Create tooltip (separate from the text content)
-            const tooltip = document.createElement('div');
-            tooltip.className = 'comment-tooltip';
-            tooltip.style.fontSize = '10px';
-            tooltip.style.marginTop = '4px';
-            tooltip.style.display = 'none'; // Hidden by default
-            
-            const dateStr = new Date(now).toLocaleDateString();
-            
-            let tooltipContent = '';
-            if (commentText) {
-                tooltipContent += `<div>${commentText}</div>`;
-            }
-            tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>`;
-            tooltipContent += `<div style="margin-top:5px; font-size:10px;">
-                                <button onclick="editComment(${now})" style="margin-right:5px;">Edit</button>
-                                <button onclick="deleteComment(${now})">Delete</button>
-                            </div>`;
-            tooltip.innerHTML = tooltipContent;
-            
-            // Add tooltip after the comment span, not as a child
-            commentSpan.parentNode.insertBefore(tooltip, commentSpan.nextSibling);
-            
-            // Add hover behavior using JavaScript instead of CSS
-            commentSpan.addEventListener('mouseenter', () => {
-                tooltip.style.display = 'block';
-            });
-            
-            commentSpan.addEventListener('mouseleave', () => {
-                // Small delay to prevent flickering when moving to tooltip
-                setTimeout(() => {
-                    if (!tooltip.matches(':hover') && !commentSpan.matches(':hover')) {
-                        tooltip.style.display = 'none';
-                    }
-                }, 100);
-            });
-            
-            tooltip.addEventListener('mouseenter', () => {
-                tooltip.style.display = 'block';
-            });
-            
-            tooltip.addEventListener('mouseleave', () => {
-                tooltip.style.display = 'none';
-            });
-            
-            // Save the comment
-            const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
-            if (!titleElement) {
-                console.error('Document title not found');
-                return;
-            }
-            
-            const title = titleElement.textContent;
-            const p = commentSpan.closest('.commentable');
-            
-            if (!p) {
-                console.error('Comment target paragraph not found');
-                // Still save the comment but without paragraph reference
-                const comments = getStoredComments();
-                comments[title] = comments[title] || {};
-                comments[title]['general'] = comments[title]['general'] || [];
-                comments[title]['general'].push({
-                    marker: '',
-                    text: commentText,
-                    user: userEmail,
-                    timestamp: now,
-                    type: type
-                });
-                saveComments(comments);
-                return;
-            }
-            
-            const paraIndex = p.dataset.paraIndex;
-            const comments = getStoredComments();
-            comments[title] = comments[title] || {};
-            comments[title][paraIndex] = comments[title][paraIndex] || [];
-            comments[title][paraIndex].push({
-                marker: '',
-                text: commentText,
-                user: userEmail,
-                timestamp: now,
-                type: type
-            });
-            saveComments(comments);
-        }
+    const now = Date.now();
+    const commentSpan = document.createElement('span');
+    commentSpan.className = 'comment-marker';
+    commentSpan.dataset.commentId = now;
+    commentSpan.style.backgroundColor = highlightColor; // Keep this for dynamic colors
+    
+    // Extract and store the original text content
+    const extractedContent = range.extractContents();
+    const originalText = extractedContent.textContent;
+    commentSpan.dataset.originalText = originalText;
+    
+    // Add only the original text to the span
+    commentSpan.appendChild(extractedContent);
+    
+    // Insert the comment span
+    range.insertNode(commentSpan);
+    
+    // Create tooltip
+    const tooltip = document.createElement('div');
+    tooltip.className = 'comment-tooltip';
+    
+    const dateStr = new Date(now).toLocaleDateString();
+    
+    let tooltipContent = '';
+    if (commentText) {
+        tooltipContent += `<div>${commentText}</div>`;
+    }
+    tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>`;
+    tooltipContent += `<div style="margin-top:5px; font-size:10px;">
+                        <button onclick="editComment(${now})" style="margin-right:5px;">Edit</button>
+                        <button onclick="deleteComment(${now})">Delete</button>
+                    </div>`;
+    tooltip.innerHTML = tooltipContent;
+    
+    // Add tooltip to the comment span
+    commentSpan.appendChild(tooltip);
+    
+    // Save the comment
+    const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
+    if (!titleElement) {
+        console.error('Document title not found');
+        return;
+    }
+    
+    const title = titleElement.textContent;
+    const p = commentSpan.closest('.commentable');
+    
+    if (!p) {
+        console.error('Comment target paragraph not found');
+        // Still save the comment but without paragraph reference
+        const comments = getStoredComments();
+        comments[title] = comments[title] || {};
+        comments[title]['general'] = comments[title]['general'] || [];
+        comments[title]['general'].push({
+            marker: '',
+            text: commentText,
+            user: userEmail,
+            timestamp: now,
+            type: type
+        });
+        saveComments(comments);
+        return;
+    }
+    
+    const paraIndex = p.dataset.paraIndex;
+    const comments = getStoredComments();
+    comments[title] = comments[title] || {};
+    comments[title][paraIndex] = comments[title][paraIndex] || [];
+    comments[title][paraIndex].push({
+        marker: '',
+        text: commentText,
+        user: userEmail,
+        timestamp: now,
+        type: type
+    });
+    saveComments(comments);
+}
 
 
         function showCommentDialog(type) {
