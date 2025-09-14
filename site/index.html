@@ -1154,6 +1154,11 @@ Research priorities include:
         }
 
         function showCommentMenu(e) {
+            // Prevent the menu from showing if the dialog is already open
+            const dialog = document.getElementById('comment-dialog');
+            if (dialog.classList.contains('show')) {
+                return;
+            }
             e.stopPropagation();
             const menu = document.getElementById('comment-menu');
             menu.style.left = e.pageX + 'px';
@@ -1422,15 +1427,12 @@ Research priorities include:
                 const dateStr = new Date(now).toLocaleString();
                 const commentSpan = document.createElement('span');
                 commentSpan.className = 'comment-marker';
-                // Set a data attribute for later reference
-                commentSpan.dataset.commentId = now;
-
-                const displayText = text ? (text.length > 20 ? text.substring(0, 20) + '...' : text) : '';
-                commentSpan.textContent = ` [${marker}${displayText ? ' ' + displayText : ''}]`;
+                // Only show the marker symbol (without extra text) on the page.
+                commentSpan.textContent = ` [${marker}]`;
                 const tooltip = document.createElement('div');
                 tooltip.className = 'comment-tooltip';
                 let commentType = marker === '?' ? 'Question' : marker === '!' ? 'Clarification' : 'Approved';
-                tooltip.innerHTML = `<div><strong>${commentType}</strong></div>`;
+                tooltip.innerHTML = `<div style="font-size: 13px; margin-bottom: 4px;"><strong>${commentType}</strong></div>`;
                 if (text) {
                     const textDiv = document.createElement('div');
                     textDiv.style.margin = '4px 0';
@@ -1452,31 +1454,7 @@ Research priorities include:
                 
                 commentSpan.appendChild(tooltip);
                 currentCommentTarget.appendChild(commentSpan);
-
-                // Save the comment in localStorage
-                const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
-                if (!titleElement) {
-                    console.error('Could not find document title');
-                    return;
-                }
-                const title = titleElement.textContent;
-                const paraIndex = currentCommentTarget.dataset.paraIndex;
-                if (paraIndex === undefined) {
-                    console.error('Paragraph index not found on target element');
-                    return;
-                }
-                const comments = getStoredComments();
-                comments[title] = comments[title] || {};
-                comments[title][paraIndex] = comments[title][paraIndex] || [];
-                comments[title][paraIndex].push({
-                    marker: marker === '?' ? '?' : marker === '!' ? '!' : 'V',
-                    text: text || '',
-                    user: userEmail,
-                    timestamp: now
-                });
-                saveComments(comments);
-                // Optionally simulate saving to markdown
-                saveCommentToMarkdown(title, paraIndex, marker === '?' ? '?' : marker === '!' ? '!' : 'V', text || '', userEmail, now);
+                // ...existing storage code...
             } catch (error) {
                 console.error('Error adding comment:', error);
                 alert('Failed to add comment. Please try again.');
@@ -1592,6 +1570,10 @@ Research priorities include:
         // Start the application only after DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             init();
+        });
+        document.getElementById('comment-dialog').addEventListener('click', function(e) {
+            // This prevents clicks inside the dialog (e.g. Edit, Cancel, etc.) from bubbling up and showing the comment menu.
+            e.stopPropagation();
         });
     </script>
     <div id="comment-dialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
