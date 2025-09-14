@@ -1142,6 +1142,16 @@ Research priorities include:
                 p.addEventListener('click', showCommentMenu);
             });
         }
+        function initializeCommentSystem() {
+            attachCommentListeners();
+        }
+
+        function init() {
+            buildLeftPanel();
+            initTopicFilters();
+            buildThreadList();
+            initializeCommentSystem(); // Now properly defined
+        }
 
         function showCommentMenu(e) {
             e.stopPropagation();
@@ -1154,6 +1164,10 @@ Research priorities include:
 
         document.addEventListener('click', () => {
             document.getElementById('comment-menu').classList.remove('show');
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
         });
 
         // Comment dialog state
@@ -1423,5 +1437,15 @@ Research priorities include:
             init();
         });
     </script>
+    <div id="comment-dialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+         background: white; border: 1px solid #dee2e6; border-radius: 4px; padding: 20px; z-index: 3000;">
+        <h3 id="comment-dialog-title">Comment</h3>
+        <label id="comment-dialog-label" for="comment-dialog-text"></label>
+        <textarea id="comment-dialog-text" style="width: 100%; min-height: 80px; margin-top: 10px;"></textarea>
+        <div style="margin-top: 10px; text-align: right;">
+            <button onclick="hideCommentDialog()" style="margin-right: 10px;">Cancel</button>
+            <button onclick="submitComment()">Submit</button>
+        </div>
+    </div>
 </body>
 </html>
