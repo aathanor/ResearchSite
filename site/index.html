@@ -1285,10 +1285,6 @@ async function buildLeftPanel() {
             init();
         });
 
-        // Comment dialog state
-        let currentCommentTarget = null;
-        let currentCommentType = '';
-
         // Handle comment selection
         // Replace the comment-option click handler with the following:
         document.querySelectorAll('.comment-option').forEach(option => {
