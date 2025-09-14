@@ -896,7 +896,9 @@ async function buildLeftPanel() {
     // Group docs by frontmatter.category; default to 'uncategorized'
     const categories = {};
     docsArray.forEach(doc => {
-        const cat = (doc.frontmatter && doc.frontmatter.category) ? doc.frontmatter.category : 'uncategorized';
+        const cat = (doc.frontmatter && doc.frontmatter.category)
+            ? doc.frontmatter.category
+            : 'uncategorized';
         categories[cat] = categories[cat] || [];
         categories[cat].push(doc);
     });
@@ -916,7 +918,7 @@ async function buildLeftPanel() {
         categories[cat].forEach(doc => {
             const item = document.createElement('div');
             item.className = 'document-item';
-            // Use only the document from loadDocuments(), not the local fallback
+            // Use only the document from loadDocuments()
             item.dataset.id = doc.id;
             item.dataset.lenses = doc.lens ? doc.lens.join(' ') : '';
             item.innerHTML = `
@@ -925,30 +927,23 @@ async function buildLeftPanel() {
             `;
             docsDiv.appendChild(item);
     
-            // Pass the entire doc object to loadDocContent
+            // Add event listener for selecting the document
             item.addEventListener('click', () => {
-                document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.document-item, .message-thread')
+                    .forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 loadDocContent(doc);
-            });
-        });
-            
-            item.addEventListener('click', () => {
-                document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                // Use the document id to fetch the markdown file from the content folder
-                loadDocContent(doc.frontmatter.title, doc.id);
             });
         });
         
         categoryDiv.appendChild(docsDiv);
         leftPanel.appendChild(categoryDiv);
-    };
+    });
     
     // Optionally load the first document automatically, if any exist:
     const firstItem = document.querySelector('.document-item');
     if (firstItem) firstItem.click();
-
+}
 
         // Initialize topic filters
         function initTopicFilters() {
