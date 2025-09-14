@@ -30,8 +30,8 @@
             position: absolute;
             top: 100%;
             left: 0;
-            background: #fff;
-            border: 1px solid #fafcee;
+            background: #fffeefc4;
+            border: 1px solid #e9e9e9;
             border-radius: 4px;
             padding: 4px;
             z-index: 1000;
@@ -39,7 +39,12 @@
             pointer-events: auto;  /* allow clicks */
         }
 
-        .comment-marker:hover .comment-tooltip {
+        .comment-tooltip {
+            font-size: 12px;  /* increased font size */
+        }
+
+        .comment-marker:hover .comment-tooltip,
+        .comment-tooltip:hover {
             display: block;
         }
        
