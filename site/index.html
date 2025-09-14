@@ -875,9 +875,10 @@ Research priorities include:
         // New function to load documents from documents.json
 async function loadDocuments() {
     try {
-        const res = await fetch('/site/data/documents.json');
+        // Note the updated path: /data/documents.json
+        const res = await fetch('/data/documents.json');
         const data = await res.json();
-        // Return an array of document objects (values from the "documents" property)
+        // Return an array of document objects from the "documents" property.
         return Object.values(data.documents || {});
     } catch (err) {
         console.error('Error loading documents.json:', err);
@@ -1738,10 +1739,13 @@ async function buildLeftPanel() {
         // Start the application only after DOM is fully loaded
         document.addEventListener('DOMContentLoaded', async function() {
             await init();
-        });
-        document.getElementById('comment-dialog').addEventListener('click', function(e) {
-            // This prevents clicks inside the dialog (e.g. Edit, Cancel, etc.) from bubbling up and showing the comment menu.
-            e.stopPropagation();
+            const dialog = document.getElementById('comment-dialog');
+            if (dialog) {
+                dialog.addEventListener('click', function(e) {
+                    // Prevent clicks inside the dialog from propagating to show the comment menu.
+                    e.stopPropagation();
+                });
+            }
         });
     </script>
     <div id="comment-dialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
