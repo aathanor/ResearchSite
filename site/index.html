@@ -1486,7 +1486,7 @@ async function buildLeftPanel() {
     }
     
     // Get the original text content (without comment markup)
-    const originalText = commentSpan.textContent;
+    const originalText = commentSpan.dataset.originalText;
     
     // Create a text node with the original text
     const textNode = document.createTextNode(originalText);
