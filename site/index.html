@@ -31,11 +31,12 @@
             top: 100%;
             left: 0;
             background: #fff;
-            border: 1px solid #e5e6de;
+            border: 1px solid #fafcee;
             border-radius: 4px;
             padding: 4px;
             z-index: 1000;
             white-space: nowrap;
+            pointer-events: auto;  /* allow clicks */
         }
 
         .comment-marker:hover .comment-tooltip {
@@ -1183,10 +1184,27 @@ Research priorities include:
         });
 
         // Comment functionality
+        // Replace the attachCommentListeners() function with the following:
         function attachCommentListeners() {
+            // Instead of listening for click on the whole paragraph,
+            // listen for mouseup and check if the user selected some text.
             document.querySelectorAll('.commentable').forEach(p => {
-                p.style.cursor = 'pointer';
-                p.addEventListener('click', showCommentMenu);
+                p.style.cursor = 'text';
+                p.addEventListener('mouseup', function(e) {
+                    const selection = window.getSelection();
+                    if (!selection.isCollapsed && selection.toString().trim().length > 0) {
+                        // Only show menu if selection is in a commentable element.
+                        const range = selection.getRangeAt(0);
+                        if (!p.contains(range.commonAncestorContainer)) return;
+                        const rect = range.getBoundingClientRect();
+                        const menu = document.getElementById('comment-menu');
+                        menu.style.left = (rect.left + window.scrollX) + 'px';
+                        menu.style.top = (rect.bottom + window.scrollY) + 'px';
+                        menu.classList.add('show');
+                        // Store the current selection range for later.
+                        menu.selectionRange = range;
+                    }
+                });
             });
         }
         function initializeCommentSystem() {
@@ -1227,26 +1245,77 @@ Research priorities include:
         let currentCommentType = '';
 
         // Handle comment selection
+        // Replace the comment-option click handler with the following:
         document.querySelectorAll('.comment-option').forEach(option => {
             option.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const type = option.dataset.type;
                 const menu = document.getElementById('comment-menu');
-                const target = menu.targetElement;
-                if (!target) return;
-
-                currentCommentTarget = target;
-                currentCommentType = type;
-
-                if (type === 'approved') {
-                    // Approved comments don't need text input
-                    addComment('', '✓');
-                } else {
-                    // Show dialog for question/clarification
-                    showCommentDialog(type);
+                const range = menu.selectionRange;
+                if (!range) return;
+                // Determine highlight color based on type.
+                let highlightColor = '';
+                let marker = '';
+                if (type === 'question') { 
+                    highlightColor = 'rgba(255, 0, 0, 0.3)'; // red
+                    marker = '?';
+                } else if (type === 'clarification') {
+                    highlightColor = 'rgba(255, 255, 0, 0.3)'; // yellow
+                    marker = '!';
+                } else if (type === 'approved') {
+                    highlightColor = 'rgba(0, 255, 0, 0.3)'; // green
+                    marker = '✓';
                 }
-
+                // Wrap the selected text with a span.
+                const commentSpan = document.createElement('span');
+                commentSpan.className = 'comment-marker';
+                const now = Date.now();
+                commentSpan.dataset.commentId = now;
+                commentSpan.style.backgroundColor = highlightColor;
+                // Create a small icon (the marker) that stays visible.
+                const iconSpan = document.createElement('span');
+                iconSpan.textContent = marker;
+                iconSpan.style.fontWeight = 'bold';
+                // For the tooltip, show edit/delete and metadata on mouse-over.
+                const tooltip = document.createElement('div');
+                tooltip.className = 'comment-tooltip';
+                tooltip.style.fontSize = '10px';
+                tooltip.style.marginTop = '4px';
+                const dateStr = new Date(now).toLocaleDateString();
+                tooltip.innerHTML = `<button onclick="editComment(${now})" style="margin-right:5px;">Edit</button>
+                                    <button onclick="deleteComment(${now})">Delete</button>
+                                    <div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>`;
+                commentSpan.appendChild(iconSpan);
+                // Move the selected text into our span.
+                try {
+                    commentSpan.appendChild(range.extractContents());
+                    range.insertNode(commentSpan);
+                } catch(err) {
+                    console.error('Error wrapping selection:', err);
+                }
+                // Optionally, save comment data (using your existing storage functions)
+                // Determine the paragraph target from the selection.
+                let p = commentSpan.closest('.commentable');
+                if (p) {
+                    const paraIndex = p.dataset.paraIndex;
+                    const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
+                    if (titleElement && paraIndex !== undefined) {
+                        const title = titleElement.textContent;
+                        const comments = getStoredComments();
+                        comments[title] = comments[title] || {};
+                        comments[title][paraIndex] = comments[title][paraIndex] || [];
+                        comments[title][paraIndex].push({
+                            marker: marker,
+                            text: commentSpan.innerText,
+                            user: userEmail,
+                            timestamp: now
+                        });
+                        saveComments(comments);
+                        // Optionally call saveCommentToMarkdown(...)
+                    }
+                }
                 menu.classList.remove('show');
+                window.getSelection().removeAllRanges();
             });
         });
 
