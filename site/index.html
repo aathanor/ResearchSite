@@ -184,7 +184,7 @@
        
         /* Left panel - Documents */
         .left-panel {
-            width: 25%;
+            width: 20%;
             background: #f8f9fa;
             border-right: 1px solid #dee2e6;
             overflow-y: auto;
@@ -255,7 +255,7 @@
        
         /* Right panel - Messages */
         .right-panel {
-            width: 30%;
+            width: 25%;
             background: #f8f9fa;
             border-left: 1px solid #dee2e6;
             display: flex;
@@ -653,7 +653,7 @@
         <!-- Right Panel - Messages -->
         <div class="right-panel">
             <div class="messages-header">
-                <h3>Discussion Threads</h3>
+                <h3>Messages</h3>
                 <button class="new-thread-btn" onclick="showNewThreadForm()">+ New Thread</button>
             </div>
             <div class="topic-filters" id="topic-filters">
@@ -730,7 +730,7 @@
    
     <!-- New Thread Form -->
     <div class="new-thread-form" id="new-thread-form">
-        <h3 style="margin-bottom: 20px;">Start New Discussion Thread</h3>
+        <h3 style="margin-bottom: 20px;">New Discussion</h3>
         <div class="form-group">
             <label>Subject</label>
             <input type="text" id="thread-subject" placeholder="Brief topic...">
@@ -769,13 +769,14 @@
 
         // Add this mapping function to your frontend code
         function getActualFilename(docId) {
-        const filenameMap = {
-            'pattern-recognition-identity': 'sample.md',
-            'empirical-evidence': 'sample.md',
-            'related-work': 'sample.md'
-        };
-        
-        return filenameMap[docId] || `${docId}.md`;
+            const filenameMap = {
+                'pattern-recognition-identity': 'sample.md',
+                'empirical-evidence': 'sample.md', 
+                'related-work': 'sample.md',
+                'second-test': 'second-test.md' // Add this when you upload second-test.md
+            };
+            
+            return filenameMap[docId] || `${docId}.md`;
         }
 
         // Thread data with better timestamp management
@@ -967,32 +968,27 @@ function getCommentIcon(type) {
 // Updated buildLeftPanel that groups documents by frontmatter.category
 async function buildLeftPanel() {
     const leftPanel = document.querySelector('.left-panel');
-    // Remove any existing categories (leaving lens tabs intact)
     leftPanel.querySelectorAll('.doc-category').forEach(cat => cat.remove());
     
     const docsArray = await loadDocuments();
     
-    // Create a Set to track document IDs and prevent duplicates
-    const seenDocs = new Set();
-    
-    // Group docs by frontmatter.category; default to 'uncategorized'
-    const categories = {};
-    
+    // Deduplicate by ID
+    const uniqueDocs = {};
     docsArray.forEach(doc => {
-        // Skip if we've already processed this document
-        if (seenDocs.has(doc.id)) {
-            return;
+        if (!uniqueDocs[doc.id]) {
+            uniqueDocs[doc.id] = doc;
         }
-        seenDocs.add(doc.id);
-        
-        const cat = (doc.frontmatter && doc.frontmatter.category)
-            ? doc.frontmatter.category
-            : 'uncategorized';
-        categories[cat] = categories[cat] || [];
+    });
+    
+    // Group by category
+    const categories = {};
+    Object.values(uniqueDocs).forEach(doc => {
+        const cat = doc.frontmatter?.category || 'uncategorized';
+        if (!categories[cat]) categories[cat] = [];
         categories[cat].push(doc);
     });
     
-    // For each category, create a section in the left panel
+    // Build UI
     Object.keys(categories).sort().forEach(cat => {
         const categoryDiv = document.createElement('div');
         categoryDiv.className = 'doc-category';
@@ -1002,36 +998,29 @@ async function buildLeftPanel() {
         categoryDiv.appendChild(h3);
         
         const docsDiv = document.createElement('div');
-        docsDiv.id = cat + '-docs';
         
         categories[cat].forEach(doc => {
             const item = document.createElement('div');
             item.className = 'document-item';
-            // Use only the document from loadDocuments()
             item.dataset.id = doc.id;
             item.dataset.lenses = doc.lens ? doc.lens.join(' ') : '';
             item.innerHTML = `
-                <div>${doc.frontmatter.title}</div>
+                <div>${doc.title || doc.frontmatter?.title || 'Untitled'}</div>
                 <span style="font-size: 11px; color: #6c757d;">● ${doc.status}</span>
             `;
-            docsDiv.appendChild(item);
-    
-            // Add event listener for selecting the document
+            
             item.addEventListener('click', () => {
-                document.querySelectorAll('.document-item, .message-thread')
-                    .forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 loadDocContent(doc);
             });
+            
+            docsDiv.appendChild(item);
         });
         
         categoryDiv.appendChild(docsDiv);
         leftPanel.appendChild(categoryDiv);
     });
-    
-    // Optionally load the first document automatically, if any exist:
-    const firstItem = document.querySelector('.document-item');
-    if (firstItem) firstItem.click();
 }
 
         // Initialize topic filters
@@ -1109,66 +1098,7 @@ async function buildLeftPanel() {
                     text = await res.text();
                 }
                 
-                // Simple markdown to HTML conversion
-                function markdownToHtml(markdown) {
-                    let html = markdown;
-                    
-                    // Headers
-                    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-                    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-                    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-                    
-                    // Bold and italic
-                    html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
-                    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-                    
-                    // Lists
-                    html = html.replace(/^\* (.+)$/gim, '<li>$1</li>');
-                    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-                    html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>');
-                    
-                    // Paragraphs - wrap lines that aren't already tags
-                    const lines = html.split('\n');
-                    const processedLines = [];
-                    let inParagraph = false;
-                    let paragraphIndex = 0;
-                    
-                    lines.forEach(line => {
-                        const trimmed = line.trim();
-                        if (!trimmed) {
-                            if (inParagraph) {
-                                processedLines.push('</p>');
-                                inParagraph = false;
-                            }
-                            return;
-                        }
-                        
-                        // Check if line is already a tag
-                        if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<li')) {
-                            if (inParagraph) {
-                                processedLines.push('</p>');
-                                inParagraph = false;
-                            }
-                            processedLines.push(line);
-                        } else {
-                            if (!inParagraph) {
-                                processedLines.push(`<p class="commentable" data-para-index="${paragraphIndex}">`);
-                                inParagraph = true;
-                                paragraphIndex++;
-                            }
-                            processedLines.push(line);
-                        }
-                    });
-                    
-                    if (inParagraph) {
-                        processedLines.push('</p>');
-                    }
-                    
-                    return processedLines.join('\n');
-                }
-                
-                const htmlContent = markdownToHtml(text);
+                // Your existing markdown to HTML conversion code...
                 
                 // Add proper container with good typography
                 document.getElementById('center-panel').innerHTML = `
@@ -1177,8 +1107,8 @@ async function buildLeftPanel() {
                     </article>
                 `;
                 
-                const docTitle = doc.frontmatter?.title || doc.title;
-                restoreComments(docTitle);
+                // Use doc.id instead of title for restoring comments
+                restoreComments(doc.id);
                 attachCommentListeners();
                 
             } catch (e) {
@@ -1193,19 +1123,53 @@ async function buildLeftPanel() {
         }
 
         function restoreComments(docId) {
-            // Use doc ID instead of title for consistency
             const comments = getStoredComments()[docId];
             if (!comments) return;
             
             Object.keys(comments).forEach(paraIndex => {
+                if (paraIndex === 'general') {
+                    // Handle general comments
+                    comments[paraIndex].forEach(comment => {
+                        console.log('General comment found:', comment);
+                    });
+                    return;
+                }
+                
                 const paragraph = document.querySelector(`[data-para-index="${paraIndex}"]`);
                 if (!paragraph) return;
                 
                 comments[paraIndex].forEach(comment => {
-                    // Your existing comment restoration code...
+                    // Find if this comment already exists in the DOM
+                    const existingComment = document.querySelector(`[data-comment-id="${comment.timestamp}"]`);
+                    if (existingComment) return; // Already restored
+                    
+                    // Create new comment element
+                    const commentSpan = document.createElement('span');
+                    commentSpan.className = 'comment-marker';
+                    commentSpan.dataset.commentId = comment.timestamp;
+                    commentSpan.dataset.originalText = comment.text || '';
+                    commentSpan.style.backgroundColor = getHighlightColor(comment.type);
+                    
+                    // Add the comment text
+                    const textNode = document.createTextNode(comment.text || '');
+                    commentSpan.appendChild(textNode);
+                    
+                    // Create tooltip
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'comment-tooltip';
+                    
+                    const dateStr = new Date(comment.timestamp).toLocaleDateString();
+                    tooltip.innerHTML = `<button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
+                                        <button onclick="deleteComment(${comment.timestamp})">Delete</button>
+                                        <div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
+                    
+                    // Add to DOM
+                    commentSpan.appendChild(tooltip);
+                    paragraph.appendChild(commentSpan);
                 });
             });
         }
+
 
         // Load thread content
         function loadThreadContent(subject) {
@@ -1391,7 +1355,9 @@ async function buildLeftPanel() {
             const commentSpan = document.createElement('span');
             commentSpan.className = 'comment-marker';
             commentSpan.dataset.commentId = now;
-            commentSpan.style.backgroundColor = highlightColor; // Keep this for dynamic colors
+            commentSpan.style.backgroundColor = highlightColor;
+            commentSpan.style.marginLeft = '5px';
+            commentSpan.style.cursor = 'pointer';
             
             // Extract and store the original text content
             const extractedContent = range.extractContents();
@@ -1424,24 +1390,23 @@ async function buildLeftPanel() {
             // Add tooltip to the comment span
             commentSpan.appendChild(tooltip);
             
-            // Save the comment
-            const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
-            if (!titleElement) {
-                console.error('Document title not found');
+            // Get the document ID from the active document
+            const currentDocItem = document.querySelector('.document-item.active');
+            if (!currentDocItem) {
+                console.error('No active document found');
                 return;
             }
-        
-            const title = titleElement.textContent;
+            
+            const docId = currentDocItem.dataset.id;
             const p = commentSpan.closest('.commentable');
             
             if (!p) {
                 console.error('Comment target paragraph not found');
                 // Still save the comment but without paragraph reference
                 const comments = getStoredComments();
-                comments[title] = comments[title] || {};
-                comments[title]['general'] = comments[title]['general'] || [];
-                comments[title]['general'].push({
-                    marker: '',
+                comments[docId] = comments[docId] || {};
+                comments[docId]['general'] = comments[docId]['general'] || [];
+                comments[docId]['general'].push({
                     text: commentText,
                     user: userEmail,
                     timestamp: now,
@@ -1450,15 +1415,8 @@ async function buildLeftPanel() {
                 saveComments(comments);
                 return;
             }
-            const currentDocItem = document.querySelector('.document-item.active');
-            const docId = currentDocItem ? currentDocItem.dataset.id : null;
-
-            if (!docId) {
-                console.error('No active document to associate comment with');
-                return;
-            }
-
-            // Save with doc ID as key
+            
+            const paraIndex = p.dataset.paraIndex;
             const comments = getStoredComments();
             comments[docId] = comments[docId] || {};
             comments[docId][paraIndex] = comments[docId][paraIndex] || [];
@@ -1469,9 +1427,12 @@ async function buildLeftPanel() {
                 type: type
             });
             saveComments(comments);
-
-            const paraIndex = p.dataset.paraIndex;
+            
+            // Save to GitHub
+            saveCommentToMarkdown(docId, paraIndex, type === 'question' ? '?' : type === 'clarification' ? '!' : '✓', 
+                                commentText, userEmail, now);
         }
+
 
 
         function showCommentDialog(type) {
@@ -1820,9 +1781,8 @@ async function buildLeftPanel() {
 
 
 
-        async function saveCommentToMarkdown(docTitle, paraIndex, prefix, text, user, timestamp) {
-            const slug = slugify(docTitle);
-            const filename = getActualFilename(slug);
+        async function saveCommentToMarkdown(docId, paraIndex, prefix, text, user, timestamp) {
+            const filename = getActualFilename(docId);
             
             // Format the markdown comment
             const mdComment = text ? 
@@ -1837,56 +1797,50 @@ async function buildLeftPanel() {
                         filename, 
                         paraIndex, 
                         comment: mdComment,
-                        docId: slug
+                        docId: docId
                     })
                 });
                 
                 const responseData = await response.json();
 
                 if (!response.ok) {
-                    // Show detailed error from server
-                    showError(
-                        'Error Saving Comment', 
-                        responseData.error || 'Failed to save comment',
-                        responseData.details || `Status: ${response.status}`
-                    );
-                    throw new Error(`Server responded with error: ${response.status}`);
+                    console.error('Error saving comment to server:', responseData);
+                    // Still save locally even if remote save fails
+                    const comments = getStoredComments();
+                    comments[docId] = comments[docId] || {};
+                    comments[docId][paraIndex] = comments[docId][paraIndex] || [];
+                    comments[docId][paraIndex].push({
+                        text: text,
+                        user: user,
+                        timestamp: timestamp,
+                        type: prefix,
+                        needsSync: true
+                    });
+                    saveComments(comments);
+                    
+                    return responseData;
                 }
                 
-                console.log('Comment saved successfully');
-
-                // Show mapping info if applicable
-                if (responseData.mappedFrom && responseData.mappedTo) {
-                    console.log(`Filename mapped from ${responseData.mappedFrom} to ${responseData.mappedTo}`);
-                }
-
+                console.log('Comment saved successfully to server');
                 return responseData;
 
             } catch (error) {
                 console.error('Error saving comment:', error);
-
-                // Show generic error for network issues
-                if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    showError(
-                        'Network Error', 
-                        'Cannot connect to server. Please check your internet connection.',
-                        error.message
-                    );
-                }
                 
                 // Still save locally even if remote save fails
                 const comments = getStoredComments();
-                comments[docTitle] = comments[docTitle] || {};
-                comments[docTitle][paraIndex] = comments[docTitle][paraIndex] || [];
-                comments[docTitle][paraIndex].push({
-                    marker: '',
+                comments[docId] = comments[docId] || {};
+                comments[docId][paraIndex] = comments[docId][paraIndex] || [];
+                comments[docId][paraIndex].push({
                     text: text,
                     user: user,
                     timestamp: timestamp,
                     type: prefix,
-                    needsSync: true // Mark for later sync
+                    needsSync: true
                 });
                 saveComments(comments);
+                
+                return { error: error.message };
             }
         }
 
