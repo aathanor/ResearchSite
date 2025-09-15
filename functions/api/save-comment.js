@@ -12,8 +12,26 @@ export async function onRequestPost(context) {
     
     const { filename, paraIndex, docId } = body;
     let comment = body.comment;
+
     const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
-    let author = 'anonymous'; // Fallback
+    let author = 'anonymous';
+    if (jwt) {
+      const identityUrl = 'https://aathanor.cloudflareaccess.com/cdn-cgi/access/get-identity'; // Replace <your-team-name> with actual (e.g., florin-research)
+      console.log('Fetching identity from:', identityUrl);
+      const identityResponse = await fetch(identityUrl, {
+        headers: { 'Cf-Access-Jwt-Assertion': jwt }
+      });
+      console.log('Identity response status:', identityResponse.status);
+
+      if (identityResponse.ok) {
+        const identity = await identityResponse.json();
+        console.log('Identity data:', JSON.stringify(identity)); // Redacts sensitive but shows keys
+        author = identity.email || author;
+      } else {
+        console.error('Identity fetch failed:', identityResponse.status, await identityResponse.text());
+      }
+    }
+    console.log('Final author:', author);
 
     // Parse, replace author, and rebuild (reassign to comment for no downstream changes)
     const commentParts = comment.split('|').map(part => part.trim());
