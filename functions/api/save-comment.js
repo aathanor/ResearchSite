@@ -2,86 +2,66 @@ export async function onRequestPost(context) {
   const { request, env } = context;
   
   try {
+    console.log('Function invoked'); // Always log entry for debugging
+    
     // Check if environment variables exist
     if (!env.GITHUB_TOKEN || !env.GITHUB_OWNER || !env.GITHUB_REPO) {
       throw new Error('Missing environment variables');
     }
     
     const body = await request.json();
-    console.log('Request body:', body);
+    console.log('Request body:', JSON.stringify(body));
     
     const { filename, paraIndex, docId } = body;
     let comment = body.comment;
-
+    
     const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
-    let author = 'anonymous';
+    console.log('JWT present:', !!jwt);
+    
+    let author = 'anonymous'; // Fallback
+    
     if (jwt) {
-      const identityUrl = 'https://aathanor.cloudflareaccess.com/cdn-cgi/access/get-identity'; // Replace <your-team-name> with actual (e.g., florin-research)
+      const identityUrl = 'https://aathanor.cloudflareaccess.com/cdn-cgi/access/get-identity'; // Confirm this is your correct team name from Zero Trust dashboard
       console.log('Fetching identity from:', identityUrl);
       const identityResponse = await fetch(identityUrl, {
         headers: { 'Cf-Access-Jwt-Assertion': jwt }
       });
       console.log('Identity response status:', identityResponse.status);
-
+      
       if (identityResponse.ok) {
         const identity = await identityResponse.json();
-        console.log('Identity data:', JSON.stringify(identity)); // Redacts sensitive but shows keys
+        console.log('Identity data:', JSON.stringify(identity));
         author = identity.email || author;
       } else {
         console.error('Identity fetch failed:', identityResponse.status, await identityResponse.text());
       }
     }
+    
     console.log('Final author:', author);
-
-    // Parse, replace author, and rebuild (reassign to comment for no downstream changes)
+    
+    // Parse and replace author in comment (handles |-separated format)
     const commentParts = comment.split('|').map(part => part.trim());
     if (commentParts.length >= 3 && commentParts[1] === 'anonymous') {
-    commentParts[1] = author;
+      commentParts[1] = author;
     }
     comment = commentParts.join(' | ');
-
-    console.log('Checking JWT header:', request.headers.get('Cf-Access-Jwt-Assertion') ? 'Present (redacted)' : 'Missing');
     
-    if (jwt) {
-    const identityUrl = 'https://aathanor.cloudflareaccess.com/cdn-cgi/access/get-identity'; // Or `https://${env.ACCESS_DOMAIN}/cdn-cgi/access/get-identity`
-    const identityResponse = await fetch(identityUrl, {
-        headers: {
-        'Cf-Access-Jwt-Assertion': jwt
-        }
-    });
-
-    console.log('Identity response status:', identityResponse.status);
-    if (identityResponse.ok) {
-        const identity = await identityResponse.json();
-        console.log('Identity data:', identity); // Check for 'email' key
-    } else {
-        console.error('Failed to fetch identity:', await identityResponse.text());
+    // Ensure comment is wrapped as Markdown/HTML comment if not already
+    if (!comment.startsWith('<!--')) {
+      comment = `<!-- ? [${comment}] -->`;
     }
-    if (identityResponse.ok) {
-        const identity = await identityResponse.json();
-        author = identity.email || author; // Use email; alternatively identity.name if available/preferred
-    } else {
-        console.error('Failed to fetch identity:', await identityResponse.text());
-        }
-    }
-
-    // Modify comment to use the real author
-    const updatedComment = comment.replace('anonymous', author);
-
-    // Map document IDs to actual filenames
+    
+    // Map document IDs to actual filenames (temporary; consider dynamic listing for auto-derivation)
     const filenameMap = {
       'pattern-recognition-identity': 'sample.md',
-      'empirical-evidence': 'sample.md', // Add other mappings as needed
+      'empirical-evidence': 'sample.md',
       'related-work': 'sample.md'
     };
-    
-    // Use mapped filename or fallback to requested filename
     const actualFilename = filenameMap[docId] || filename;
     
     // Build the GitHub API URL
     const filePath = `content/${actualFilename}`;
     const apiUrl = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${filePath}`;
-    
     console.log('Fetching from GitHub:', apiUrl);
     
     // Get current file from GitHub
@@ -95,19 +75,8 @@ export async function onRequestPost(context) {
     
     if (!getResponse.ok) {
       const errorText = await getResponse.text();
-      console.error('GitHub fetch error:', getResponse.status, errorText);
-      
-      return new Response(JSON.stringify({ 
-        error: `File not found: ${actualFilename}`,
-        details: `Tried to access: ${apiUrl}`,
-        suggestion: 'Please check your filename mappings'
-      }), {
-        status: 404,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
-      });
+      console.error('GitHub GET failed:', getResponse.status, errorText);
+      throw new Error(`GitHub GET error: ${getResponse.status} - ${errorText}`);
     }
     
     const fileData = await getResponse.json();
@@ -116,8 +85,17 @@ export async function onRequestPost(context) {
     // Decode the content
     let content = atob(fileData.content.replace(/\n/g, ''));
     
-    // For now, just append the comment at the end to test
-    content = content + '\n' + comment + '\n';
+    // Split into paragraphs for targeted insertion (using 2+ newlines as separator)
+    const paragraphs = content.split(/\n{2,}/);
+    if (paraIndex < 0 || paraIndex >= paragraphs.length) {
+      throw new Error('Comment target paragraph not found');
+    }
+    
+    // Insert comment at the end of the target paragraph
+    paragraphs[paraIndex] += '\n' + comment;
+    
+    // Rejoin content
+    content = paragraphs.join('\n\n');
     
     // Commit back to GitHub
     const updateResponse = await fetch(apiUrl, {
@@ -141,16 +119,13 @@ export async function onRequestPost(context) {
     
     if (!updateResponse.ok) {
       const errorText = await updateResponse.text();
-      console.error('GitHub update error:', errorText);
-      throw new Error(`Failed to update file: ${errorText}`);
+      console.error('GitHub PUT failed:', updateResponse.status, errorText);
+      throw new Error(`GitHub PUT error: ${updateResponse.status} - ${errorText}`);
     }
     
-    return new Response(JSON.stringify({ 
-      success: true,
-      message: `Comment added to ${actualFilename}`,
-      mappedFrom: filename,
-      mappedTo: actualFilename
-    }), {
+    console.log('Save successful for file:', actualFilename);
+    
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { 
         'Content-Type': 'application/json',
@@ -159,19 +134,24 @@ export async function onRequestPost(context) {
     });
     
   } catch (error) {
-    console.error('Function error:', error.message);
-    return new Response(
-      JSON.stringify({ 
-        error: error.message,
-        details: error.stack 
-      }), 
-      { 
-        status: 500,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
+    console.error('Function error:', error.message, error.stack);
+    return new Response(JSON.stringify({ error: error.message }), { 
+      status: 500,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       }
-    );
+    });
   }
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
+  });
 }

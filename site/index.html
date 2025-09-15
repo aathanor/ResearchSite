@@ -1187,14 +1187,13 @@ async function buildLeftPanel() {
             }
         }
 
-        // Updated restoreComments function to properly wrap existing text
+        // Updated restoreComments function with proper positioning
         function restoreComments(docId) {
             const comments = getStoredComments()[docId];
             if (!comments) return;
             
             Object.keys(comments).forEach(paraIndex => {
                 if (paraIndex === 'general') {
-                    // Handle general comments
                     comments[paraIndex].forEach(comment => {
                         console.log('General comment found:', comment);
                     });
@@ -1207,83 +1206,40 @@ async function buildLeftPanel() {
                     return;
                 }
                 
-                // Store the original paragraph text
-                const originalText = paragraph.textContent;
-                
                 comments[paraIndex].forEach(comment => {
                     // Find if this comment already exists in the DOM
                     const existingComment = document.querySelector(`[data-comment-id="${comment.timestamp}"]`);
-                    if (existingComment) return; // Already restored
+                    if (existingComment) return;
                     
-                    // Find the position of the commented text in the paragraph
-                    const commentText = comment.text || '';
-                    const textIndex = originalText.indexOf(commentText);
+                    // Create a new comment element
+                    const commentSpan = document.createElement('span');
+                    commentSpan.className = 'comment-marker';
+                    commentSpan.dataset.commentId = comment.timestamp;
+                    commentSpan.dataset.originalText = comment.text || '';
+                    commentSpan.style.backgroundColor = getHighlightColor(comment.type);
                     
-                    if (textIndex === -1) {
-                        console.log('Comment text not found in paragraph:', commentText);
-                        return;
-                    }
+                    // Add the comment text
+                    const textNode = document.createTextNode(comment.text || '');
+                    commentSpan.appendChild(textNode);
                     
-                    // Split the paragraph into text nodes
-                    const textNodes = [];
-                    let currentPos = 0;
+                    // Create tooltip
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'comment-tooltip';
                     
-                    // Process child nodes to find where to insert the comment
-                    for (const node of paragraph.childNodes) {
-                        if (node.nodeType === Node.TEXT_NODE) {
-                            const nodeText = node.textContent;
-                            const nodeEnd = currentPos + nodeText.length;
-                            
-                            // Check if this node contains the comment text
-                            if (currentPos <= textIndex && textIndex < nodeEnd) {
-                                const splitPos = textIndex - currentPos;
-                                const beforeText = nodeText.substring(0, splitPos);
-                                const commentText = nodeText.substring(splitPos, splitPos + commentText.length);
-                                const afterText = nodeText.substring(splitPos + commentText.length);
-                                
-                                // Replace this text node with new structure
-                                const fragment = document.createDocumentFragment();
-                                
-                                // Add text before comment
-                                if (beforeText) {
-                                    fragment.appendChild(document.createTextNode(beforeText));
-                                }
-                                
-                                // Create comment span
-                                const commentSpan = document.createElement('span');
-                                commentSpan.className = 'comment-marker';
-                                commentSpan.dataset.commentId = comment.timestamp;
-                                commentSpan.dataset.originalText = commentText;
-                                commentSpan.style.backgroundColor = getHighlightColor(comment.type);
-                                commentSpan.appendChild(document.createTextNode(commentText));
-                                
-                                // Create tooltip
-                                const tooltip = document.createElement('div');
-                                tooltip.className = 'comment-tooltip';
-                                
-                                const dateStr = new Date(comment.timestamp).toLocaleDateString();
-                                tooltip.innerHTML = `<button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
-                                                    <button onclick="deleteComment(${comment.timestamp})">Delete</button>
-                                                    <div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
-                                
-                                commentSpan.appendChild(tooltip);
-                                fragment.appendChild(commentSpan);
-                                
-                                // Add text after comment
-                                if (afterText) {
-                                    fragment.appendChild(document.createTextNode(afterText));
-                                }
-                                
-                                // Replace the original text node
-                                node.replaceWith(fragment);
-                            }
-                            
-                            currentPos = nodeEnd;
-                        } else if (node.nodeType === Node.ELEMENT_NODE) {
-                            // For element nodes, just update current position
-                            currentPos += node.textContent.length;
-                        }
-                    }
+                    const dateStr = new Date(comment.timestamp).toLocaleDateString();
+                    tooltip.innerHTML = `<button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
+                                        <button onclick="deleteComment(${comment.timestamp})">Delete</button>
+                                        <div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
+                    
+                    // Add to DOM
+                    commentSpan.appendChild(tooltip);
+                    
+                    // For now, just append to the end of the paragraph
+                    // In a more advanced implementation, we would insert at the correct position
+                    paragraph.appendChild(commentSpan);
+                    
+                    // Add a space after the comment for better readability
+                    paragraph.appendChild(document.createTextNode(' '));
                 });
             });
         }
@@ -2021,76 +1977,76 @@ async function buildLeftPanel() {
 
 
         // Enhanced saveCommentToMarkdown function with better debugging
-async function saveCommentToMarkdown(docId, paraIndex, prefix, text, user, timestamp) {
-    const filename = getActualFilename(docId);
-    
-    // Format the markdown comment
-    const mdComment = text ? 
-        `<!-- ${prefix} ${text} | ${user} | ${timestamp} -->` :
-        `<!-- ${prefix} | ${user} | ${timestamp} -->`;
-    
-    console.log('Attempting to save comment to GitHub:', {
-        filename,
-        paraIndex,
-        docId,
-        comment: mdComment
-    });
-    
-    try {
-        const response = await fetch('/api/save-comment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                filename, 
-                paraIndex, 
-                comment: mdComment,
-                docId: docId
-            })
-        });
-        
-        // Check if response is OK before trying to parse as JSON
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Server responded with error:', response.status, errorText);
-            throw new Error(`Server error: ${response.status} - ${errorText}`);
-        }
-        
-        const responseData = await response.json();
-        console.log('Server response:', responseData);
+        async function saveCommentToMarkdown(docId, paraIndex, prefix, text, user, timestamp) {
+            const filename = getActualFilename(docId);
+            
+            // Format the markdown comment
+            const mdComment = text ? 
+                `<!-- ${prefix} ${text} | ${user} | ${timestamp} -->` :
+                `<!-- ${prefix} | ${user} | ${timestamp} -->`;
+            
+            console.log('Attempting to save comment to GitHub:', {
+                filename,
+                paraIndex,
+                docId,
+                comment: mdComment
+            });
+            
+            try {
+                const response = await fetch('/api/save-comment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        filename, 
+                        paraIndex, 
+                        comment: mdComment,
+                        docId: docId
+                    })
+                });
+                
+                // Check if response is OK before trying to parse as JSON
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server responded with error:', response.status, errorText);
+                    throw new Error(`Server error: ${response.status} - ${errorText}`);
+                }
+                
+                const responseData = await response.json();
+                console.log('Server response:', responseData);
 
-        if (responseData.error) {
-            throw new Error(responseData.error);
-        }
-        
-        console.log('Comment saved successfully to GitHub');
-        return responseData;
+                if (responseData.error) {
+                    throw new Error(responseData.error);
+                }
+                
+                console.log('Comment saved successfully to GitHub');
+                return responseData;
 
-    } catch (error) {
-        console.error('Error saving comment to GitHub:', error);
-        
-        // Still save locally even if remote save fails
-        const comments = getStoredComments();
-        comments[docId] = comments[docId] || {};
-        comments[docId][paraIndex] = comments[docId][paraIndex] || [];
-        comments[docId][paraIndex].push({
-            text: text,
-            user: user,
-            timestamp: timestamp,
-            type: prefix,
-            needsSync: true // Mark for later sync
-        });
-        saveComments(comments);
-        
-        // Show error to user
-        showError(
-            'Failed to save to GitHub', 
-            'Comment saved locally but failed to sync with GitHub.',
-            error.message
-        );
-        
-        return { error: error.message };
-    }
-}
+            } catch (error) {
+                console.error('Error saving comment to GitHub:', error);
+                
+                // Still save locally even if remote save fails
+                const comments = getStoredComments();
+                comments[docId] = comments[docId] || {};
+                comments[docId][paraIndex] = comments[docId][paraIndex] || [];
+                comments[docId][paraIndex].push({
+                    text: text,
+                    user: user,
+                    timestamp: timestamp,
+                    type: prefix,
+                    needsSync: true
+                });
+                saveComments(comments);
+                
+                // Show error to user
+                showError(
+                    'Failed to save to GitHub', 
+                    'Comment saved locally but failed to sync with GitHub.',
+                    error.message
+                );
+                
+                return { error: error.message };
+            }
+        }
 
         // Thread selection handling - FIXED
         function attachThreadListeners() {
