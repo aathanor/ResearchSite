@@ -12,13 +12,13 @@ export async function onRequestPost(context) {
     const body = await clonedRequest.json();
     console.log('Request body:', body);
     
-    const { filename, paraIndex, docId, comment: originalComment } = body;
+    const { docId, paraIndex, comment: originalComment } = body;
     
     // Get JWT from headers
     const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
     let author = 'anonymous';
     
-    // Fetch identity only once
+    // Fetch identity if JWT is present
     if (jwt) {
       const identityUrl = 'https://aathanor.cloudflareaccess.com/cdn-cgi/access/get-identity';
       console.log('Fetching identity from:', identityUrl);
@@ -53,24 +53,75 @@ export async function onRequestPost(context) {
     
     console.log('Processed comment:', processedComment);
     
-    // Map document IDs to actual filenames
-    const filenameMap = {
-      'pattern-recognition-identity': 'sample.md',
-      'empirical-evidence': 'sample.md',
-      'related-work': 'sample.md'
-    };
+    // Get list of files in content directory from GitHub
+    const contentUrl = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/content`;
+    console.log('Fetching content list from:', contentUrl);
     
-    // Use mapped filename or fallback to requested filename
-    const actualFilename = filenameMap[docId] || filename;
+    const contentResponse = await fetch(contentUrl, {
+      headers: {
+        'Authorization': `Bearer ${env.GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'Cloudflare-Worker'
+      }
+    });
     
-    // Build the GitHub API URL
-    const filePath = `content/${actualFilename}`;
-    const apiUrl = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${filePath}`;
+    if (!contentResponse.ok) {
+      const errorText = await contentResponse.text();
+      console.error('GitHub content fetch error:', contentResponse.status, errorText);
+      
+      return new Response(JSON.stringify({ 
+        error: `Cannot access content directory`,
+        details: errorText
+      }), {
+        status: contentResponse.status,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    }
     
-    console.log('Fetching from GitHub:', apiUrl);
+    const contentData = await contentResponse.json();
+    console.log('Content files:', contentData.map(file => file.name));
+    
+    // Find the file that matches our document
+    // We'll look for a file that might be related to the docId
+    let actualFilename = null;
+    
+    // First, try exact match
+    const exactMatch = contentData.find(file => file.name === `${docId}.md`);
+    if (exactMatch) {
+      actualFilename = exactMatch.name;
+    } else {
+      // If no exact match, try to find the first .md file
+      const mdFiles = contentData.filter(file => file.name.endsWith('.md'));
+      if (mdFiles.length > 0) {
+        actualFilename = mdFiles[0].name; // Use the first .md file found
+        console.log(`Using first .md file found: ${actualFilename}`);
+      }
+    }
+    
+    if (!actualFilename) {
+      return new Response(JSON.stringify({ 
+        error: `No markdown files found in content directory`,
+        details: `Looked in: ${contentUrl}`
+      }), {
+        status: 404,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    }
+    
+    console.log('Using file:', actualFilename);
+    
+    // Build the GitHub API URL for the specific file
+    const fileUrl = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/content/${actualFilename}`;
+    console.log('Fetching file from GitHub:', fileUrl);
     
     // Get current file from GitHub
-    const getResponse = await fetch(apiUrl, {
+    const getResponse = await fetch(fileUrl, {
       headers: {
         'Authorization': `Bearer ${env.GITHUB_TOKEN}`,
         'Accept': 'application/vnd.github.v3+json',
@@ -79,15 +130,12 @@ export async function onRequestPost(context) {
     });
     
     if (!getResponse.ok) {
-      // Clone response before reading to avoid "body already used" error
-      const responseClone = getResponse.clone();
-      const errorText = await responseClone.text();
-      console.error('GitHub fetch error:', getResponse.status, errorText);
+      const errorText = await getResponse.text();
+      console.error('GitHub file fetch error:', getResponse.status, errorText);
       
       return new Response(JSON.stringify({ 
         error: `File not found: ${actualFilename}`,
-        details: `Tried to access: ${apiUrl}`,
-        suggestion: 'Please check your filename mappings'
+        details: `Tried to access: ${fileUrl}`
       }), {
         status: 404,
         headers: { 
@@ -107,7 +155,7 @@ export async function onRequestPost(context) {
     content = content + '\n' + processedComment + '\n';
     
     // Commit back to GitHub
-    const updateResponse = await fetch(apiUrl, {
+    const updateResponse = await fetch(fileUrl, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${env.GITHUB_TOKEN}`,
@@ -127,9 +175,7 @@ export async function onRequestPost(context) {
     });
     
     if (!updateResponse.ok) {
-      // Clone response before reading to avoid "body already used" error
-      const responseClone = updateResponse.clone();
-      const errorText = await responseClone.text();
+      const errorText = await updateResponse.text();
       console.error('GitHub update error:', updateResponse.status, errorText);
       
       return new Response(JSON.stringify({ 
@@ -147,8 +193,7 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify({ 
       success: true,
       message: `Comment added to ${actualFilename}`,
-      mappedFrom: filename,
-      mappedTo: actualFilename
+      filename: actualFilename
     }), {
       status: 200,
       headers: { 

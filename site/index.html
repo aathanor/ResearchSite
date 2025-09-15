@@ -767,18 +767,6 @@
         }
         fetchUserEmail();
 
-        // Add this mapping function to your frontend code
-        function getActualFilename(docId) {
-            const filenameMap = {
-                'pattern-recognition-identity': 'sample.md',
-                'empirical-evidence': 'sample.md', 
-                'related-work': 'sample.md',
-                'second-test': 'second-test.md' // Add this when you upload second-test.md
-            };
-            
-            return filenameMap[docId] || `${docId}.md`;
-        }
-
         // Thread data with better timestamp management
         const threads = {
             'Eastern Philosophy Connection': {
@@ -1976,31 +1964,23 @@ async function buildLeftPanel() {
 
 
 
-        // Enhanced saveCommentToMarkdown function with better debugging
+        // Remove the getActualFilename function entirely
+
+        // Update the saveCommentToMarkdown function
         async function saveCommentToMarkdown(docId, paraIndex, prefix, text, user, timestamp) {
-            const filename = getActualFilename(docId);
-            
-            // Format the markdown comment
+            // Format the markdown comment with "anonymous" placeholder
             const mdComment = text ? 
                 `<!-- ${prefix} ${text} | anonymous | ${timestamp} -->` :
                 `<!-- ${prefix} | anonymous | ${timestamp} -->`;
-            
-            console.log('Attempting to save comment to GitHub:', {
-                filename,
-                paraIndex,
-                docId,
-                comment: mdComment
-            });
             
             try {
                 const response = await fetch('/api/save-comment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        filename, 
+                        docId, // Send document ID instead of filename
                         paraIndex, 
-                        comment: mdComment,
-                        docId: docId
+                        comment: mdComment
                     })
                 });
                 
