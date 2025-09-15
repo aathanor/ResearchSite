@@ -1982,8 +1982,8 @@ async function buildLeftPanel() {
             
             // Format the markdown comment
             const mdComment = text ? 
-                `<!-- ${prefix} ${text} | ${user} | ${timestamp} -->` :
-                `<!-- ${prefix} | ${user} | ${timestamp} -->`;
+                `<!-- ${prefix} ${text} | anonymous | ${timestamp} -->` :
+                `<!-- ${prefix} | anonymous | ${timestamp} -->`;
             
             console.log('Attempting to save comment to GitHub:', {
                 filename,
