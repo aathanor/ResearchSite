@@ -1187,6 +1187,7 @@ async function buildLeftPanel() {
             }
         }
 
+        // Updated restoreComments function to properly wrap existing text
         function restoreComments(docId) {
             const comments = getStoredComments()[docId];
             if (!comments) return;
@@ -1206,38 +1207,207 @@ async function buildLeftPanel() {
                     return;
                 }
                 
+                // Store the original paragraph text
+                const originalText = paragraph.textContent;
+                
                 comments[paraIndex].forEach(comment => {
                     // Find if this comment already exists in the DOM
                     const existingComment = document.querySelector(`[data-comment-id="${comment.timestamp}"]`);
                     if (existingComment) return; // Already restored
                     
-                    // Create new comment element
-                    const commentSpan = document.createElement('span');
-                    commentSpan.className = 'comment-marker';
-                    commentSpan.dataset.commentId = comment.timestamp;
-                    commentSpan.dataset.originalText = comment.text || '';
-                    commentSpan.style.backgroundColor = getHighlightColor(comment.type);
+                    // Find the position of the commented text in the paragraph
+                    const commentText = comment.text || '';
+                    const textIndex = originalText.indexOf(commentText);
                     
-                    // Add the comment text
-                    const textNode = document.createTextNode(comment.text || '');
-                    commentSpan.appendChild(textNode);
+                    if (textIndex === -1) {
+                        console.log('Comment text not found in paragraph:', commentText);
+                        return;
+                    }
                     
-                    // Create tooltip
-                    const tooltip = document.createElement('div');
-                    tooltip.className = 'comment-tooltip';
+                    // Split the paragraph into text nodes
+                    const textNodes = [];
+                    let currentPos = 0;
                     
-                    const dateStr = new Date(comment.timestamp).toLocaleDateString();
-                    tooltip.innerHTML = `<button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
-                                        <button onclick="deleteComment(${comment.timestamp})">Delete</button>
-                                        <div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
-                    
-                    // Add to DOM
-                    commentSpan.appendChild(tooltip);
-                    paragraph.appendChild(commentSpan);
+                    // Process child nodes to find where to insert the comment
+                    for (const node of paragraph.childNodes) {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            const nodeText = node.textContent;
+                            const nodeEnd = currentPos + nodeText.length;
+                            
+                            // Check if this node contains the comment text
+                            if (currentPos <= textIndex && textIndex < nodeEnd) {
+                                const splitPos = textIndex - currentPos;
+                                const beforeText = nodeText.substring(0, splitPos);
+                                const commentText = nodeText.substring(splitPos, splitPos + commentText.length);
+                                const afterText = nodeText.substring(splitPos + commentText.length);
+                                
+                                // Replace this text node with new structure
+                                const fragment = document.createDocumentFragment();
+                                
+                                // Add text before comment
+                                if (beforeText) {
+                                    fragment.appendChild(document.createTextNode(beforeText));
+                                }
+                                
+                                // Create comment span
+                                const commentSpan = document.createElement('span');
+                                commentSpan.className = 'comment-marker';
+                                commentSpan.dataset.commentId = comment.timestamp;
+                                commentSpan.dataset.originalText = commentText;
+                                commentSpan.style.backgroundColor = getHighlightColor(comment.type);
+                                commentSpan.appendChild(document.createTextNode(commentText));
+                                
+                                // Create tooltip
+                                const tooltip = document.createElement('div');
+                                tooltip.className = 'comment-tooltip';
+                                
+                                const dateStr = new Date(comment.timestamp).toLocaleDateString();
+                                tooltip.innerHTML = `<button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
+                                                    <button onclick="deleteComment(${comment.timestamp})">Delete</button>
+                                                    <div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
+                                
+                                commentSpan.appendChild(tooltip);
+                                fragment.appendChild(commentSpan);
+                                
+                                // Add text after comment
+                                if (afterText) {
+                                    fragment.appendChild(document.createTextNode(afterText));
+                                }
+                                
+                                // Replace the original text node
+                                node.replaceWith(fragment);
+                            }
+                            
+                            currentPos = nodeEnd;
+                        } else if (node.nodeType === Node.ELEMENT_NODE) {
+                            // For element nodes, just update current position
+                            currentPos += node.textContent.length;
+                        }
+                    }
                 });
             });
         }
 
+        // Add this error display function
+        function showError(title, message, details = null) {
+            // Create error notification if it doesn't exist
+            let errorDiv = document.getElementById('error-notification');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'error-notification';
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #f8d7da;
+                    color: #721c24;
+                    padding: 15px;
+                    border-radius: 6px;
+                    border: 1px solid #f5c6cb;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 10000;
+                    max-width: 400px;
+                    display: none;
+                `;
+                
+                errorDiv.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 8px;" id="error-title"></div>
+                    <div style="margin-bottom: 10px;" id="error-message"></div>
+                    <div style="
+                        background: rgba(0,0,0,0.05);
+                        padding: 10px;
+                        border-radius: 4px;
+                        font-family: monospace;
+                        font-size: 12px;
+                        margin-top: 10px;
+                        overflow: auto;
+                        max-height: 120px;
+                        display: none;
+                    " id="error-details"></div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                        <button style="
+                            padding: 6px 12px;
+                            background: #6c757d;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        " onclick="document.getElementById('error-notification').style.display = 'none'">Dismiss</button>
+                        <button style="
+                            padding: 6px 12px;
+                            background: #721c24;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        " onclick="document.getElementById('error-details').style.display = 
+                            document.getElementById('error-details').style.display === 'block' ? 'none' : 'block'">Details</button>
+                    </div>
+                `;
+                
+                document.body.appendChild(errorDiv);
+            }
+            
+            // Set error content
+            document.getElementById('error-title').textContent = title;
+            document.getElementById('error-message').textContent = message;
+            
+            if (details) {
+                document.getElementById('error-details').textContent = details;
+                document.getElementById('error-details').style.display = 'block';
+            } else {
+                document.getElementById('error-details').style.display = 'none';
+            }
+            
+            // Show the error
+            errorDiv.style.display = 'block';
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 10000);
+        }
+        // Add this function to test Cloudflare connection
+        async function testCloudflareConnection() {
+            try {
+                console.log('Testing Cloudflare function connection...');
+                const response = await fetch('/api/save-comment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        filename: 'test.md', 
+                        paraIndex: '0', 
+                        comment: '<!-- Test comment -->',
+                        docId: 'test'
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('Cloudflare function test result:', result);
+                
+                if (!response.ok) {
+                    showError(
+                        'Cloudflare Connection Issue',
+                        'Unable to connect to the Cloudflare function.',
+                        `Status: ${response.status}, Error: ${JSON.stringify(result)}`
+                    );
+                } else {
+                    console.log('Cloudflare function is working correctly');
+                }
+            } catch (error) {
+                console.error('Cloudflare function test failed:', error);
+                showError(
+                    'Network Error',
+                    'Cannot connect to Cloudflare function. Please check your internet connection.',
+                    error.message
+                );
+            }
+        }
+
+        // Call this on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(testCloudflareConnection, 2000); // Test after 2 seconds
+        });
 
         // Load thread content
         function loadThreadContent(subject) {
@@ -1418,6 +1588,7 @@ async function buildLeftPanel() {
             });
         });
 
+        // Update the addHighlight function to ensure proper text handling
         function addHighlight(range, highlightColor, commentText, type) {
             const now = Date.now();
             const commentSpan = document.createElement('span');
@@ -1849,68 +2020,77 @@ async function buildLeftPanel() {
 
 
 
-        async function saveCommentToMarkdown(docId, paraIndex, prefix, text, user, timestamp) {
-            const filename = getActualFilename(docId);
-            
-            // Format the markdown comment
-            const mdComment = text ? 
-                `<!-- ${prefix} ${text} | ${user} | ${timestamp} -->` :
-                `<!-- ${prefix} | ${user} | ${timestamp} -->`;
-            
-            try {
-                const response = await fetch('/api/save-comment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        filename, 
-                        paraIndex, 
-                        comment: mdComment,
-                        docId: docId
-                    })
-                });
-                
-                const responseData = await response.json();
-
-                if (!response.ok) {
-                    console.error('Error saving comment to server:', responseData);
-                    // Still save locally even if remote save fails
-                    const comments = getStoredComments();
-                    comments[docId] = comments[docId] || {};
-                    comments[docId][paraIndex] = comments[docId][paraIndex] || [];
-                    comments[docId][paraIndex].push({
-                        text: text,
-                        user: user,
-                        timestamp: timestamp,
-                        type: prefix,
-                        needsSync: true
-                    });
-                    saveComments(comments);
-                    
-                    return responseData;
-                }
-                
-                console.log('Comment saved successfully to server');
-                return responseData;
-
-            } catch (error) {
-                console.error('Error saving comment:', error);
-                
-                // Still save locally even if remote save fails
-                const comments = getStoredComments();
-                comments[docId] = comments[docId] || {};
-                comments[docId][paraIndex] = comments[docId][paraIndex] || [];
-                comments[docId][paraIndex].push({
-                    text: text,
-                    user: user,
-                    timestamp: timestamp,
-                    type: prefix,
-                    needsSync: true
-                });
-                saveComments(comments);
-                
-                return { error: error.message };
-            }
+        // Enhanced saveCommentToMarkdown function with better debugging
+async function saveCommentToMarkdown(docId, paraIndex, prefix, text, user, timestamp) {
+    const filename = getActualFilename(docId);
+    
+    // Format the markdown comment
+    const mdComment = text ? 
+        `<!-- ${prefix} ${text} | ${user} | ${timestamp} -->` :
+        `<!-- ${prefix} | ${user} | ${timestamp} -->`;
+    
+    console.log('Attempting to save comment to GitHub:', {
+        filename,
+        paraIndex,
+        docId,
+        comment: mdComment
+    });
+    
+    try {
+        const response = await fetch('/api/save-comment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                filename, 
+                paraIndex, 
+                comment: mdComment,
+                docId: docId
+            })
+        });
+        
+        // Check if response is OK before trying to parse as JSON
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server responded with error:', response.status, errorText);
+            throw new Error(`Server error: ${response.status} - ${errorText}`);
         }
+        
+        const responseData = await response.json();
+        console.log('Server response:', responseData);
+
+        if (responseData.error) {
+            throw new Error(responseData.error);
+        }
+        
+        console.log('Comment saved successfully to GitHub');
+        return responseData;
+
+    } catch (error) {
+        console.error('Error saving comment to GitHub:', error);
+        
+        // Still save locally even if remote save fails
+        const comments = getStoredComments();
+        comments[docId] = comments[docId] || {};
+        comments[docId][paraIndex] = comments[docId][paraIndex] || [];
+        comments[docId][paraIndex].push({
+            text: text,
+            user: user,
+            timestamp: timestamp,
+            type: prefix,
+            needsSync: true // Mark for later sync
+        });
+        saveComments(comments);
+        
+        // Show error to user
+        showError(
+            'Failed to save to GitHub', 
+            'Comment saved locally but failed to sync with GitHub.',
+            error.message
+        );
+        
+        return { error: error.message };
+    }
+}
 
         // Thread selection handling - FIXED
         function attachThreadListeners() {
