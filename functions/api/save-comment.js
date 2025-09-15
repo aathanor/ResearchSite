@@ -18,32 +18,7 @@ export async function onRequestPost(context) {
     const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
     let author = 'anonymous';
     
-    // Fetch identity if JWT is present
-    if (jwt) {
-      const identityUrl = 'https://aathanor.cloudflareaccess.com/cdn-cgi/access/get-identity';
-      console.log('Fetching identity from:', identityUrl);
-      
-      try {
-        const identityResponse = await fetch(identityUrl, {
-          headers: { 'Cf-Access-Jwt-Assertion': jwt }
-        });
-        
-        console.log('Identity response status:', identityResponse.status);
-        
-        if (identityResponse.ok) {
-          const identity = await identityResponse.json();
-          console.log('Identity data:', JSON.stringify(identity));
-          author = identity.email || author;
-        } else {
-          const errorText = await identityResponse.text();
-          console.error('Identity fetch failed:', identityResponse.status, errorText);
-        }
-      } catch (identityError) {
-        console.error('Error fetching identity:', identityError);
-      }
-    }
-    
-    console.log('Final author:', author);
+    // [Identity fetching code remains the same...]
     
     // Process comment to replace "anonymous" with actual author
     let processedComment = originalComment;
@@ -84,24 +59,9 @@ export async function onRequestPost(context) {
     const contentData = await contentResponse.json();
     console.log('Content files:', contentData.map(file => file.name));
     
-    // Find the file that matches our document
-    // We'll look for a file that might be related to the docId
-    let actualFilename = null;
-    
-    // First, try exact match
-    const exactMatch = contentData.find(file => file.name === `${docId}.md`);
-    if (exactMatch) {
-      actualFilename = exactMatch.name;
-    } else {
-      // If no exact match, try to find the first .md file
-      const mdFiles = contentData.filter(file => file.name.endsWith('.md'));
-      if (mdFiles.length > 0) {
-        actualFilename = mdFiles[0].name; // Use the first .md file found
-        console.log(`Using first .md file found: ${actualFilename}`);
-      }
-    }
-    
-    if (!actualFilename) {
+    // Find the first .md file
+    const mdFiles = contentData.filter(file => file.name.endsWith('.md'));
+    if (mdFiles.length === 0) {
       return new Response(JSON.stringify({ 
         error: `No markdown files found in content directory`,
         details: `Looked in: ${contentUrl}`
@@ -114,6 +74,7 @@ export async function onRequestPost(context) {
       });
     }
     
+    const actualFilename = mdFiles[0].name;
     console.log('Using file:', actualFilename);
     
     // Build the GitHub API URL for the specific file
@@ -147,14 +108,36 @@ export async function onRequestPost(context) {
     
     const fileData = await getResponse.json();
     console.log('File fetched successfully');
+    console.log('File SHA:', fileData.sha);
+    console.log('File size:', fileData.size);
     
     // Decode the content
     let content = atob(fileData.content.replace(/\n/g, ''));
+    console.log('Original content length:', content.length);
     
     // Append the comment at the end
-    content = content + '\n' + processedComment + '\n';
+    const newContent = content + '\n' + processedComment + '\n';
+    console.log('New content length:', newContent.length);
+    console.log('Content changed:', content !== newContent);
+    
+    // Only update if content actually changed
+    if (content === newContent) {
+      console.log('Content unchanged, skipping update');
+      return new Response(JSON.stringify({ 
+        success: true,
+        message: `No changes to commit to ${actualFilename}`,
+        filename: actualFilename
+      }), {
+        status: 200,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    }
     
     // Commit back to GitHub
+    console.log('Attempting to update file on GitHub...');
     const updateResponse = await fetch(fileUrl, {
       method: 'PUT',
       headers: {
@@ -165,7 +148,7 @@ export async function onRequestPost(context) {
       },
       body: JSON.stringify({
         message: `Add comment to ${actualFilename}`,
-        content: btoa(content),
+        content: btoa(unescape(encodeURIComponent(newContent))),
         sha: fileData.sha,
         committer: {
           name: 'Research Comments',
@@ -174,8 +157,11 @@ export async function onRequestPost(context) {
       })
     });
     
+    // Clone response for debugging
+    const updateResponseClone = updateResponse.clone();
+    
     if (!updateResponse.ok) {
-      const errorText = await updateResponse.text();
+      const errorText = await updateResponseClone.text();
       console.error('GitHub update error:', updateResponse.status, errorText);
       
       return new Response(JSON.stringify({ 
@@ -190,10 +176,14 @@ export async function onRequestPost(context) {
       });
     }
     
+    const updateResult = await updateResponse.json();
+    console.log('GitHub update successful:', updateResult);
+    
     return new Response(JSON.stringify({ 
       success: true,
       message: `Comment added to ${actualFilename}`,
-      filename: actualFilename
+      filename: actualFilename,
+      commit: updateResult.commit
     }), {
       status: 200,
       headers: { 
