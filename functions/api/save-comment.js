@@ -108,15 +108,46 @@ export async function onRequestPost(context) {
     
     const fileData = await getResponse.json();
     console.log('File fetched successfully');
-    console.log('File SHA:', fileData.sha);
-    console.log('File size:', fileData.size);
     
     // Decode the content
     let content = atob(fileData.content.replace(/\n/g, ''));
     console.log('Original content length:', content.length);
     
-    // Append the comment at the end
-    const newContent = content + '\n' + processedComment + '\n';
+    // Parse the content to insert comment at the correct position
+    const lines = content.split('\n');
+    let newContent = '';
+    let currentParaIndex = 0;
+    let inParagraph = false;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // Check if this is a paragraph line (not empty, not a header, etc.)
+      if (line.trim() && !line.startsWith('#') && !line.startsWith('---')) {
+        if (!inParagraph) {
+          inParagraph = true;
+          // If this is the paragraph we're looking for, insert the comment
+          if (currentParaIndex === parseInt(paraIndex)) {
+            newContent += line + '\n' + processedComment + '\n';
+          } else {
+            newContent += line + '\n';
+          }
+          currentParaIndex++;
+        } else {
+          newContent += line + '\n';
+        }
+      } else {
+        // Reset paragraph state on empty lines or headers
+        inParagraph = false;
+        newContent += line + '\n';
+      }
+    }
+    
+    // If we didn't find the paragraph, append the comment at the end
+    if (currentParaIndex <= parseInt(paraIndex)) {
+      newContent += '\n' + processedComment + '\n';
+    }
+    
     console.log('New content length:', newContent.length);
     console.log('Content changed:', content !== newContent);
     
@@ -147,7 +178,7 @@ export async function onRequestPost(context) {
         'User-Agent': 'Cloudflare-Worker'
       },
       body: JSON.stringify({
-        message: `Add comment to ${actualFilename}`,
+        message: `Add comment to paragraph ${paraIndex} in ${actualFilename}`,
         content: btoa(unescape(encodeURIComponent(newContent))),
         sha: fileData.sha,
         committer: {
@@ -181,7 +212,7 @@ export async function onRequestPost(context) {
     
     return new Response(JSON.stringify({ 
       success: true,
-      message: `Comment added to ${actualFilename}`,
+      message: `Comment added to paragraph ${paraIndex} in ${actualFilename}`,
       filename: actualFilename,
       commit: updateResult.commit
     }), {
