@@ -19,7 +19,101 @@
             display: flex;
             flex-direction: column;
         }
+        /* Document Typography */
+        .document-content {
+            max-width: 700px;
+            margin: 0 auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            font-size: 17px;
+            line-height: 1.7;
+            color: #333;
+        }
 
+        .document-content h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin: 2rem 0 1.5rem 0;
+            line-height: 1.2;
+            color: #1a1a1a;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+
+        .document-content h2 {
+            font-size: 1.7em;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            line-height: 1.3;
+            color: #2c3e50;
+        }
+
+        .document-content h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 1.5rem 0 0.8rem 0;
+            line-height: 1.4;
+            color: #34495e;
+        }
+
+        .document-content p {
+            margin: 0 0 1.2rem 0;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        .document-content ul, .document-content ol {
+            margin: 0 0 1.2rem 0;
+            padding-left: 2rem;
+        }
+
+        .document-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.7;
+        }
+
+        .document-content strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .document-content em {
+            font-style: italic;
+        }
+
+        /* Better readability on screens */
+        @media screen and (min-width: 768px) {
+            .document-content {
+                font-size: 18px;
+                line-height: 1.8;
+            }
+        }
+
+        /* Selection and interaction */
+        .document-content .commentable {
+            cursor: text;
+            transition: background-color 0.2s;
+        }
+
+        .document-content .commentable:hover {
+            background-color: rgba(0, 102, 204, 0.03);
+        }
+
+        /* Code blocks if you have any */
+        .document-content code {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            font-size: 0.9em;
+            padding: 0.2em 0.4em;
+            background: #f4f4f4;
+            border-radius: 3px;
+        }
+
+        /* Improve comment markers */
+        .comment-marker {
+            background: rgba(255, 235, 59, 0.2);
+            padding: 0 3px;
+            border-radius: 3px;
+            margin: 0 2px;
+        }
         .comment-marker {
             position: relative;
             display: inline;
@@ -1008,79 +1102,93 @@ async function buildLeftPanel() {
         // FIXED: Load document content properly
         async function loadDocContent(doc) {
             try {
-                // Use the pre-built fullContent from documents.json if available
-                let text = doc.fullContent;
+                // Use the pre-built content from documents.json
+                let text = doc.fullContent || doc.content;
                 if (!text) {
-                    // Fallback if fullContent is missing (this may fetch index.html on Cloudflare Pages)
                     const res = await fetch(`/content/${doc.id}`);
                     text = await res.text();
                 }
-                const { meta, content } = parseFrontmatter(text);
+                
+                // Simple markdown to HTML conversion
+                function markdownToHtml(markdown) {
+                    let html = markdown;
                     
-                // Convert markdown content to HTML.
-                // For simplicity, we'll only wrap paragraphs that aren't headings.
-                let html = `<div style="max-width: 700px;">`;
-                const lines = content.split('\n');
-                let inParagraph = false;
-                let paragraphIndex = 0;
-                
-                lines.forEach(line => {
-                    line = line.trim();
-                    if (!line) {
-                        if (inParagraph) { 
-                            html += '</p>'; 
-                            inParagraph = false; 
+                    // Headers
+                    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+                    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+                    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+                    
+                    // Bold and italic
+                    html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+                    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                    
+                    // Lists
+                    html = html.replace(/^\* (.+)$/gim, '<li>$1</li>');
+                    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+                    html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>');
+                    
+                    // Paragraphs - wrap lines that aren't already tags
+                    const lines = html.split('\n');
+                    const processedLines = [];
+                    let inParagraph = false;
+                    let paragraphIndex = 0;
+                    
+                    lines.forEach(line => {
+                        const trimmed = line.trim();
+                        if (!trimmed) {
+                            if (inParagraph) {
+                                processedLines.push('</p>');
+                                inParagraph = false;
+                            }
+                            return;
                         }
-                        return;
-                    }
-                    if (line.startsWith('# ')) {
-                        if (inParagraph) { 
-                            html += '</p>'; 
-                            inParagraph = false; 
-                        }
-                        html += `<h1>${line.substring(2)}</h1>`;
-                    } else if (line.startsWith('## ')) {
-                        if (inParagraph) { 
-                            html += '</p>'; 
-                            inParagraph = false; 
-                        }
-                        html += `<h2>${line.substring(3)}</h2>`;
-                    } else if (line.startsWith('### ')) {
-                        if (inParagraph) {
-                            html += '</p>';
-                            inParagraph = false;
-                        }
-                        html += `<h3>${line.substring(4)}</h3>`;
-                    } else {
-                        if (!inParagraph) {
-                            html += `<p class="commentable" data-para-index="${paragraphIndex}">`;
-                            inParagraph = true;
-                            paragraphIndex++;
+                        
+                        // Check if line is already a tag
+                        if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<li')) {
+                            if (inParagraph) {
+                                processedLines.push('</p>');
+                                inParagraph = false;
+                            }
+                            processedLines.push(line);
                         } else {
-                            html += ' ';
+                            if (!inParagraph) {
+                                processedLines.push(`<p class="commentable" data-para-index="${paragraphIndex}">`);
+                                inParagraph = true;
+                                paragraphIndex++;
+                            }
+                            processedLines.push(line);
                         }
-                        html += line;
-                    }
-                });
-                if (inParagraph) html += '</p>';
-                html += '</div>';
-                
-                // Optionally prepend metadata from YAML frontmatter
-                let metaHtml = '';
-                if (meta && Object.keys(meta).length) {
-                    metaHtml = '<div style="font-size:12px; color:#666; margin-bottom:10px;">';
-                    Object.keys(meta).forEach(key => {
-                        metaHtml += `<strong>${key}:</strong> ${meta[key]} &nbsp;&nbsp;`;
                     });
-                    metaHtml += '</div>';
+                    
+                    if (inParagraph) {
+                        processedLines.push('</p>');
+                    }
+                    
+                    return processedLines.join('\n');
                 }
                 
-                document.getElementById('center-panel').innerHTML = metaHtml + html;
-                restoreComments(doc.frontmatter.title);
+                const htmlContent = markdownToHtml(text);
+                
+                // Add proper container with good typography
+                document.getElementById('center-panel').innerHTML = `
+                    <article class="document-content">
+                        ${htmlContent}
+                    </article>
+                `;
+                
+                const docTitle = doc.frontmatter?.title || doc.title;
+                restoreComments(docTitle);
                 attachCommentListeners();
+                
             } catch (e) {
                 console.error('Error loading document:', e);
-                document.getElementById('center-panel').innerHTML = `<div style="max-width: 700px;"><h2>${doc.frontmatter.title}</h2><p style="color: #dc3545;">Error loading document: ${e.message}</p></div>`;
+                document.getElementById('center-panel').innerHTML = `
+                    <div class="document-content">
+                        <h2>Error loading document</h2>
+                        <p style="color: #dc3545;">${e.message}</p>
+                    </div>
+                `;
             }
         }
 
