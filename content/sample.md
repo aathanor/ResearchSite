@@ -1,6 +1,5 @@
 ---
 title: "sample"
-<!-- Test comment -->
 category: "core" 
 lens: ["philosophy", "cognition"]
 node: "pri-core"
