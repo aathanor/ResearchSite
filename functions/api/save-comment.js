@@ -14,11 +14,10 @@ export async function onRequestPost(context) {
     
     const { docId, paraIndex, comment: originalComment } = body;
     
-    // Get JWT from headers
-    const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
-    let author = 'anonymous';
+    // Get authenticated email directly from header (no fetch needed)
+    let author = request.headers.get('Cf-Access-Authenticated-User-Email') || 'anonymous';
+    console.log('Author from header:', author);
     
-    // [Identity fetching code remains the same...]
     
     // Process comment to replace "anonymous" with actual author
     let processedComment = originalComment;
