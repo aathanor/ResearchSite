@@ -1192,51 +1192,17 @@ async function buildLeftPanel() {
             }
         }
 
-        // Replace the restoreComments() part with the updated code below
-        function restoreComments(title) {
-            const comments = getStoredComments()[title];
+        function restoreComments(docId) {
+            // Use doc ID instead of title for consistency
+            const comments = getStoredComments()[docId];
             if (!comments) return;
             
             Object.keys(comments).forEach(paraIndex => {
-                if (paraIndex === 'general') {
-                    // Handle general comments
-                    comments[paraIndex].forEach(comment=> {
-                        console.log('General comment found:', comment);
-                    });
-                    return;
-                }
-                
                 const paragraph = document.querySelector(`[data-para-index="${paraIndex}"]`);
                 if (!paragraph) return;
                 
-                comments[paraIndex].forEach(comment=> {
-                    // Find if this comment already exists in the DOM
-                    const existingComment = document.querySelector(`[data-comment-id="${comment.timestamp}"]`);
-                    if (existingComment) return; // Already restored
-                    
-                    // Create new comment element
-                    const commentSpan = document.createElement('span');
-                    commentSpan.className = 'comment-marker';
-                    commentSpan.dataset.commentId = comment.timestamp;
-                    commentSpan.dataset.originalText = comment.text || '';
-                    commentSpan.style.backgroundColor = getHighlightColor(comment.type);
-                    
-                    // Add the comment text
-                    const textNode = document.createTextNode(comment.text || '');
-                    commentSpan.appendChild(textNode);
-                    
-                    // Create tooltip
-                    const tooltip = document.createElement('div');
-                    tooltip.className = 'comment-tooltip';
-                    
-                    const dateStr = new Date(comment.timestamp).toLocaleDateString();
-                    tooltip.innerHTML = `<button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
-                                        <button onclick="deleteComment(${comment.timestamp})">Delete</button>
-                                        <div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
-                    
-                    // Add to DOM
-                    commentSpan.appendChild(tooltip);
-                    paragraph.appendChild(commentSpan);
+                comments[paraIndex].forEach(comment => {
+                    // Your existing comment restoration code...
                 });
             });
         }
@@ -1421,83 +1387,91 @@ async function buildLeftPanel() {
         });
 
         function addHighlight(range, highlightColor, commentText, type) {
-    const now = Date.now();
-    const commentSpan = document.createElement('span');
-    commentSpan.className = 'comment-marker';
-    commentSpan.dataset.commentId = now;
-    commentSpan.style.backgroundColor = highlightColor; // Keep this for dynamic colors
-    
-    // Extract and store the original text content
-    const extractedContent = range.extractContents();
-    const originalText = extractedContent.textContent;
-    commentSpan.dataset.originalText = originalText;
-    
-    // Add only the original text to the span
-    commentSpan.appendChild(extractedContent);
-    
-    // Insert the comment span
-    range.insertNode(commentSpan);
-    
-    // Create tooltip
-    const tooltip = document.createElement('div');
-    tooltip.className = 'comment-tooltip';
-    
-    const dateStr = new Date(now).toLocaleDateString();
-    
-    let tooltipContent = '';
-    if (commentText) {
-        tooltipContent += `<div>${commentText}</div>`;
-    }
-    tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>`;
-    tooltipContent += `<div style="margin-top:5px; font-size:10px;">
-                        <button onclick="editComment(${now})" style="margin-right:5px;">Edit</button>
-                        <button onclick="deleteComment(${now})">Delete</button>
-                    </div>`;
-    tooltip.innerHTML = tooltipContent;
-    
-    // Add tooltip to the comment span
-    commentSpan.appendChild(tooltip);
-    
-    // Save the comment
-    const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
-    if (!titleElement) {
-        console.error('Document title not found');
-        return;
-    }
-    
-    const title = titleElement.textContent;
-    const p = commentSpan.closest('.commentable');
-    
-    if (!p) {
-        console.error('Comment target paragraph not found');
-        // Still save the comment but without paragraph reference
-        const comments = getStoredComments();
-        comments[title] = comments[title] || {};
-        comments[title]['general'] = comments[title]['general'] || [];
-        comments[title]['general'].push({
-            marker: '',
-            text: commentText,
-            user: userEmail,
-            timestamp: now,
-            type: type
-        });
-        saveComments(comments);
-        return;
-    }
-    
-    const paraIndex = p.dataset.paraIndex;
-    const comments = getStoredComments();
-    comments[title] = comments[title] || {};
-    comments[title][paraIndex] = comments[title][paraIndex] || [];
-    comments[title][paraIndex].push({
-        marker: '',
-        text: commentText,
-        user: userEmail,
-        timestamp: now,
-        type: type
-    });
-    saveComments(comments);
-}
+            const now = Date.now();
+            const commentSpan = document.createElement('span');
+            commentSpan.className = 'comment-marker';
+            commentSpan.dataset.commentId = now;
+            commentSpan.style.backgroundColor = highlightColor; // Keep this for dynamic colors
+            
+            // Extract and store the original text content
+            const extractedContent = range.extractContents();
+            const originalText = extractedContent.textContent;
+            commentSpan.dataset.originalText = originalText;
+            
+            // Add only the original text to the span
+            commentSpan.appendChild(extractedContent);
+            
+            // Insert the comment span
+            range.insertNode(commentSpan);
+            
+            // Create tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'comment-tooltip';
+            
+            const dateStr = new Date(now).toLocaleDateString();
+            
+            let tooltipContent = '';
+            if (commentText) {
+                tooltipContent += `<div>${commentText}</div>`;
+            }
+            tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>`;
+            tooltipContent += `<div style="margin-top:5px; font-size:10px;">
+                                <button onclick="editComment(${now})" style="margin-right:5px;">Edit</button>
+                                <button onclick="deleteComment(${now})">Delete</button>
+                            </div>`;
+            tooltip.innerHTML = tooltipContent;
+            
+            // Add tooltip to the comment span
+            commentSpan.appendChild(tooltip);
+            
+            // Save the comment
+            const titleElement = document.querySelector('#center-panel h1, #center-panel h2');
+            if (!titleElement) {
+                console.error('Document title not found');
+                return;
+            }
+        
+            const title = titleElement.textContent;
+            const p = commentSpan.closest('.commentable');
+            
+            if (!p) {
+                console.error('Comment target paragraph not found');
+                // Still save the comment but without paragraph reference
+                const comments = getStoredComments();
+                comments[title] = comments[title] || {};
+                comments[title]['general'] = comments[title]['general'] || [];
+                comments[title]['general'].push({
+                    marker: '',
+                    text: commentText,
+                    user: userEmail,
+                    timestamp: now,
+                    type: type
+                });
+                saveComments(comments);
+                return;
+            }
+            const currentDocItem = document.querySelector('.document-item.active');
+            const docId = currentDocItem ? currentDocItem.dataset.id : null;
+
+            if (!docId) {
+                console.error('No active document to associate comment with');
+                return;
+            }
+
+            // Save with doc ID as key
+            const comments = getStoredComments();
+            comments[docId] = comments[docId] || {};
+            comments[docId][paraIndex] = comments[docId][paraIndex] || [];
+            comments[docId][paraIndex].push({
+                text: commentText,
+                user: userEmail,
+                timestamp: now,
+                type: type
+            });
+            saveComments(comments);
+
+            const paraIndex = p.dataset.paraIndex;
+        }
 
 
         function showCommentDialog(type) {
