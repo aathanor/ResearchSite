@@ -1383,7 +1383,7 @@
             return icons[type] || '💬';
         }
 
-        // Restore comments from storage - FIXED to show original highlighted text
+        // Restore comments from storage - FIXED to replace original text instead of appending
         function restoreComments(docId) {
             const comments = getStoredComments()[docId];
             if (!comments) return;
@@ -1412,44 +1412,93 @@
                     // Don't create empty comments
                     if (!highlightedText) return;
                     
-                    const commentSpan = document.createElement('span');
-                    commentSpan.className = 'comment-marker';
-                    commentSpan.dataset.commentId = comment.timestamp;
-                    commentSpan.dataset.originalText = highlightedText;
-                    commentSpan.style.backgroundColor = getHighlightColor(comment.type);
-                    commentSpan.style.marginLeft = '5px';
-                    commentSpan.style.cursor = 'pointer';
+                    // Find and replace the original text within the paragraph
+                    const paragraphText = paragraph.textContent;
+                    const textIndex = paragraphText.indexOf(highlightedText);
                     
-                    // Show the ORIGINAL highlighted text, not the comment
-                    const textNode = document.createTextNode(highlightedText);
-                    commentSpan.appendChild(textNode);
-                    
-                    // Create tooltip with the actual comment
-                    const tooltip = document.createElement('div');
-                    tooltip.className = 'comment-tooltip';
-                    
-                    const dateStr = new Date(comment.timestamp).toLocaleDateString();
-                    let tooltipContent = '';
-                    
-                    // Show the comment text in the tooltip (if different from highlighted text)
-                    if (comment.text && comment.text !== highlightedText) {
-                        tooltipContent += `<div style="margin-bottom: 5px;"><strong>${comment.text}</strong></div>`;
+                    if (textIndex !== -1) {
+                        // Found the text - we need to replace it with a highlighted version
+                        console.log(`Found text "${highlightedText}" at index ${textIndex} in paragraph ${paraIndex}`);
+                        
+                        // Create the comment span
+                        const commentSpan = document.createElement('span');
+                        commentSpan.className = 'comment-marker';
+                        commentSpan.dataset.commentId = comment.timestamp;
+                        commentSpan.dataset.originalText = highlightedText;
+                        commentSpan.style.backgroundColor = getHighlightColor(comment.type);
+                        commentSpan.style.cursor = 'pointer';
+                        commentSpan.style.borderRadius = '2px';
+                        commentSpan.style.padding = '1px 2px';
+                        
+                        // Add the highlighted text to the span
+                        commentSpan.appendChild(document.createTextNode(highlightedText));
+                        
+                        // Create tooltip with the actual comment
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'comment-tooltip';
+                        
+                        const dateStr = new Date(comment.timestamp).toLocaleDateString();
+                        let tooltipContent = '';
+                        
+                        // Show the comment text in the tooltip (if different from highlighted text)
+                        if (comment.text && comment.text !== highlightedText) {
+                            tooltipContent += `<div style="margin-bottom: 5px;"><strong>${comment.text}</strong></div>`;
+                        }
+                        
+                        tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
+                        tooltipContent += `<div style="margin-top:5px; font-size:10px;">
+                                            <button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
+                                            <button onclick="deleteComment(${comment.timestamp})">Delete</button>
+                                        </div>`;
+                        
+                        tooltip.innerHTML = tooltipContent;
+                        commentSpan.appendChild(tooltip);
+                        
+                        // Now we need to replace the text within the paragraph
+                        // This is tricky because we need to find the exact text node containing our target text
+                        replaceTextInParagraph(paragraph, highlightedText, commentSpan);
+                        
+                    } else {
+                        console.log(`Text "${highlightedText}" not found in paragraph ${paraIndex}, skipping comment restoration`);
                     }
-                    
-                    tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
-                    tooltipContent += `<div style="margin-top:5px; font-size:10px;">
-                                        <button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
-                                        <button onclick="deleteComment(${comment.timestamp})">Delete</button>
-                                    </div>`;
-                    
-                    tooltip.innerHTML = tooltipContent;
-                    commentSpan.appendChild(tooltip);
-                    
-                    // Append to paragraph with some spacing
-                    paragraph.appendChild(commentSpan);
-                    paragraph.appendChild(document.createTextNode(' '));
                 });
             });
+        }
+        
+        // Helper function to replace specific text within a paragraph with a comment span
+        function replaceTextInParagraph(paragraph, targetText, replacementSpan) {
+            const walker = document.createTreeWalker(
+                paragraph,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+            
+            let node;
+            while (node = walker.nextNode()) {
+                const nodeText = node.textContent;
+                const textIndex = nodeText.indexOf(targetText);
+                
+                if (textIndex !== -1) {
+                    // Found the target text in this text node
+                    const beforeText = nodeText.substring(0, textIndex);
+                    const afterText = nodeText.substring(textIndex + targetText.length);
+                    
+                    // Create text nodes for before and after
+                    const beforeNode = beforeText ? document.createTextNode(beforeText) : null;
+                    const afterNode = afterText ? document.createTextNode(afterText) : null;
+                    
+                    // Replace the original text node
+                    const parent = node.parentNode;
+                    
+                    if (beforeNode) parent.insertBefore(beforeNode, node);
+                    parent.insertBefore(replacementSpan, node);
+                    if (afterNode) parent.insertBefore(afterNode, node);
+                    
+                    parent.removeChild(node);
+                    break; // We've found and replaced the text, so we're done
+                }
+            }
         }
 
         // Comment functionality
