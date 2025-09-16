@@ -1202,51 +1202,80 @@
                 
                 // Parse and render comments in the content
                 const renderComments = (content) => {
-                    const commentRegex = new RegExp('<!--\\s*([?!✓])\\s*(.*?)\\s*\\|\\s*(.*?)\\s*\\|\\s*(\\d+)(?:\\s*\\|\\s*(.*?))?\\s*-->', 'g');
+                    console.log('Parsing existing comments from markdown...');
+                    // Updated regex to match markdown comment format: <!-- ? comment text | author | timestamp -->
+                    const commentRegex = /<!--\s*([?!✓])\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(\d+)(?:\s*\|\s*(.*?))?\s*-->/g;
                     
                     let lastIndex = 0;
                     let result = '';
                     let match;
+                    let commentCount = 0;
                     
                     while ((match = commentRegex.exec(content)) !== null) {
+                        commentCount++;
+                        console.log('Found existing comment:', match);
+                        
+                        // Add content before the comment
                         result += content.substring(lastIndex, match.index);
                         
-                        const [fullMatch, commentHtml, type, commentText, author, timestamp, highlightedText] = match;
+                        const [fullMatch, type, commentText, author, timestamp, highlightedText] = match;
                         
-                        const commentElement = document.createElement('span');
-                        commentElement.className = 'comment-marker';
-                        commentElement.dataset.commentId = timestamp;
-                        commentElement.dataset.originalText = highlightedText || commentText;
+                        // Create highlighted text span
+                        const highlightedSpan = document.createElement('span');
+                        highlightedSpan.className = 'comment-marker';
+                        highlightedSpan.dataset.commentId = timestamp;
+                        highlightedSpan.dataset.originalText = highlightedText || commentText;
                         
+                        // Set background color based on type
                         if (type === '?') {
-                            commentElement.style.backgroundColor = 'rgba(255, 0, 0, 0.3)';
+                            highlightedSpan.style.backgroundColor = 'rgba(255, 0, 0, 0.3)';
                         } else if (type === '!') {
-                            commentElement.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
+                            highlightedSpan.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
                         } else if (type === '✓') {
-                            commentElement.style.backgroundColor = 'rgba(0, 255, 0, 0.3)';
+                            highlightedSpan.style.backgroundColor = 'rgba(0, 255, 0, 0.3)';
                         }
                         
-                        if (highlightedText) {
-                            commentElement.textContent = highlightedText;
-                        } else {
-                            commentElement.textContent = commentText || type;
-                        }
+                        highlightedSpan.style.cursor = 'pointer';
+                        highlightedSpan.style.borderRadius = '2px';
+                        highlightedSpan.style.padding = '1px 2px';
                         
+                        // Add the highlighted text (or fallback to comment text)
+                        const textToHighlight = highlightedText || commentText;
+                        highlightedSpan.textContent = textToHighlight;
+                        
+                        // Create tooltip
                         const tooltip = document.createElement('div');
                         tooltip.className = 'comment-tooltip';
                         
                         const dateStr = new Date(parseInt(timestamp)).toLocaleDateString();
-                        tooltip.innerHTML = `<button onclick="editComment(${timestamp})" style="margin-right:5px;">Edit</button>
-                                            <button onclick="deleteComment(${timestamp})">Delete</button>
-                                            <div style="font-size:11px; opacity:0.8;">By ${author} on ${dateStr}</div>
-                                            <div>${commentText}</div>`;
+                        let tooltipHTML = '';
                         
-                        commentElement.appendChild(tooltip);
-                        result += commentElement.outerHTML;
+                        if (commentText && commentText !== textToHighlight) {
+                            tooltipHTML += `<div style="margin-bottom: 5px;"><strong>${commentText}</strong></div>`;
+                        }
+                        
+                        tooltipHTML += `<div style="font-size:11px; opacity:0.8;">By ${author} on ${dateStr}</div>`;
+                        tooltipHTML += `<div style="margin-top:5px; font-size:10px;">
+                                        <button onclick="editComment(${timestamp})" style="margin-right:5px;">Edit</button>
+                                        <button onclick="deleteComment(${timestamp})">Delete</button>
+                                    </div>`;
+                        
+                        tooltip.innerHTML = tooltipHTML;
+                        highlightedSpan.appendChild(tooltip);
+                        
+                        // Add to result as HTML string
+                        result += highlightedSpan.outerHTML;
+                        
                         lastIndex = match.index + fullMatch.length;
+                        
+                        // Store comment in localStorage for consistency
+                        storeCommentFromMarkdown(doc.id, type, commentText, author, parseInt(timestamp), textToHighlight);
                     }
                     
+                    // Add remaining content
                     result += content.substring(lastIndex);
+                    
+                    console.log(`Found and rendered ${commentCount} existing comments from markdown`);
                     return result;
                 };
                 
@@ -1354,7 +1383,7 @@
             return icons[type] || '💬';
         }
 
-        // Restore comments from storage - FIXED to replace original text instead of appending
+        // Restore comments from storage - FIXED to show original highlighted text
         function restoreComments(docId) {
             const comments = getStoredComments()[docId];
             if (!comments) return;
@@ -1383,93 +1412,44 @@
                     // Don't create empty comments
                     if (!highlightedText) return;
                     
-                    // Find and replace the original text within the paragraph
-                    const paragraphText = paragraph.textContent;
-                    const textIndex = paragraphText.indexOf(highlightedText);
+                    const commentSpan = document.createElement('span');
+                    commentSpan.className = 'comment-marker';
+                    commentSpan.dataset.commentId = comment.timestamp;
+                    commentSpan.dataset.originalText = highlightedText;
+                    commentSpan.style.backgroundColor = getHighlightColor(comment.type);
+                    commentSpan.style.marginLeft = '5px';
+                    commentSpan.style.cursor = 'pointer';
                     
-                    if (textIndex !== -1) {
-                        // Found the text - we need to replace it with a highlighted version
-                        console.log(`Found text "${highlightedText}" at index ${textIndex} in paragraph ${paraIndex}`);
-                        
-                        // Create the comment span
-                        const commentSpan = document.createElement('span');
-                        commentSpan.className = 'comment-marker';
-                        commentSpan.dataset.commentId = comment.timestamp;
-                        commentSpan.dataset.originalText = highlightedText;
-                        commentSpan.style.backgroundColor = getHighlightColor(comment.type);
-                        commentSpan.style.cursor = 'pointer';
-                        commentSpan.style.borderRadius = '2px';
-                        commentSpan.style.padding = '1px 2px';
-                        
-                        // Add the highlighted text to the span
-                        commentSpan.appendChild(document.createTextNode(highlightedText));
-                        
-                        // Create tooltip with the actual comment
-                        const tooltip = document.createElement('div');
-                        tooltip.className = 'comment-tooltip';
-                        
-                        const dateStr = new Date(comment.timestamp).toLocaleDateString();
-                        let tooltipContent = '';
-                        
-                        // Show the comment text in the tooltip (if different from highlighted text)
-                        if (comment.text && comment.text !== highlightedText) {
-                            tooltipContent += `<div style="margin-bottom: 5px;"><strong>${comment.text}</strong></div>`;
-                        }
-                        
-                        tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
-                        tooltipContent += `<div style="margin-top:5px; font-size:10px;">
-                                            <button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
-                                            <button onclick="deleteComment(${comment.timestamp})">Delete</button>
-                                        </div>`;
-                        
-                        tooltip.innerHTML = tooltipContent;
-                        commentSpan.appendChild(tooltip);
-                        
-                        // Now we need to replace the text within the paragraph
-                        // This is tricky because we need to find the exact text node containing our target text
-                        replaceTextInParagraph(paragraph, highlightedText, commentSpan);
-                        
-                    } else {
-                        console.log(`Text "${highlightedText}" not found in paragraph ${paraIndex}, skipping comment restoration`);
+                    // Show the ORIGINAL highlighted text, not the comment
+                    const textNode = document.createTextNode(highlightedText);
+                    commentSpan.appendChild(textNode);
+                    
+                    // Create tooltip with the actual comment
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'comment-tooltip';
+                    
+                    const dateStr = new Date(comment.timestamp).toLocaleDateString();
+                    let tooltipContent = '';
+                    
+                    // Show the comment text in the tooltip (if different from highlighted text)
+                    if (comment.text && comment.text !== highlightedText) {
+                        tooltipContent += `<div style="margin-bottom: 5px;"><strong>${comment.text}</strong></div>`;
                     }
+                    
+                    tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
+                    tooltipContent += `<div style="margin-top:5px; font-size:10px;">
+                                        <button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
+                                        <button onclick="deleteComment(${comment.timestamp})">Delete</button>
+                                    </div>`;
+                    
+                    tooltip.innerHTML = tooltipContent;
+                    commentSpan.appendChild(tooltip);
+                    
+                    // Append to paragraph with some spacing
+                    paragraph.appendChild(commentSpan);
+                    paragraph.appendChild(document.createTextNode(' '));
                 });
             });
-        }
-        
-        // Helper function to replace specific text within a paragraph with a comment span
-        function replaceTextInParagraph(paragraph, targetText, replacementSpan) {
-            const walker = document.createTreeWalker(
-                paragraph,
-                NodeFilter.SHOW_TEXT,
-                null,
-                false
-            );
-            
-            let node;
-            while (node = walker.nextNode()) {
-                const nodeText = node.textContent;
-                const textIndex = nodeText.indexOf(targetText);
-                
-                if (textIndex !== -1) {
-                    // Found the target text in this text node
-                    const beforeText = nodeText.substring(0, textIndex);
-                    const afterText = nodeText.substring(textIndex + targetText.length);
-                    
-                    // Create text nodes for before and after
-                    const beforeNode = beforeText ? document.createTextNode(beforeText) : null;
-                    const afterNode = afterText ? document.createTextNode(afterText) : null;
-                    
-                    // Replace the original text node
-                    const parent = node.parentNode;
-                    
-                    if (beforeNode) parent.insertBefore(beforeNode, node);
-                    parent.insertBefore(replacementSpan, node);
-                    if (afterNode) parent.insertBefore(afterNode, node);
-                    
-                    parent.removeChild(node);
-                    break; // We've found and replaced the text, so we're done
-                }
-            }
         }
 
         // Comment functionality
@@ -1926,10 +1906,41 @@
             }
         }
 
+        // Helper function to store comments parsed from markdown into localStorage
+        function storeCommentFromMarkdown(docId, type, commentText, author, timestamp, highlightedText) {
+            const comments = getStoredComments();
+            comments[docId] = comments[docId] || {};
+            
+            // For now, store as general comments since we don't have paragraph index from markdown
+            // In a more sophisticated version, we'd need to track paragraph positions
+            comments[docId]['general'] = comments[docId]['general'] || [];
+            
+            // Check if comment already exists
+            const existingComment = comments[docId]['general'].find(c => c.timestamp === timestamp);
+            if (!existingComment) {
+                comments[docId]['general'].push({
+                    text: commentText,
+                    user: author,
+                    timestamp: timestamp,
+                    type: type === '?' ? 'question' : type === '!' ? 'clarification' : 'approved',
+                    highlightedText: highlightedText
+                });
+                saveComments(comments);
+            }
+        }
+        
+        // Updated saveCommentToMarkdown function with better error handling and debugging
         async function saveCommentToMarkdown(docId, paraIndex, prefix, text, user, timestamp, highlightedText, contextBefore, contextAfter) {
-            const mdComment = text ? 
-                `<!-- ${prefix} ${text} | ${user} | ${timestamp} | ${highlightedText} | ${contextBefore} | ${contextAfter} -->` :
-                `<!-- ${prefix} | ${user} | ${timestamp} | ${highlightedText} | ${contextBefore} | ${contextAfter} -->`;
+            console.log('Attempting to save comment to markdown:', {
+                docId, paraIndex, prefix, text, user, timestamp, highlightedText
+            });
+            
+            // Format the markdown comment
+            const mdComment = highlightedText ? 
+                `<!-- ${prefix} ${text} | ${user} | ${timestamp} | ${highlightedText} -->` :
+                `<!-- ${prefix} ${text} | ${user} | ${timestamp} -->`;
+            
+            console.log('Formatted markdown comment:', mdComment);
             
             try {
                 const response = await fetch('/api/save-comment', {
@@ -1946,10 +1957,66 @@
                 });
                 
                 if (!response.ok) {
-                    console.error('Failed to save comment to markdown');
+                    const errorData = await response.text();
+                    console.error('Failed to save comment to markdown:', response.status, errorData);
+                    
+                    // Show user-friendly error
+                    alert(`Failed to save comment to markdown file. Error: ${response.status}. Comment saved locally only.`);
+                    return;
                 }
+                
+                const result = await response.json();
+                console.log('Comment saved to markdown successfully:', result);
+                
             } catch (error) {
                 console.error('Error saving comment to markdown:', error);
+                
+                // For development/testing - try to save to a mock endpoint or show helpful message
+                console.log('API endpoint not available. In a real deployment, this would save to GitHub.');
+                console.log('Mock API call would be:');
+                console.log(`POST /api/save-comment`, {
+                    docId,
+                    comment: mdComment,
+                    action: 'add'
+                });
+                
+                // Don't show alert for network errors in development, just log
+                // alert(`Network error: ${error.message}. Comment saved locally only.`);
+            }
+        }
+        
+        // Function to remove comment from markdown file
+        async function removeCommentFromMarkdown(docId, paraIndex, timestamp) {
+            console.log('Attempting to remove comment from markdown:', { docId, paraIndex, timestamp });
+            
+            try {
+                const response = await fetch('/api/save-comment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        docId,
+                        paraIndex,
+                        timestamp,
+                        action: 'remove'
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    console.error('Failed to remove comment from markdown:', response.status, errorData);
+                    return;
+                }
+                
+                console.log('Comment removed from markdown successfully');
+                
+            } catch (error) {
+                console.error('Error removing comment from markdown:', error);
+                console.log('Mock API call would be:');
+                console.log(`POST /api/save-comment`, {
+                    docId,
+                    timestamp,
+                    action: 'remove'
+                });
             }
         }
 
