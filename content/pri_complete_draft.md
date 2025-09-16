@@ -19,7 +19,7 @@ Pattern-matching involves:
 
 [^7]Many computer software algorithms exemplify pattern-matching strategies. Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines. Expert systems search through rule databases to find matching conditions.[^1]
 
-However, conflating all pattern-matching with pattern-recognition may obscure important distinctions about the nature of cognition.
+[^13]However, conflating all pattern-matching with pattern-recognition may obscure important distinctions about the nature of cognition.
 
 
 # The Immediacy of Recognition
@@ -302,3 +302,5 @@ notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
     has many line breaks:florin.cojocariu@s.unibuc.ro:1758052620108
 
 [^10]: question:It seems are not saved now with or without line breaks:florin.cojocariu@s.unibuc.ro:1758052693045
+
+[^13]: question:this is a question without line break:florin.cojocariu@s.unibuc.ro:1758053319186
