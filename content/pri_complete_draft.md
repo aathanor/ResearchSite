@@ -161,7 +161,7 @@ PRI's primary test is whether long-standing problems genuinely disappear rather 
 
 **The Hard Problem of Consciousness**: Traditional formulations assume a gap between objective neural processes and subjective experience. PRI proposes consciousness IS pattern-recognition recognizing itself reflexively—a cat pattern-recognizes but doesn't recognize its own pattern-recognition; humans do.
 
-**The Frame Problem**: Current approaches struggle with "how an agent context-sensitively determines relevance". PRI proposes relevance is intrinsic to pattern-constellations through embodied developmental history rather than computed algorithmically.
+**[^10]The Frame Problem**: Current approaches struggle with "how an agent context-sensitively determines relevance". PRI proposes relevance is intrinsic to pattern-constellations through embodied developmental history rather than computed algorithmically.
 
 **Empirical question**: Whether these dissolutions are genuine or merely conceptual sleight-of-hand requires careful analysis of whether the proposed alternatives actually eliminate the problematic phenomena or simply relocate them.
 
@@ -290,3 +290,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 
 [^9]: clarification:Understanding as Recognition
 notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
+
+[^10]: clarification:Now, here is a comment without a line break.:florin.cojocariu@s.unibuc.ro:1758052575981
