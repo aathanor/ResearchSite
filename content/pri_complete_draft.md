@@ -167,7 +167,7 @@ PRI's primary test is whether long-standing problems genuinely disappear rather 
 
 # Philosophical Consequences
 
-PRI has implications for foundational philosophical questions, though these remain interpretive rather than empirically established:
+[^11]PRI has implications for foundational philosophical questions, though these remain interpretive rather than empirically established:
 
 ## Truth and Reference - Dissolving Primitive Reference
 
@@ -292,3 +292,6 @@ Both types of existence are internal to pattern-recognition events - there's no 
 notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
 
 [^10]: clarification:Now, here is a comment without a line break.:florin.cojocariu@s.unibuc.ro:1758052575981
+
+[^11]: clarification:And here is one
+    with a line break:florin.cojocariu@s.unibuc.ro:1758052596183
