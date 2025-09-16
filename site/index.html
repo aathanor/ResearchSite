@@ -1350,7 +1350,7 @@
             return icons[type] || '💬';
         }
 
-        // Restore comments from storage
+        // Restore comments from storage - FIXED to show original highlighted text
         function restoreComments(docId) {
             const comments = getStoredComments()[docId];
             if (!comments) return;
@@ -1373,24 +1373,46 @@
                     const existingComment = document.querySelector(`[data-comment-id="${comment.timestamp}"]`);
                     if (existingComment) return;
                     
+                    // Get the text that should be highlighted (original selected text)
+                    const highlightedText = comment.highlightedText || comment.text || '';
+                    
+                    // Don't create empty comments
+                    if (!highlightedText) return;
+                    
                     const commentSpan = document.createElement('span');
                     commentSpan.className = 'comment-marker';
                     commentSpan.dataset.commentId = comment.timestamp;
-                    commentSpan.dataset.originalText = comment.text || '';
+                    commentSpan.dataset.originalText = highlightedText;
                     commentSpan.style.backgroundColor = getHighlightColor(comment.type);
+                    commentSpan.style.marginLeft = '5px';
+                    commentSpan.style.cursor = 'pointer';
                     
-                    const textNode = document.createTextNode(comment.text || '');
+                    // Show the ORIGINAL highlighted text, not the comment
+                    const textNode = document.createTextNode(highlightedText);
                     commentSpan.appendChild(textNode);
                     
+                    // Create tooltip with the actual comment
                     const tooltip = document.createElement('div');
                     tooltip.className = 'comment-tooltip';
                     
                     const dateStr = new Date(comment.timestamp).toLocaleDateString();
-                    tooltip.innerHTML = `<button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
-                                        <button onclick="deleteComment(${comment.timestamp})">Delete</button>
-                                        <div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
+                    let tooltipContent = '';
                     
+                    // Show the comment text in the tooltip (if different from highlighted text)
+                    if (comment.text && comment.text !== highlightedText) {
+                        tooltipContent += `<div style="margin-bottom: 5px;"><strong>${comment.text}</strong></div>`;
+                    }
+                    
+                    tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
+                    tooltipContent += `<div style="margin-top:5px; font-size:10px;">
+                                        <button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
+                                        <button onclick="deleteComment(${comment.timestamp})">Delete</button>
+                                    </div>`;
+                    
+                    tooltip.innerHTML = tooltipContent;
                     commentSpan.appendChild(tooltip);
+                    
+                    // Append to paragraph with some spacing
                     paragraph.appendChild(commentSpan);
                     paragraph.appendChild(document.createTextNode(' '));
                 });
@@ -1656,22 +1678,57 @@
             const textarea = document.getElementById('comment-dialog-text');
             const newText = textarea.value.trim();
             
+            // If editing, update the comment
             if (currentEditingInfo) {
                 if (!newText) {
                     alert('Please enter comment text');
                     return;
                 }
-                // Handle editing logic here
+                
+                const docId = currentEditingInfo.docId;
+                const paraIndex = currentEditingInfo.paraIndex;
+                const commentIndex = currentEditingInfo.commentIndex;
+                const commentsData = getStoredComments();
+                
+                if (!commentsData[docId] || !commentsData[docId][paraIndex] || !commentsData[docId][paraIndex][commentIndex]) {
+                    console.error('Stored comment not found for editing');
+                    alert('Error: Comment not found in storage');
+                    currentEditingInfo = null;
+                    hideCommentDialog();
+                    return;
+                }
+                
+                const newTimestamp = Date.now();
+                commentsData[docId][paraIndex][commentIndex].text = newText;
+                commentsData[docId][paraIndex][commentIndex].timestamp = newTimestamp;
+                saveComments(commentsData);
+                
+                // Update the DOM element
+                const domElem = currentEditingInfo.domElement;
+                if (domElem) {
+                    domElem.dataset.commentId = newTimestamp;
+                    
+                    // Update tooltip
+                    const tooltip = domElem.querySelector('.comment-tooltip');
+                    if (tooltip) {
+                        const dateStr = new Date(newTimestamp).toLocaleDateString();
+                        tooltip.innerHTML = `<button onclick="editComment(${newTimestamp})" style="margin-right:5px;">Edit</button>
+                                            <button onclick="deleteComment(${newTimestamp})">Delete</button>
+                                            <div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>
+                                            <div>${newText}</div>`;
+                    }
+                }
+                
                 currentEditingInfo = null;
                 hideCommentDialog();
                 return;
             }
-            
+
+            // For new comments: ensure text is provided if needed.
             if ((currentCommentType === 'question' || currentCommentType === 'clarification') && !newText) {
                 alert('Please enter comment text');
                 return;
             }
-            
             let highlightColor = '';
             if (currentCommentType === 'question') highlightColor = 'rgba(255, 0, 0, 0.3)';
             else if (currentCommentType === 'clarification') highlightColor = 'rgba(255, 255, 0, 0.3)';
@@ -1688,7 +1745,66 @@
         }
 
         function editComment(commentTimestamp) {
-            // Implementation for editing comments
+            console.log('Editing comment:', commentTimestamp);
+            
+            // Find the comment in storage
+            const currentDocItem = document.querySelector('.document-item.active');
+            if (!currentDocItem) {
+                console.error('No active document found');
+                return;
+            }
+            
+            const docId = currentDocItem.dataset.id;
+            const commentsData = getStoredComments();
+            
+            if (!commentsData[docId]) {
+                console.error('No comments for this document');
+                return;
+            }
+            
+            let foundComment = null;
+            let foundInfo = null;
+            
+            // Search through all paragraphs for this comment
+            for (const paraIndex in commentsData[docId]) {
+                const commentsArr = commentsData[docId][paraIndex];
+                for (let i = 0; i < commentsArr.length; i++) {
+                    if (commentsArr[i].timestamp == commentTimestamp) {
+                        foundComment = commentsArr[i];
+                        foundInfo = {
+                            docId: docId,
+                            paraIndex: paraIndex,
+                            commentIndex: i,
+                            originalText: commentsArr[i].text,
+                            domElement: document.querySelector(`[data-comment-id="${commentTimestamp}"]`)
+                        };
+                        break;
+                    }
+                }
+                if (foundComment) break;
+            }
+            
+            if (!foundComment) {
+                console.error('Comment not found for editing');
+                return;
+            }
+            
+            // Set up editing state
+            currentEditingInfo = foundInfo;
+            
+            // Open the dialog prefilled for editing
+            const dialog = document.getElementById('comment-dialog');
+            const dlgTitle = document.getElementById('comment-dialog-title');
+            const label = document.getElementById('comment-dialog-label');
+            const textarea = document.getElementById('comment-dialog-text');
+            
+            dlgTitle.textContent = 'Edit Comment';
+            label.textContent = 'Edit your comment:';
+            textarea.value = foundComment.text || '';
+            
+            dialog.style.display = 'block';
+            dialog.classList.add('show');
+            textarea.focus();
         }
 
         async function deleteComment(commentTimestamp) {
@@ -1699,33 +1815,64 @@
                 return;
             }
             
-            const originalText = commentElement.dataset.originalText || 
-                                Array.from(commentElement.childNodes)
-                                    .filter(node => node.nodeType === Node.TEXT_NODE || 
-                                                    (node.nodeType === Node.ELEMENT_NODE && 
-                                                    !node.classList.contains('comment-tooltip')))
-                                    .map(node => node.textContent)
-                                    .join('');
+            // Get the original highlighted text from the data attribute or from storage
+            let originalText = commentElement.dataset.originalText;
             
+            if (!originalText) {
+                // Try to get original text from storage
+                const currentDocItem = document.querySelector('.document-item.active');
+                if (currentDocItem) {
+                    const docId = currentDocItem.dataset.id;
+                    const comments = getStoredComments();
+                    
+                    if (comments[docId]) {
+                        // Search for the comment in storage
+                        for (const paraIndex in comments[docId]) {
+                            const commentsArr = comments[docId][paraIndex];
+                            for (let i = 0; i < commentsArr.length; i++) {
+                                if (commentsArr[i].timestamp == commentTimestamp) {
+                                    originalText = commentsArr[i].highlightedText || commentsArr[i].text;
+                                    break;
+                                }
+                            }
+                            if (originalText) break;
+                        }
+                    }
+                }
+            }
+            
+            // If still no original text, extract from element content (excluding tooltip)
+            if (!originalText) {
+                originalText = Array.from(commentElement.childNodes)
+                    .filter(node => node.nodeType === Node.TEXT_NODE || 
+                                    (node.nodeType === Node.ELEMENT_NODE && 
+                                    !node.classList.contains('comment-tooltip')))
+                    .map(node => node.textContent)
+                    .join('');
+            }
+            
+            // Create a text node with only the original text
             const textNode = document.createTextNode(originalText);
+            
+            // Replace the comment element with the text node
             commentElement.parentNode.replaceChild(textNode, commentElement);
             
-            // Remove from storage
+            // Remove from stored comments
             const currentDocItem = document.querySelector('.document-item.active');
             if (currentDocItem) {
                 const docId = currentDocItem.dataset.id;
-                const comments = getStoredComments();
+                const commentsData = getStoredComments();
                 
-                if (comments[docId]) {
-                    for (const paraIndex in comments[docId]) {
-                        const commentsArr = comments[docId][paraIndex];
+                if (commentsData[docId]) {
+                    for (const paraIndex in commentsData[docId]) {
+                        const commentsArr = commentsData[docId][paraIndex];
                         for (let i = 0; i < commentsArr.length; i++) {
                             if (commentsArr[i].timestamp == commentTimestamp) {
                                 commentsArr.splice(i, 1);
                                 if (commentsArr.length === 0) {
-                                    delete comments[docId][paraIndex];
+                                    delete commentsData[docId][paraIndex];
                                 }
-                                saveComments(comments);
+                                saveComments(commentsData);
                                 return;
                             }
                         }
