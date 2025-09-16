@@ -920,14 +920,40 @@
             return lastActivity > lastReadTime;
         }
 
-        // Load documents from manifest
+        // Load documents from site/data/documents.json
         async function loadDocuments() {
             try {
-                const res = await fetch('/content/manifest.json');
-                if (!res.ok) throw new Error('Manifest fetch failed');
-                return await res.json();
+                console.log('Attempting to fetch documents from /site/data/documents.json...');
+                const res = await fetch('/site/data/documents.json');
+                if (!res.ok) {
+                    console.error('Fetch failed with status:', res.status, res.statusText);
+                    throw new Error(`Documents fetch failed: ${res.status} ${res.statusText}`);
+                }
+                const docs = await res.json();
+                console.log('Documents loaded:', docs);
+                return docs;
             } catch (err) {
                 console.error('Error loading documents:', err);
+                // Try alternative paths
+                const alternativePaths = [
+                    '/data/documents.json',
+                    '/documents.json',
+                    '/content/documents.json'
+                ];
+                
+                for (const path of alternativePaths) {
+                    try {
+                        console.log('Trying alternative path:', path);
+                        const res2 = await fetch(path);
+                        if (res2.ok) {
+                            const docs = await res2.json();
+                            console.log('Documents loaded from alternative path:', path, docs);
+                            return docs;
+                        }
+                    } catch (err2) {
+                        console.error(`Alternative path ${path} failed:`, err2);
+                    }
+                }
                 return [];
             }
         }
@@ -941,30 +967,61 @@
 
             try {
                 const docsArray = await loadDocuments();
+                console.log('Raw documents array:', docsArray);
+                console.log('Array length:', docsArray ? docsArray.length : 'null/undefined');
                 
-                if (docsArray.length === 0) {
+                if (!docsArray || docsArray.length === 0) {
                     const errorMsg = document.createElement('div');
                     errorMsg.className = 'error-message';
-                    errorMsg.textContent = 'No documents found';
+                    errorMsg.textContent = 'No documents found - check console for details';
                     leftPanel.appendChild(errorMsg);
                     return;
                 }
                 
+                // Log first document structure for debugging
+                if (docsArray[0]) {
+                    console.log('First document structure:', JSON.stringify(docsArray[0], null, 2));
+                }
+                
+                // Handle different possible document structures
+                let processedDocs = [];
+                if (Array.isArray(docsArray)) {
+                    processedDocs = docsArray;
+                } else if (docsArray.documents && Array.isArray(docsArray.documents)) {
+                    processedDocs = docsArray.documents;
+                } else if (typeof docsArray === 'object') {
+                    // If it's an object, try to extract documents from various possible keys
+                    processedDocs = Object.values(docsArray);
+                }
+                
+                console.log('Processed documents:', processedDocs);
+                
                 // Deduplicate by ID
                 const uniqueDocs = {};
-                docsArray.forEach(doc => {
-                    if (!uniqueDocs[doc.id]) {
-                        uniqueDocs[doc.id] = doc;
+                processedDocs.forEach((doc, index) => {
+                    const docId = doc.id || doc.slug || doc.filename || `doc_${index}`;
+                    if (!uniqueDocs[docId]) {
+                        // Ensure doc has an ID
+                        doc.id = docId;
+                        uniqueDocs[docId] = doc;
                     }
                 });
+                
+                console.log('Unique documents:', uniqueDocs);
                 
                 // Group by category
                 const categories = {};
                 Object.values(uniqueDocs).forEach(doc => {
-                    const cat = doc.frontmatter?.category || 'uncategorized';
+                    // Try multiple ways to get category
+                    const cat = doc.frontmatter?.category || 
+                              doc.category || 
+                              doc.meta?.category ||
+                              'uncategorized';
                     if (!categories[cat]) categories[cat] = [];
                     categories[cat].push(doc);
                 });
+                
+                console.log('Categories:', categories);
                 
                 // Build UI
                 Object.keys(categories).sort().forEach(cat => {
@@ -981,10 +1038,27 @@
                         const item = document.createElement('div');
                         item.className = 'document-item';
                         item.dataset.id = doc.id;
-                        item.dataset.lenses = doc.lens ? doc.lens.join(' ') : '';
+                        
+                        // Handle different lens/tag formats
+                        const lenses = doc.lens || doc.lenses || doc.tags || [];
+                        item.dataset.lenses = Array.isArray(lenses) ? lenses.join(' ') : '';
+                        
+                        // Try multiple ways to get title
+                        const title = doc.title || 
+                                    doc.frontmatter?.title || 
+                                    doc.name ||
+                                    doc.filename ||
+                                    'Untitled';
+                        
+                        // Try multiple ways to get status
+                        const status = doc.status || 
+                                     doc.frontmatter?.status ||
+                                     doc.meta?.status ||
+                                     'draft';
+                        
                         item.innerHTML = `
-                            <div>${doc.title || doc.frontmatter?.title || 'Untitled'}</div>
-                            <span style="font-size: 11px; color: #6c757d;">● ${doc.status}</span>
+                            <div>${title}</div>
+                            <span style="font-size: 11px; color: #6c757d;">● ${status}</span>
                         `;
                         
                         item.addEventListener('click', () => {
@@ -1004,7 +1078,7 @@
                 console.error('Error building left panel:', error);
                 const errorMsg = document.createElement('div');
                 errorMsg.className = 'error-message';
-                errorMsg.textContent = 'Error loading documents';
+                errorMsg.innerHTML = `Error loading documents<br><small style="font-size:10px;">${error.message}</small>`;
                 leftPanel.appendChild(errorMsg);
             }
         }
@@ -1077,10 +1151,21 @@
         // Load document content
         async function loadDocContent(doc) {
             try {
+                console.log('Loading document:', doc);
+                
                 let text = doc.fullContent || doc.content;
                 if (!text) {
-                    const res = await fetch(`/content/${doc.id}`);
+                    // Construct the path to the markdown file in /content/ folder
+                    const filename = doc.filename || doc.id || `${doc.id}.md`;
+                    const contentPath = `/content/${filename}`;
+                    console.log('Fetching content from:', contentPath);
+                    
+                    const res = await fetch(contentPath);
+                    if (!res.ok) {
+                        throw new Error(`Failed to fetch content: ${res.status} ${res.statusText}`);
+                    }
                     text = await res.text();
+                    console.log('Content loaded successfully, length:', text.length);
                 }
                 
                 // Parse and render comments in the content
