@@ -7,12 +7,50 @@ export async function onRequestPost(context) {
       throw new Error('Missing environment variables');
     }
     
+    // Extract user from Cloudflare Access JWT
+    let authenticatedUser = 'anonymous';
+    const jwtAssertion = request.headers.get('cf-access-jwt-assertion');
+    
+    if (jwtAssertion) {
+      try {
+        console.log('Extracting user from JWT assertion...');
+        const parts = jwtAssertion.split('.');
+        if (parts.length === 3) {
+          const payload = parts[1];
+          const paddedPayload = payload + '='.repeat((4 - payload.length % 4) % 4);
+          const decoded = atob(paddedPayload);
+          const userInfo = JSON.parse(decoded);
+          
+          authenticatedUser = userInfo.email || 
+                             userInfo.user_email ||
+                             userInfo.preferred_username ||
+                             userInfo.upn ||
+                             userInfo.name ||
+                             userInfo.sub ||
+                             'anonymous';
+          
+          console.log('Authenticated user:', authenticatedUser);
+        }
+      } catch (jwtError) {
+        console.warn('Could not extract user from JWT:', jwtError.message);
+      }
+    } else {
+      console.log('No JWT assertion found, using anonymous');
+    }
+    
     // Clone the request to avoid "body already used" error
     const clonedRequest = request.clone();
     const body = await clonedRequest.json();
     console.log('Request body:', body);
     
     const { docId, comment, oldComment, footnoteRef, selectedText, beforeContext, afterContext, type, action } = body;
+    
+    // Replace 'anonymous' in comment with authenticated user
+    let processedComment = comment;
+    if (comment && comment.includes(':anonymous:') && authenticatedUser !== 'anonymous') {
+      processedComment = comment.replace(':anonymous:', `:${authenticatedUser}:`);
+      console.log('Updated comment with authenticated user:', processedComment);
+    }
     
     if (type !== 'footnote') {
       return new Response(JSON.stringify({ 
@@ -133,7 +171,7 @@ export async function onRequestPost(context) {
     // Handle different actions
     switch (action) {
       case 'add':
-        content = addFootnoteComment(content, comment, footnoteRef, selectedText, beforeContext, afterContext);
+        content = addFootnoteComment(content, processedComment, footnoteRef, selectedText, beforeContext, afterContext);
         commitMessage = `Add comment to ${actualFilename}`;
         break;
         
@@ -149,18 +187,18 @@ export async function onRequestPost(context) {
             }
           });
         }
-        content = updateFootnoteComment(content, oldComment, comment);
+        content = updateFootnoteComment(content, oldComment, processedComment);
         commitMessage = `Update comment in ${actualFilename}`;
         break;
         
       case 'delete':
-        content = deleteFootnoteComment(content, comment);
+        content = deleteFootnoteComment(content, processedComment);
         commitMessage = `Delete comment from ${actualFilename}`;
         break;
         
       default:
         // Default to add for backward compatibility
-        content = addFootnoteComment(content, comment, footnoteRef, selectedText, beforeContext, afterContext);
+        content = addFootnoteComment(content, processedComment, footnoteRef, selectedText, beforeContext, afterContext);
         commitMessage = `Add comment to ${actualFilename}`;
         break;
     }
@@ -226,7 +264,9 @@ export async function onRequestPost(context) {
       success: true, 
       message: `Comment ${action}ed successfully`,
       commit: updateResult.commit.sha,
-      action: action
+      action: action,
+      authenticatedUser: authenticatedUser,
+      userWasAuthenticated: authenticatedUser !== 'anonymous'
     }), {
       status: 200,
       headers: { 

@@ -1052,6 +1052,7 @@
             currentDocument = doc;
             
             try {
+                console.log('=== Loading document with encoding debug ===');
                 console.log('Loading document:', doc);
                 
                 let text = doc.fullContent || doc.content;
@@ -1064,8 +1065,24 @@
                     if (!res.ok) {
                         throw new Error(`Failed to fetch content: ${res.status} ${res.statusText}`);
                     }
+                    
+                    // Debug the response
+                    console.log('Response headers:', [...res.headers.entries()]);
+                    console.log('Content-Type:', res.headers.get('Content-Type'));
+                    
                     text = await res.text();
-                    console.log('Content loaded successfully, length:', text.length);
+                    console.log('Raw fetched content length:', text.length);
+                    console.log('First 200 chars of raw content:', JSON.stringify(text.substring(0, 200)));
+                }
+                
+                console.log('Content before processing:', JSON.stringify(text.substring(0, 300)));
+                
+                // Check for and fix encoding issues
+                if (text.includes('Ã') || text.includes('Â') || text.includes('â€')) {
+                    console.error('⚠️ ENCODING CORRUPTION DETECTED in raw content!');
+                    console.log('Attempting to fix encoding issues...');
+                    text = fixEncodingIssues(text);
+                    console.log('Content after encoding fix:', JSON.stringify(text.substring(0, 300)));
                 }
                 
                 // Parse markdown and extract footnotes
@@ -1073,11 +1090,22 @@
                 currentComments = footnotes;
                 nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
                 
-                console.log('Parsed footnotes:', footnotes);
-                console.log('Next comment number:', nextCommentNumber);
+                console.log('Content after footnote parsing:', JSON.stringify(content.substring(0, 300)));
+                
+                // Check for encoding issues after parsing
+                if (content.includes('Ã') || content.includes('Â')) {
+                    console.error('⚠️ ENCODING CORRUPTION DETECTED after footnote parsing!');
+                }
                 
                 // Convert to HTML with footnote references
                 const htmlContent = markdownToHtml(content);
+                
+                console.log('Content after HTML conversion:', htmlContent.substring(0, 300));
+                
+                // Check for encoding issues after HTML conversion
+                if (htmlContent.includes('Ã') || htmlContent.includes('Â')) {
+                    console.error('⚠️ ENCODING CORRUPTION DETECTED after HTML conversion!');
+                }
                 
                 // Create footnotes section for regular footnotes
                 const regularFootnotes = footnotes.filter(f => !f.isComment);
@@ -1110,6 +1138,8 @@
                 
                 // Add text selection handlers for comments
                 addTextSelectionHandlers();
+                
+                console.log('=== End document loading ===');
                 
             } catch (e) {
                 console.error('Error loading document:', e);
@@ -1154,6 +1184,87 @@
             });
             
             console.log('=== End Authentication Debug ===');
+        };
+
+        // Debug function for encoding issues
+        window.debugEncoding = function() {
+            console.log('=== Encoding Debug ===');
+            
+            if (currentDocument) {
+                const content = currentDocument.fullContent || currentDocument.content || '';
+                console.log('Raw content length:', content.length);
+                console.log('Raw content sample:', JSON.stringify(content.substring(0, 500)));
+                
+                // Look for specific corruption patterns
+                const corruptionIndex = content.indexOf('Ã');
+                if (corruptionIndex !== -1) {
+                    console.log('Corruption found at index:', corruptionIndex);
+                    console.log('Context around corruption:');
+                    console.log(JSON.stringify(content.substring(Math.max(0, corruptionIndex - 50), corruptionIndex + 100)));
+                    
+                    // Show character codes
+                    const corruptSection = content.substring(corruptionIndex, corruptionIndex + 20);
+                    console.log('Character codes in corrupted section:');
+                    for (let i = 0; i < corruptSection.length; i++) {
+                        const char = corruptSection[i];
+                        console.log(`"${char}" = ${char.charCodeAt(0)} (0x${char.charCodeAt(0).toString(16)})`);
+                    }
+                }
+                
+                const hasCorruption = content.includes('Ã') || content.includes('Â') || content.includes('â€');
+                console.log('Has encoding corruption:', hasCorruption);
+                
+                if (hasCorruption) {
+                    console.log('Attempting encoding fix...');
+                    const fixed = fixEncodingIssues(content);
+                    console.log('Fixed content sample:', JSON.stringify(fixed.substring(0, 500)));
+                    
+                    // Show the user they can reload with fixed encoding
+                    console.log('To reload with fixed encoding, run: reloadWithEncodingFix()');
+                    window.reloadWithEncodingFix = () => {
+                        const fixedDoc = {...currentDocument};
+                        fixedDoc.content = fixed;
+                        fixedDoc.fullContent = fixed;
+                        loadDocument(fixedDoc);
+                    };
+                }
+                
+                // Also check what's in the GitHub file vs what we're getting
+                console.log('To check the original GitHub file, run: checkGitHubSource()');
+                window.checkGitHubSource = async () => {
+                    try {
+                        const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
+                        const res = await fetch(`/content/${filename}`, {
+                            headers: {
+                                'Accept': 'text/plain; charset=utf-8'
+                            }
+                        });
+                        const rawText = await res.text();
+                        
+                        console.log('=== GitHub Source Check ===');
+                        console.log('Content-Type:', res.headers.get('Content-Type'));
+                        console.log('Character encoding test around em-dashes and underscores:');
+                        
+                        // Look for actual em-dashes and underscores
+                        const testChars = ['_', '—', '*', '`'];
+                        testChars.forEach(char => {
+                            const index = rawText.indexOf(char);
+                            if (index !== -1) {
+                                console.log(`Character "${char}" (${char.charCodeAt(0)}) found at index ${index}`);
+                                console.log('Context:', JSON.stringify(rawText.substring(index - 10, index + 10)));
+                            }
+                        });
+                        
+                        console.log('Raw GitHub content preview:', JSON.stringify(rawText.substring(0, 300)));
+                    } catch (err) {
+                        console.error('Error fetching GitHub source:', err);
+                    }
+                };
+            } else {
+                console.log('No current document loaded');
+            }
+            
+            console.log('=== End Encoding Debug ===');
         };
 
         // Debug function to check current document content
@@ -1693,6 +1804,23 @@
                 
                 const result = await response.json();
                 console.log('Comment saved to GitHub successfully:', result);
+                
+                // Update UI to show authentication status
+                if (result.userWasAuthenticated) {
+                    console.log('✓ Comment saved with authenticated user:', result.authenticatedUser);
+                    if (userEmail === 'anonymous' && result.authenticatedUser !== 'anonymous') {
+                        // Update the userEmail if backend found authentication
+                        userEmail = result.authenticatedUser;
+                        const userInfoElement = document.getElementById('user-info');
+                        if (userInfoElement) {
+                            userInfoElement.textContent = `👤 ${userEmail}`;
+                            userInfoElement.style.color = '#28a745';
+                            userInfoElement.title = 'Authenticated user';
+                        }
+                    }
+                } else {
+                    console.warn('Comment saved but user was not authenticated');
+                }
                 
             } catch (error) {
                 console.error('Error saving comment to GitHub:', error);
