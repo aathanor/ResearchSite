@@ -73,7 +73,7 @@ The _structure_ is identical to simple recognition—immediate constellation-a
 
 This phenomenological analysis finds striking support in neuroscience, but it's crucial to clarify the methodological relationship. Rather than deriving PRI from empirical findings, our approach starts with **conceptual analysis** of what recognition actually _is_, then finds neuroscience evidence that supports this analysis. This sidesteps the usual objection "but you're just describing very fast sequential processing" by arguing that sequential processing is the wrong conceptual model entirely.
 
-## Neural Evidence for Constellation-Activation
+## [^10]Neural Evidence for Constellation-Activation
 
 Neuroscience reveals that neural systems operate through constellation-activation rather than sequential processing. The most direct support comes from studies of unconscious neural processing, which consistently show that specific response circuits activate before conscious awareness of stimuli.
 
@@ -161,19 +161,19 @@ PRI's primary test is whether long-standing problems genuinely disappear rather 
 
 **The Hard Problem of Consciousness**: Traditional formulations assume a gap between objective neural processes and subjective experience. PRI proposes consciousness IS pattern-recognition recognizing itself reflexively—a cat pattern-recognizes but doesn't recognize its own pattern-recognition; humans do.
 
-**The Frame Problem**: Current approaches struggle with "how an agent context-sensitively determines relevance". PRI proposes relevance is intrinsic to pattern-constellations through embodied developmental history rather than computed algorithmically.
+**[^10]The Frame Problem**: Current approaches struggle with "how an agent context-sensitively determines relevance". PRI proposes relevance is intrinsic to pattern-constellations through embodied developmental history rather than computed algorithmically.
 
 **Empirical question**: Whether these dissolutions are genuine or merely conceptual sleight-of-hand requires careful analysis of whether the proposed alternatives actually eliminate the problematic phenomena or simply relocate them.
 
 # Philosophical Consequences
 
-PRI has implications for foundational philosophical questions, though these remain interpretive rather than empirically established:
+[^11]PRI has implications for foundational philosophical questions, though these remain interpretive rather than empirically established:
 
 ## Truth and Reference - Dissolving Primitive Reference
 
 Hartry Field's formulation of the primitive reference problem highlights a fundamental issue in semantic theory: how do basic referring terms get their reference without relying on other referring terms? Traditional approaches assume words must somehow "hook onto" objects in the external world, but this leads to infinite regress—what grounds the grounding relation itself?
 
-Field's challenge to Tarski's truth schema illustrates the core problem. Tarski proposed: "Snow is white" is true if and only if snow is white. Field's concern is that the right side {snow is white} (using braces to avoid quotation confusion) appears to be just another bunch of words with no primitive reference to actual snow. Where is the connection to the external world?
+[^12]Field's challenge to Tarski's truth schema illustrates the core problem. Tarski proposed: "Snow is white" is true if and only if snow is white. Field's concern is that the right side {snow is white} (using braces to avoid quotation confusion) appears to be just another bunch of words with no primitive reference to actual snow. Where is the connection to the external world?
 
 **PRI's dissolution**: The problem dissolves when we recognize that {snow is white} is not disconnected words floating in semantic space, but word-patterns as they exist **integrated with sensation-patterns** within the snow-constellation-pattern. This constellation includes:
 
@@ -290,3 +290,15 @@ Both types of existence are internal to pattern-recognition events - there's no 
 
 [^9]: clarification:Understanding as Recognition
 notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
+
+[^10]: clarification:Now, here is a comment without a line break.:florin.cojocariu@s.unibuc.ro:1758052575981
+
+[^11]: clarification:And here is one
+    with a line break:florin.cojocariu@s.unibuc.ro:1758052596183
+
+[^12]: question:While
+    this
+    one
+    has many line breaks:florin.cojocariu@s.unibuc.ro:1758052620108
+
+[^10]: question:It seems are not saved now with or without line breaks:florin.cojocariu@s.unibuc.ro:1758052693045
