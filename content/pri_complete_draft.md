@@ -73,7 +73,7 @@ The _structure_ is identical to simple recognition—immediate constellation-a
 
 This phenomenological analysis finds striking support in neuroscience, but it's crucial to clarify the methodological relationship. Rather than deriving PRI from empirical findings, our approach starts with **conceptual analysis** of what recognition actually _is_, then finds neuroscience evidence that supports this analysis. This sidesteps the usual objection "but you're just describing very fast sequential processing" by arguing that sequential processing is the wrong conceptual model entirely.
 
-## Neural Evidence for Constellation-Activation
+## [^10]Neural Evidence for Constellation-Activation
 
 Neuroscience reveals that neural systems operate through constellation-activation rather than sequential processing. The most direct support comes from studies of unconscious neural processing, which consistently show that specific response circuits activate before conscious awareness of stimuli.
 
@@ -300,3 +300,5 @@ notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
     this
     one
     has many line breaks:florin.cojocariu@s.unibuc.ro:1758052620108
+
+[^10]: question:It seems are not saved now with or without line breaks:florin.cojocariu@s.unibuc.ro:1758052693045
