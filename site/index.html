@@ -921,16 +921,163 @@
 
         // Replace your buildLeftPanel() function with this version that loads the manifest dynamically.
         // New function to load documents from documents.json
-async function loadDocuments() {
+async function loadDocContent(doc) {
     try {
-        // Note the updated path: /data/documents.json
-        const res = await fetch('/data/documents.json');
-        const data = await res.json();
-        // Return an array of document objects from the "documents" property.
-        return Object.values(data.documents || {});
-    } catch (err) {
-        console.error('Error loading documents.json:', err);
-        return [];
+        // Use the pre-built content from documents.json
+        let text = doc.fullContent || doc.content;
+        if (!text) {
+            const res = await fetch(`/content/${doc.id}`);
+            text = await res.text();
+        }
+        
+        // Parse and render comments in the content
+        const renderComments = (content) => {
+            // Regular expression to match comment patterns - FIXED: replaced ❗ with !
+            const commentRegex = new RegExp('<!--\\s*([?!\\u2713])\\s*(.*?)\\s*\\|\\s*(.*?)\\s*\\|\\s*(\\d+)(?:\\s*\\|\\s*(.*?))?\\s*-->', 'g');
+            
+            let lastIndex = 0;
+            let result = '';
+            let match;
+            
+            while ((match = commentRegex.exec(content)) !== null) {
+                // Add content before the comment
+                result += content.substring(lastIndex, match.index);
+                
+                const [fullMatch, commentHtml, type, commentText, author, timestamp, highlightedText] = match;
+                
+                // Create a comment element
+                const commentElement = document.createElement('span');
+                commentElement.className = 'comment-marker';
+                commentElement.dataset.commentId = timestamp;
+                commentElement.dataset.originalText = highlightedText || commentText;
+                
+                // Set background color based on type
+                if (type === '?') {
+                    commentElement.style.backgroundColor = 'rgba(255, 0, 0, 0.3)';
+                } else if (type === '!') {
+                    commentElement.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
+                } else if (type === '✓') {
+                    commentElement.style.backgroundColor = 'rgba(0, 255, 0, 0.3)';
+                }
+                
+                // Add the highlighted text
+                if (highlightedText) {
+                    commentElement.textContent = highlightedText;
+                } else {
+                    // Fallback: use comment text or type indicator
+                    commentElement.textContent = commentText || type;
+                }
+                
+                // Create tooltip
+                const tooltip = document.createElement('div');
+                tooltip.className = 'comment-tooltip';
+                
+                const dateStr = new Date(parseInt(timestamp)).toLocaleDateString();
+                tooltip.innerHTML = `<button onclick="editComment(${timestamp})" style="margin-right:5px;">Edit</button>
+                                    <button onclick="deleteComment(${timestamp})">Delete</button>
+                                    <div style="font-size:11px; opacity:0.8;">By ${author} on ${dateStr}</div>
+                                    <div>${commentText}</div>`;
+                
+                commentElement.appendChild(tooltip);
+                
+                // Add to result as HTML string
+                result += commentElement.outerHTML;
+                
+                lastIndex = match.index + fullMatch.length;
+            }
+            
+            // Add remaining content
+            result += content.substring(lastIndex);
+            
+            return result;
+        };
+        
+        // Simple markdown to HTML conversion
+        function markdownToHtml(markdown) {
+            let html = markdown;
+            
+            // Headers
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            
+            // Bold and italic
+            html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Lists
+            html = html.replace(/^\* (.+)$/gim, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+            html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>');
+            
+            // Paragraphs - wrap lines that aren't already tags
+            const lines = html.split('\n');
+            const processedLines = [];
+            let inParagraph = false;
+            let paragraphIndex = 0;
+            
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    if (inParagraph) {
+                        processedLines.push('</p>');
+                        inParagraph = false;
+                    }
+                    processedLines.push(''); // Keep empty lines
+                    return;
+                }
+                
+                // Check if line is already a tag
+                if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || 
+                    trimmed.startsWith('<li') || trimmed.startsWith('</')) {
+                    if (inParagraph) {
+                        processedLines.push('</p>');
+                        inParagraph = false;
+                    }
+                    processedLines.push(line);
+                } else {
+                    if (!inParagraph) {
+                        processedLines.push(`<p class="commentable" data-para-index="${paragraphIndex}">`);
+                        inParagraph = true;
+                        paragraphIndex++;
+                    } else {
+                        processedLines.push('<br>'); // Add line break within paragraph
+                    }
+                    processedLines.push(line);
+                }
+            });
+            
+            if (inParagraph) {
+                processedLines.push('</p>');
+            }
+            
+            return processedLines.join('\n');
+        }
+        
+        // Convert markdown to HTML and render comments
+        let htmlContent = markdownToHtml(text);
+        htmlContent = renderComments(htmlContent);
+        
+        // Add proper container with good typography
+        document.getElementById('center-panel').innerHTML = `
+            <article class="document-content">
+                ${htmlContent}
+            </article>
+        `;
+        
+        const docTitle = doc.frontmatter?.title || doc.title;
+        restoreComments(docTitle);
+        attachCommentListeners();
+        
+    } catch (e) {
+        console.error('Error loading document:', e);
+        document.getElementById('center-panel').innerHTML = `
+            <div class="document-content">
+                <h2>Error loading document</h2>
+                <p style="color: #dc3545;">${e.message}</p>
+            </div>
+        `;
     }
 }
 
