@@ -52,7 +52,7 @@ _Theoretical proposal_: Recognition is not the identification of a visual patter
 
 This would explain the experiential immediacy: there is no process of matching followed by retrieval of appropriate responses. The constellation of readiness would be what recognition is, not what recognition produces. There's no temporal sequence of "visual input → memory search → recognition achieved." Instead, the entire constellation becomes simultaneously "close to hand," and that constellation-activation IS the recognition event.
 
-## Understanding as Recognition
+## [^9]Understanding as Recognition
 
 This analysis extends beyond simple object recognition to complex cognition. When you finally "get" a difficult philosophical text, that moment of understanding isn't different from recognizing a cat's face—it's the same instantaneous constellation-activation, just with more complex patterns:
 
@@ -289,3 +289,6 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^8]: question:Why?:anonymous:1758050003922
 
 [^9]: clarification:numbers are still moved at the beggining of the paragraph:florin.cojocariu@s.unibuc.ro:1758050600500
+
+[^9]: clarification:Understanding as Recognition
+notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
