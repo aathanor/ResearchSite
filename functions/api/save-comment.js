@@ -12,7 +12,7 @@ export async function onRequestPost(context) {
     const body = await clonedRequest.json();
     console.log('Request body:', body);
     
-    const { docId, comment, oldComment, type, action } = body;
+    const { docId, comment, oldComment, footnoteRef, selectedText, beforeContext, afterContext, type, action } = body;
     
     if (type !== 'footnote') {
       return new Response(JSON.stringify({ 
@@ -113,7 +113,7 @@ export async function onRequestPost(context) {
     // Handle different actions
     switch (action) {
       case 'add':
-        content = addFootnoteComment(content, comment);
+        content = addFootnoteComment(content, comment, footnoteRef, selectedText, beforeContext, afterContext);
         commitMessage = `Add comment to ${actualFilename}`;
         break;
         
@@ -140,7 +140,7 @@ export async function onRequestPost(context) {
         
       default:
         // Default to add for backward compatibility
-        content = addFootnoteComment(content, comment);
+        content = addFootnoteComment(content, comment, footnoteRef, selectedText, beforeContext, afterContext);
         commitMessage = `Add comment to ${actualFilename}`;
         break;
     }
@@ -218,29 +218,128 @@ export async function onRequestPost(context) {
 }
 
 // Add footnote comment to content
-function addFootnoteComment(content, footnoteDefinition) {
-  console.log('Adding footnote:', footnoteDefinition);
+function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedText, beforeContext, afterContext) {
+  console.log('Adding footnote:', { footnoteDefinition, footnoteRef, selectedText, beforeContext, afterContext });
   
-  // Parse footnote to get the number and details
-  const match = footnoteDefinition.match(/^\[(\^[^\]]+)\]:\s*(.+)$/);
-  if (!match) {
-    console.error('Invalid footnote format:', footnoteDefinition);
+  if (!footnoteRef || !selectedText) {
+    console.error('Missing footnoteRef or selectedText');
     return content;
   }
   
-  const [, ref, definition] = match;
-  const number = ref.replace('^', '');
+  // Clean the selected text and contexts
+  const cleanSelectedText = selectedText.trim();
+  const cleanBeforeContext = beforeContext ? beforeContext.trim() : '';
+  const cleanAfterContext = afterContext ? afterContext.trim() : '';
   
-  // Add footnote reference [^n] to the content at the end of the first paragraph
-  // This is a simple implementation - in a real app, you'd want to insert it where the user selected
-  const firstParagraphEnd = content.indexOf('\n\n');
-  if (firstParagraphEnd !== -1) {
-    const beforeFirstBreak = content.substring(0, firstParagraphEnd);
-    const afterFirstBreak = content.substring(firstParagraphEnd);
-    content = beforeFirstBreak + `[${ref}]` + afterFirstBreak;
+  let insertionIndex = -1;
+  
+  // Strategy 1: Try to find the exact selected text
+  insertionIndex = content.indexOf(cleanSelectedText);
+  if (insertionIndex !== -1) {
+    console.log('Found exact selected text at:', insertionIndex);
+  }
+  
+  // Strategy 2: Use before and after context to find the location
+  if (insertionIndex === -1 && cleanBeforeContext && cleanAfterContext) {
+    // Try to find the pattern: beforeContext + selectedText + afterContext
+    const pattern = cleanBeforeContext + cleanSelectedText + cleanAfterContext;
+    const patternIndex = content.indexOf(pattern);
+    if (patternIndex !== -1) {
+      insertionIndex = patternIndex + cleanBeforeContext.length;
+      console.log('Found using full context at:', insertionIndex);
+    }
+  }
+  
+  // Strategy 3: Use just before context
+  if (insertionIndex === -1 && cleanBeforeContext) {
+    const beforeIndex = content.indexOf(cleanBeforeContext);
+    if (beforeIndex !== -1) {
+      insertionIndex = beforeIndex + cleanBeforeContext.length;
+      console.log('Found using before context at:', insertionIndex);
+    }
+  }
+  
+  // Strategy 4: Try partial matching of selected text (first few words)
+  if (insertionIndex === -1) {
+    const words = cleanSelectedText.split(/\s+/);
+    if (words.length >= 2) {
+      for (let i = Math.min(words.length, 3); i >= 2; i--) {
+        const partialText = words.slice(0, i).join(' ');
+        const partialIndex = content.indexOf(partialText);
+        if (partialIndex !== -1) {
+          insertionIndex = partialIndex + partialText.length;
+          console.log('Found using partial text at:', insertionIndex);
+          break;
+        }
+      }
+    }
+  }
+  
+  // Strategy 5: Find a similar text pattern (case-insensitive, punctuation-tolerant)
+  if (insertionIndex === -1) {
+    const normalizedSelected = cleanSelectedText.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');
+    const contentWords = content.toLowerCase().match(/\w+/g) || [];
+    const selectedWords = normalizedSelected.split(' ').filter(w => w.length > 0);
+    
+    if (selectedWords.length >= 2) {
+      // Find sequence of words in content
+      for (let i = 0; i <= contentWords.length - selectedWords.length; i++) {
+        const contentSlice = contentWords.slice(i, i + selectedWords.length);
+        if (JSON.stringify(contentSlice) === JSON.stringify(selectedWords)) {
+          // Found the word sequence, now find it in original content
+          const regex = new RegExp(selectedWords.map(w => `\\b${w}\\b`).join('\\s+'), 'i');
+          const match = content.match(regex);
+          if (match) {
+            const matchIndex = content.indexOf(match[0]);
+            insertionIndex = matchIndex + match[0].length;
+            console.log('Found using word sequence at:', insertionIndex);
+            break;
+          }
+        }
+      }
+    }
+  }
+  
+  // Strategy 6: Last resort - find a reasonable location (NOT at the beginning)
+  if (insertionIndex === -1) {
+    console.warn('Could not locate selected text, using fallback strategy');
+    
+    // Skip frontmatter
+    let searchStart = 0;
+    const frontmatterEnd = content.indexOf('---', 3);
+    if (frontmatterEnd !== -1) {
+      searchStart = frontmatterEnd + 3;
+    }
+    
+    // Find the end of the first meaningful paragraph after frontmatter
+    const remainingContent = content.substring(searchStart);
+    const firstParagraphEnd = remainingContent.indexOf('\n\n');
+    
+    if (firstParagraphEnd !== -1) {
+      insertionIndex = searchStart + firstParagraphEnd;
+    } else {
+      // Find end of first sentence after frontmatter
+      const sentenceEnd = remainingContent.search(/[.!?]\s/);
+      if (sentenceEnd !== -1) {
+        insertionIndex = searchStart + sentenceEnd + 1;
+      } else {
+        // Very last resort - middle of document
+        insertionIndex = Math.floor(content.length / 2);
+      }
+    }
+    
+    console.log('Using fallback insertion at:', insertionIndex);
+  }
+  
+  // Insert footnote reference at the found position
+  if (insertionIndex !== -1 && insertionIndex < content.length) {
+    const beforeText = content.substring(0, insertionIndex);
+    const afterText = content.substring(insertionIndex);
+    content = beforeText + footnoteRef + afterText;
+    console.log('Inserted footnote reference at position:', insertionIndex);
   } else {
-    // If no paragraph breaks, add at the end of the content
-    content = content.trim() + `[${ref}]`;
+    console.error('Could not find valid insertion point, appending at end');
+    content = content.trim() + footnoteRef;
   }
   
   // Add footnote definition at the end of the content
