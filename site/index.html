@@ -542,11 +542,19 @@
             font-size: 13px;
             color: #495057;
             margin: 1px 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
        
         .comment-option:hover {
             background: #f8f9fa;
             color: #212529;
+        }
+        
+        .comment-option:active {
+            background: #e9ecef;
         }
        
         .comment-option-icon {
@@ -590,15 +598,15 @@
    
     <!-- Comment Menu - Pop-up after text selection -->
     <div class="comment-menu" id="comment-menu">
-        <div class="comment-option" data-type="question">
+        <div class="comment-option" data-type="question" onclick="handleCommentOption('question')">
             <span class="comment-option-icon">❓</span>
             <span class="comment-option-text">Ask question</span>
         </div>
-        <div class="comment-option" data-type="clarification">
+        <div class="comment-option" data-type="clarification" onclick="handleCommentOption('clarification')">
             <span class="comment-option-icon">⚠️</span>
             <span class="comment-option-text">Needs clarification</span>
         </div>
-        <div class="comment-option" data-type="approved">
+        <div class="comment-option" data-type="approved" onclick="handleCommentOption('approved')">
             <span class="comment-option-icon">✅</span>
             <span class="comment-option-text">Approved / Keep</span>
         </div>
@@ -965,6 +973,22 @@
             }
         }
 
+        // Debug function for testing (accessible from browser console)
+        window.testCommentOption = function(type) {
+            console.log('Testing comment option:', type);
+            handleCommentOption(type || 'question');
+        };
+        
+        // Debug function to check if elements exist
+        window.debugCommentSystem = function() {
+            console.log('=== Comment System Debug ===');
+            console.log('Comment menu:', document.getElementById('comment-menu'));
+            console.log('Comment options:', document.querySelectorAll('.comment-option'));
+            console.log('Current range:', currentCommentRange);
+            console.log('Document content:', document.getElementById('document-content'));
+            console.log('============================');
+        };
+
         // Add text selection handlers for commenting
         function addTextSelectionHandlers() {
             const docContent = document.getElementById('document-content');
@@ -1027,31 +1051,43 @@
         
         // Handle comment option selection
         function handleCommentOption(type) {
-            console.log('Comment option selected:', type);
+            console.log('=== handleCommentOption called ===');
+            console.log('Type:', type);
+            console.log('currentCommentRange:', currentCommentRange);
             
             const menu = document.getElementById('comment-menu');
-            menu.classList.remove('show');
+            if (menu) {
+                menu.classList.remove('show');
+                console.log('Menu hidden');
+            }
             
             if (!currentCommentRange) {
                 console.error('No comment range available');
-                alert('Error: No text selection found');
+                alert('Error: No text selection found. Please select text first.');
                 return;
             }
             
             currentCommentType = type;
+            console.log('Comment type set to:', currentCommentType);
             
-            if (type === 'approved') {
-                // For approved comments, add immediately
-                console.log('Adding approved comment immediately');
-                addComment(type, 'Approved', currentCommentRange);
-            } else {
-                // For questions and clarifications, show dialog
-                console.log('Showing dialog for', type);
-                showCommentDialog(type);
+            try {
+                if (type === 'approved') {
+                    // For approved comments, add immediately
+                    console.log('Adding approved comment immediately');
+                    addComment(type, 'Approved', currentCommentRange);
+                } else {
+                    // For questions and clarifications, show dialog
+                    console.log('Showing dialog for', type);
+                    showCommentDialog(type);
+                }
+            } catch (error) {
+                console.error('Error in handleCommentOption:', error);
+                alert('Error processing comment: ' + error.message);
             }
             
             // Clear text selection
             window.getSelection().removeAllRanges();
+            console.log('=== handleCommentOption complete ===');
         }
 
         // Parse markdown and extract footnotes
