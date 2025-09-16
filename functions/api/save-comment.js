@@ -12,12 +12,38 @@ export async function onRequestPost(context) {
     const body = await clonedRequest.json();
     console.log('Request body:', body);
     
-    const { docId, paraIndex, comment: originalComment } = body;
+    const { docId, paraIndex, comment: originalComment, highlightedText, contextBefore, contextAfter } = body;
     
-    // Get authenticated email directly from header (no fetch needed)
-    let author = request.headers.get('Cf-Access-Authenticated-User-Email') || 'anonymous';
-    console.log('Author from header:', author);
+    // Get JWT from headers
+    const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
+    let author = 'anonymous';
     
+    // Fetch identity if JWT is present
+    if (jwt) {
+      const identityUrl = 'https://aathanor.cloudflareaccess.com/cdn-cgi/access/get-identity';
+      console.log('Fetching identity from:', identityUrl);
+      
+      try {
+        const identityResponse = await fetch(identityUrl, {
+          headers: { 'Cf-Access-Jwt-Assertion': jwt }
+        });
+        
+        console.log('Identity response status:', identityResponse.status);
+        
+        if (identityResponse.ok) {
+          const identity = await identityResponse.json();
+          console.log('Identity data:', JSON.stringify(identity));
+          author = identity.email || author;
+        } else {
+          const errorText = await identityResponse.text();
+          console.error('Identity fetch failed:', identityResponse.status, errorText);
+        }
+      } catch (identityError) {
+        console.error('Error fetching identity:', identityError);
+      }
+    }
+    
+    console.log('Final author:', author);
     
     // Process comment to replace "anonymous" with actual author
     let processedComment = originalComment;
@@ -26,6 +52,9 @@ export async function onRequestPost(context) {
     }
     
     console.log('Processed comment:', processedComment);
+    console.log('Highlighted text:', highlightedText);
+    console.log('Context before:', contextBefore);
+    console.log('Context after:', contextAfter);
     
     // Get list of files in content directory from GitHub
     const contentUrl = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/content`;
@@ -112,46 +141,50 @@ export async function onRequestPost(context) {
     let content = atob(fileData.content.replace(/\n/g, ''));
     console.log('Original content length:', content.length);
     
-    // Parse the content to insert comment at the correct position
-    const lines = content.split('\n');
-    let newContent = '';
-    let currentParaIndex = 0;
-    let inParagraph = false;
+    // Store the original content for comparison
+    const originalContent = content;
     
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+    // Try to find the exact position using the context information
+    if (highlightedText && contextBefore && contextAfter) {
+      // Look for the pattern: contextBefore + highlightedText + contextAfter
+      const searchPattern = contextBefore + highlightedText + contextAfter;
+      const position = content.indexOf(searchPattern);
       
-      // Check if this is a paragraph line (not empty, not a header, etc.)
-      if (line.trim() && !line.startsWith('#') && !line.startsWith('---')) {
-        if (!inParagraph) {
-          inParagraph = true;
-          // If this is the paragraph we're looking for, insert the comment
-          if (currentParaIndex === parseInt(paraIndex)) {
-            newContent += line + '\n' + processedComment + '\n';
-          } else {
-            newContent += line + '\n';
-          }
-          currentParaIndex++;
-        } else {
-          newContent += line + '\n';
-        }
+      if (position !== -1) {
+        // Found the exact position, insert the comment right after the highlighted text
+        const insertPosition = position + contextBefore.length + highlightedText.length;
+        const before = content.substring(0, insertPosition);
+        const after = content.substring(insertPosition);
+        
+        content = before + ' ' + processedComment + ' ' + after;
+        console.log('Comment inserted at exact position');
       } else {
-        // Reset paragraph state on empty lines or headers
-        inParagraph = false;
-        newContent += line + '\n';
+        // Fallback: try to find just the highlighted text
+        const textPosition = content.indexOf(highlightedText);
+        if (textPosition !== -1) {
+          // Insert after the highlighted text
+          const before = content.substring(0, textPosition + highlightedText.length);
+          const after = content.substring(textPosition + highlightedText.length);
+          
+          content = before + ' ' + processedComment + ' ' + after;
+          console.log('Comment inserted after highlighted text (without context)');
+        } else {
+          // Fallback: append at the end
+          content = content + '\n' + processedComment + '\n';
+          console.log('Exact position not found, appended at the end');
+        }
       }
+    } else {
+      // Fallback: append at the end
+      content = content + '\n' + processedComment + '\n';
+      console.log('Insufficient positioning information, appended at the end');
     }
     
-    // If we didn't find the paragraph, append the comment at the end
-    if (currentParaIndex <= parseInt(paraIndex)) {
-      newContent += '\n' + processedComment + '\n';
-    }
-    
-    console.log('New content length:', newContent.length);
-    console.log('Content changed:', content !== newContent);
+    console.log('New content length:', content.length);
+    console.log('Content changed:', originalContent !== content);
     
     // Only update if content actually changed
-    if (content === newContent) {
+    if (originalContent === content) {
       console.log('Content unchanged, skipping update');
       return new Response(JSON.stringify({ 
         success: true,
@@ -177,8 +210,8 @@ export async function onRequestPost(context) {
         'User-Agent': 'Cloudflare-Worker'
       },
       body: JSON.stringify({
-        message: `Add comment to paragraph ${paraIndex} in ${actualFilename}`,
-        content: btoa(unescape(encodeURIComponent(newContent))),
+        message: `Add comment to ${actualFilename}`,
+        content: btoa(unescape(encodeURIComponent(content))),
         sha: fileData.sha,
         committer: {
           name: 'Research Comments',
@@ -211,7 +244,7 @@ export async function onRequestPost(context) {
     
     return new Response(JSON.stringify({ 
       success: true,
-      message: `Comment added to paragraph ${paraIndex} in ${actualFilename}`,
+      message: `Comment added to ${actualFilename}`,
       filename: actualFilename,
       commit: updateResult.commit
     }), {
