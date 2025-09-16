@@ -415,9 +415,12 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
     content = content.trim() + footnoteRef;
   }
   
-  // Format footnote definition for multi-line support
+  // Format footnote definition for multi-line support, avoid extra \n if single line
   const lines = footnoteDefinition.split('\n');
-  const formattedDefinition = lines[0] + '\n' + lines.slice(1).map(line => '    ' + line.trim()).join('\n');
+  let formattedDefinition = lines[0];
+  if (lines.length > 1) {
+    formattedDefinition += '\n' + lines.slice(1).map(line => '    ' + line.trim()).join('\n');
+  }
   
   // Add formatted footnote definition at the end of the content
   if (!content.endsWith('\n')) {
@@ -433,22 +436,25 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
 function updateFootnoteComment(content, oldFootnoteDefinition, newFootnoteDefinition) {
   console.log('Updating footnote:', { old: oldFootnoteDefinition, new: newFootnoteDefinition });
   
-  // Format new definition for multi-line
+  // Format new definition for multi-line, avoid extra \n if single line
   const newLines = newFootnoteDefinition.split('\n');
-  const formattedNew = newLines[0] + '\n' + newLines.slice(1).map(line => '    ' + line.trim()).join('\n');
+  let formattedNew = newLines[0];
+  if (newLines.length > 1) {
+    formattedNew += '\n' + newLines.slice(1).map(line => '    ' + line.trim()).join('\n');
+  }
   
-  // For old, need to match potentially multi-line in content
-  // First, escape special chars for regex
+  // For old, match potentially multi-line or single-line in content
+  // Escape special chars for regex
   const escapedOld = oldFootnoteDefinition.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-  // Allow for indented lines in old definition
-  const oldPattern = new RegExp(escapedOld.replace(/\n/g, '(?:\\n\\s{4}[^\\n]*)*'), 'g');
+  // Allow for optional multi-line indents in old definition
+  const oldPattern = new RegExp(escapedOld.replace(/\n/g, '(?:\\n\\s{0,4}[^\\n]*)*'), 'g');
   
   if (content.match(oldPattern)) {
     content = content.replace(oldPattern, formattedNew);
     console.log('Footnote updated successfully');
   } else {
     console.error('Old footnote definition not found:', oldFootnoteDefinition);
-    // Fallback: add new
+    // Fallback: add new at end
     content += '\n\n' + formattedNew;
   }
   
