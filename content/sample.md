@@ -4,7 +4,7 @@ category: "core"
 lens: ["philosophy", "cognition"]
 node: "pri-core"
 status: "developing"
----
+---[^1]
 
 # # Pattern Recognition Identity
 
@@ -99,3 +99,5 @@ mental disorders
 
 
 
+
+[^1]: clarification:some clarification asked:anonymous:1758045404033
