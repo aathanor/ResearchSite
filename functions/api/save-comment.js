@@ -317,6 +317,7 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
   
   // Strategy 2: Use before and after context to find the location
   if (insertionIndex === -1 && cleanBeforeContext && cleanAfterContext) {
+    // Try to find the pattern: beforeContext + selectedText + afterContext
     const pattern = cleanBeforeContext + cleanSelectedText + cleanAfterContext;
     const patternIndex = content.indexOf(pattern);
     if (patternIndex !== -1) {
@@ -357,9 +358,11 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
     const selectedWords = normalizedSelected.split(' ').filter(w => w.length > 0);
     
     if (selectedWords.length >= 2) {
+      // Find sequence of words in content
       for (let i = 0; i <= contentWords.length - selectedWords.length; i++) {
         const contentSlice = contentWords.slice(i, i + selectedWords.length);
         if (JSON.stringify(contentSlice) === JSON.stringify(selectedWords)) {
+          // Found the word sequence, now find it in original content
           const regex = new RegExp(selectedWords.map(w => `\\b${w}\\b`).join('\\s+'), 'i');
           const match = content.match(regex);
           if (match) {
@@ -415,18 +418,11 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
     content = content.trim() + footnoteRef;
   }
   
-  // Format footnote definition for multi-line support, avoid extra \n if single line
-  const lines = footnoteDefinition.split('\n');
-  let formattedDefinition = lines[0];
-  if (lines.length > 1) {
-    formattedDefinition += '\n' + lines.slice(1).map(line => '    ' + line.trim()).join('\n');
-  }
-  
-  // Add formatted footnote definition at the end of the content
+  // Add footnote definition at the end of the content
   if (!content.endsWith('\n')) {
     content += '\n';
   }
-  content += '\n' + formattedDefinition;
+  content += '\n' + footnoteDefinition;
   
   console.log('Footnote added successfully');
   return content;
@@ -436,28 +432,17 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
 function updateFootnoteComment(content, oldFootnoteDefinition, newFootnoteDefinition) {
   console.log('Updating footnote:', { old: oldFootnoteDefinition, new: newFootnoteDefinition });
   
-  // Format new definition for multi-line, avoid extra \n if single line
-  const newLines = newFootnoteDefinition.split('\n');
-  let formattedNew = newLines[0];
-  if (newLines.length > 1) {
-    formattedNew += '\n' + newLines.slice(1).map(line => '    ' + line.trim()).join('\n');
-  }
-  
-  // For old, match potentially multi-line or single-line in content
-  // Escape special chars for regex
-  const escapedOld = oldFootnoteDefinition.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-  // Allow for optional multi-line indents in old definition
-  const oldPattern = new RegExp(escapedOld.replace(/\n/g, '(?:\\n\\s{0,4}[^\\n]*)*'), 'g');
-  
-  if (content.match(oldPattern)) {
-    content = content.replace(oldPattern, formattedNew);
-    console.log('Footnote updated successfully');
-  } else {
+  // Find and replace the old footnote definition with the new one
+  const oldDefIndex = content.indexOf(oldFootnoteDefinition);
+  if (oldDefIndex === -1) {
     console.error('Old footnote definition not found:', oldFootnoteDefinition);
-    // Fallback: add new at end
-    content += '\n\n' + formattedNew;
+    // Fallback: just add the new definition
+    return addFootnoteComment(content, newFootnoteDefinition);
   }
   
+  content = content.replace(oldFootnoteDefinition, newFootnoteDefinition);
+  
+  console.log('Footnote updated successfully');
   return content;
 }
 
