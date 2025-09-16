@@ -1092,6 +1092,10 @@
                             console.log('Document clicked:', doc);
                             document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
                             item.classList.add('active');
+                            
+                            // Store document data reference for potential reloading
+                            item.docData = doc;
+                            
                             loadDocContent(doc);
                         });
                         
@@ -1815,69 +1819,61 @@
                 return;
             }
             
-            // Get the original highlighted text from the data attribute or from storage
-            let originalText = commentElement.dataset.originalText;
-            
-            if (!originalText) {
-                // Try to get original text from storage
-                const currentDocItem = document.querySelector('.document-item.active');
-                if (currentDocItem) {
-                    const docId = currentDocItem.dataset.id;
-                    const comments = getStoredComments();
-                    
-                    if (comments[docId]) {
-                        // Search for the comment in storage
-                        for (const paraIndex in comments[docId]) {
-                            const commentsArr = comments[docId][paraIndex];
-                            for (let i = 0; i < commentsArr.length; i++) {
-                                if (commentsArr[i].timestamp == commentTimestamp) {
-                                    originalText = commentsArr[i].highlightedText || commentsArr[i].text;
-                                    break;
-                                }
-                            }
-                            if (originalText) break;
-                        }
-                    }
-                }
-            }
-            
-            // If still no original text, extract from element content (excluding tooltip)
-            if (!originalText) {
-                originalText = Array.from(commentElement.childNodes)
-                    .filter(node => node.nodeType === Node.TEXT_NODE || 
-                                    (node.nodeType === Node.ELEMENT_NODE && 
-                                    !node.classList.contains('comment-tooltip')))
-                    .map(node => node.textContent)
-                    .join('');
-            }
-            
-            // Create a text node with only the original text
-            const textNode = document.createTextNode(originalText);
-            
-            // Replace the comment element with the text node
-            commentElement.parentNode.replaceChild(textNode, commentElement);
-            
-            // Remove from stored comments
+            // Remove from stored comments first
             const currentDocItem = document.querySelector('.document-item.active');
-            if (currentDocItem) {
-                const docId = currentDocItem.dataset.id;
-                const commentsData = getStoredComments();
-                
-                if (commentsData[docId]) {
-                    for (const paraIndex in commentsData[docId]) {
-                        const commentsArr = commentsData[docId][paraIndex];
-                        for (let i = 0; i < commentsArr.length; i++) {
-                            if (commentsArr[i].timestamp == commentTimestamp) {
-                                commentsArr.splice(i, 1);
-                                if (commentsArr.length === 0) {
-                                    delete commentsData[docId][paraIndex];
-                                }
-                                saveComments(commentsData);
-                                return;
+            if (!currentDocItem) {
+                console.error('No active document found');
+                return;
+            }
+            
+            const docId = currentDocItem.dataset.id;
+            const commentsData = getStoredComments();
+            let commentDeleted = false;
+            
+            if (commentsData[docId]) {
+                for (const paraIndex in commentsData[docId]) {
+                    const commentsArr = commentsData[docId][paraIndex];
+                    for (let i = 0; i < commentsArr.length; i++) {
+                        if (commentsArr[i].timestamp == commentTimestamp) {
+                            commentsArr.splice(i, 1);
+                            if (commentsArr.length === 0) {
+                                delete commentsData[docId][paraIndex];
                             }
+                            saveComments(commentsData);
+                            commentDeleted = true;
+                            break;
                         }
                     }
+                    if (commentDeleted) break;
                 }
+            }
+            
+            if (commentDeleted) {
+                // Find the document data and reload the content to refresh the display
+                console.log('Comment deleted, reloading document content...');
+                
+                // Get the document data from the active item's stored reference
+                // We'll need to reload from the stored document data
+                const docData = currentDocItem.docData;
+                if (docData) {
+                    loadDocContent(docData);
+                } else {
+                    // Fallback: try to reload from the original documents
+                    console.log('Document data not found in item, attempting to reload...');
+                    // For now, just remove the comment element and its text
+                    const originalText = commentElement.dataset.originalText || 
+                                       Array.from(commentElement.childNodes)
+                                           .filter(node => node.nodeType === Node.TEXT_NODE || 
+                                                           (node.nodeType === Node.ELEMENT_NODE && 
+                                                           !node.classList.contains('comment-tooltip')))
+                                           .map(node => node.textContent)
+                                           .join('');
+                    
+                    const textNode = document.createTextNode(originalText);
+                    commentElement.parentNode.replaceChild(textNode, commentElement);
+                }
+            } else {
+                console.error('Comment not found in storage for deletion');
             }
         }
 
