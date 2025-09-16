@@ -301,6 +301,4 @@ notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
     one
     has many line breaks:florin.cojocariu@s.unibuc.ro:1758052620108
 
-[^10]: question:It seems are not saved now with or without line breaks:florin.cojocariu@s.unibuc.ro:1758052693045
-
 [^13]: question:this is a question without line break:florin.cojocariu@s.unibuc.ro:1758053319186
