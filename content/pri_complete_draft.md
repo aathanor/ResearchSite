@@ -288,7 +288,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 
 [^8]: question:Why?:anonymous:1758050003922
 
-[^9]: clarification:numbers are still moved at the beggining of the paragraph:florin.cojocariu@s.unibuc.ro:1758050600500
-
 [^9]: clarification:Understanding as Recognition
 notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
