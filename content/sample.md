@@ -88,6 +88,4 @@ mental disorders
 
 *Last updated: [Date]*
 
-: question:Nu era PRU?:anonymous:1758046358196
-
 [^2]: clarification:This is done on the headline "Core Thesis":anonymous:1758046681083
