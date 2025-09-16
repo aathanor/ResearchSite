@@ -235,6 +235,11 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
+        .footnote-ref.active {
+            transform: scale(1.3);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+        
         /* Right panel - Comments */
         .right-panel {
             width: 30%;
@@ -271,6 +276,11 @@
         
         .new-comment-btn:hover {
             background: #218838;
+        }
+        
+        .new-comment-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
         }
        
         .comments-list {
@@ -526,6 +536,15 @@
         .document-content.selection-mode ::selection {
             background-color: rgba(0, 102, 204, 0.3);
         }
+        
+        /* Loading state */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -564,10 +583,10 @@
         <div class="right-panel">
             <div class="comments-header">
                 <h3>Comments</h3>
-                <button class="new-comment-btn" onclick="toggleCommentForm()">+ Add Comment</button>
+                <button class="new-comment-btn" onclick="toggleCommentForm()" disabled>+ Add Comment</button>
             </div>
             <div class="comments-list" id="comments-list">
-                <!-- Comments will be added dynamically -->
+                <div class="loading">No document selected</div>
             </div>
             <!-- New comment form -->
             <div class="comment-form" id="comment-form">
@@ -644,162 +663,253 @@
         let currentComments = [];
         let nextCommentNumber = 1;
         let isAddingComment = false;
-        let userEmail = 'researcher@example.com';
-
-        // Sample document data
-        const documents = {
-            'sample.md': {
-                id: 'sample.md',
-                title: 'Pattern Recognition Identity',
-                category: 'core',
-                lens: ['philosophy', 'cognition'],
-                status: 'developing',
-                content: `---
-title: "Pattern Recognition Identity"
-category: "core" 
-lens: ["philosophy", "cognition"]
-status: "developing"
----
-
-# Pattern Recognition Identity
-
-Pattern Recognition Identity (PRI) proposes a radical reconceptualization of consciousness and identity grounded in the fundamental process of pattern recognition[^1].
-
-## Core Thesis
-
-The central thesis[^2] of PRI is that what we experience as consciousness, identity, and subjective experience emerges from recursive pattern recognition processes. Rather than consciousness being something that recognizes patterns, consciousness *is* pattern recognition recognizing itself.
-
-## Theoretical Framework
-
-### Primary Principles
-
-1. **Pattern Recognition as Fundamental**: All cognitive processes, from perception to abstract reasoning, operate through pattern recognition mechanisms.
-
-2. **Recursive Self-Recognition**: Consciousness emerges when pattern recognition systems recognize their own pattern recognition processes - a recursive loop of recognition recognizing recognition.
-
-3. **Identity as Pattern Constellation**: Personal identity is not a fixed entity but a dynamic constellation of interconnected patterns that maintain coherence through ongoing pattern recognition processes.
-
-### Implications
-
-This framework dissolves several traditional philosophical problems[^3]:
-
-- **The Hard Problem of Consciousness**: Experience is not separate from information processing but emerges from the recursive recognition of pattern recognition itself.
-
-- **The Symbol Grounding Problem**: Symbols ground themselves through pattern recognition processes that connect abstract representations to embodied pattern recognition systems.
-
-- **The Unity of Consciousness**: Unity emerges from the integrative nature of pattern recognition systems that can recognize patterns across multiple domains simultaneously.
-
-## Empirical Connections
-
-Current evidence supporting PRI includes[^4]: 
-
-- Semantic embedding structures in neural networks mirror conceptual organization in human cognition
-- Transformer architectures demonstrate emergent properties through attention mechanisms that resemble recursive pattern recognition
-- Neuroscientific evidence for predictive processing and pattern completion in cortical circuits
-
-## Future Directions
-
-Research priorities include developing computational[^5] models that implement recursive pattern recognition, testing empirical predictions about consciousness and identity, exploring connections to phenomenology and subjective experience, and investigating therapeutic applications for understanding mental disorders.
-
-[^1]: question:This is a very broad claim. What specific evidence supports pattern recognition as the fundamental basis?:researcher@example.com:1758100000000
-[^2]: clarification:Could you clarify what makes this thesis "central" compared to other theories of consciousness?:reviewer@example.com:1758110000000
-[^3]: question:How exactly does it "dissolve" these problems rather than just reframe them?:critic@example.com:1758120000000
-[^4]: approved:Good empirical grounding here:supervisor@example.com:1758130000000
-[^5]: clarification:What specific computational architectures are you envisioning?:researcher@example.com:1758140000000`
-            }
-        };
+        let userEmail = 'anonymous';
+        let isInitialized = false;
 
         // Initialize the application
-        function init() {
-            buildLeftPanel();
+        async function init() {
+            if (isInitialized) return;
+            isInitialized = true;
             
-            // Add lens tab functionality
-            document.querySelectorAll('.lens-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    const lens = tab.dataset.lens;
-                    document.querySelectorAll('.document-item').forEach(doc => {
-                        const docLenses = doc.dataset.lenses ? doc.dataset.lenses.split(' ') : [];
-                        doc.style.display = (lens === 'all' || docLenses.includes(lens)) ? 'block' : 'none';
+            try {
+                await fetchUserEmail();
+                await buildLeftPanel();
+                
+                // Add lens tab functionality
+                document.querySelectorAll('.lens-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        
+                        const lens = tab.dataset.lens;
+                        document.querySelectorAll('.document-item').forEach(doc => {
+                            const docLenses = doc.dataset.lenses ? doc.dataset.lenses.split(' ') : [];
+                            doc.style.display = (lens === 'all' || docLenses.includes(lens)) ? 'block' : 'none';
+                        });
                     });
                 });
-            });
+                
+            } catch (error) {
+                console.error('Error during initialization:', error);
+            }
         }
 
-        // Build left panel with documents
-        function buildLeftPanel() {
+        // Fetch user email
+        async function fetchUserEmail() {
+            try {
+                const res = await fetch('/api/user');
+                const data = await res.json();
+                userEmail = data.email || 'anonymous';
+            } catch {
+                userEmail = 'anonymous';
+            }
+        }
+
+        // Load documents from GitHub
+        async function loadDocuments() {
+            try {
+                console.log('Attempting to fetch documents from /site/data/documents.json...');
+                const res = await fetch('/site/data/documents.json');
+                if (!res.ok) {
+                    console.error('Fetch failed with status:', res.status, res.statusText);
+                    throw new Error(`Documents fetch failed: ${res.status} ${res.statusText}`);
+                }
+                const data = await res.json();
+                console.log('Documents loaded:', data);
+                return data;
+            } catch (err) {
+                console.error('Error loading documents:', err);
+                const alternativePaths = [
+                    '/data/documents.json',
+                    '/documents.json',
+                    '/content/documents.json'
+                ];
+                
+                for (const path of alternativePaths) {
+                    try {
+                        console.log('Trying alternative path:', path);
+                        const res2 = await fetch(path);
+                        if (res2.ok) {
+                            const docs = await res2.json();
+                            console.log('Documents loaded from alternative path:', path, docs);
+                            return docs;
+                        }
+                    } catch (err2) {
+                        console.error(`Alternative path ${path} failed:`, err2);
+                    }
+                }
+                return [];
+            }
+        }
+
+        // Build left panel with documents from GitHub
+        async function buildLeftPanel() {
             const leftPanel = document.querySelector('.left-panel');
-            
-            // Clear existing content except lens tabs
-            leftPanel.querySelectorAll('.doc-category').forEach(el => el.remove());
+            leftPanel.querySelectorAll('.doc-category, .error-message').forEach(el => el.remove());
 
-            // Group documents by category
-            const categories = {};
-            Object.values(documents).forEach(doc => {
-                const cat = doc.category || 'uncategorized';
-                if (!categories[cat]) categories[cat] = [];
-                categories[cat].push(doc);
-            });
+            try {
+                const docsData = await loadDocuments();
+                console.log('Raw documents data:', docsData);
+                
+                if (!docsData || (!docsData.documents && !Array.isArray(docsData))) {
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'error-message';
+                    errorMsg.textContent = 'No documents found - check console for details';
+                    leftPanel.appendChild(errorMsg);
+                    return;
+                }
+                
+                // Handle different possible document structures
+                let processedDocs = [];
+                if (docsData.documents) {
+                    processedDocs = Object.values(docsData.documents);
+                } else if (Array.isArray(docsData)) {
+                    processedDocs = docsData;
+                } else {
+                    processedDocs = Object.values(docsData);
+                }
+                
+                console.log('Processed documents:', processedDocs);
+                
+                if (processedDocs.length === 0) {
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'error-message';
+                    errorMsg.textContent = 'No documents available';
+                    leftPanel.appendChild(errorMsg);
+                    return;
+                }
 
-            // Build UI for each category
-            Object.keys(categories).sort().forEach(cat => {
-                const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'doc-category';
-                
-                const h3 = document.createElement('h3');
-                h3.textContent = cat.toUpperCase();
-                categoryDiv.appendChild(h3);
-                
-                categories[cat].forEach(doc => {
-                    const item = document.createElement('div');
-                    item.className = 'document-item';
-                    item.dataset.id = doc.id;
-                    item.dataset.lenses = Array.isArray(doc.lens) ? doc.lens.join(' ') : '';
-                    
-                    item.innerHTML = `
-                        <div>${doc.title}</div>
-                        <span style="font-size: 11px; color: #6c757d;">● ${doc.status}</span>
-                    `;
-                    
-                    item.addEventListener('click', () => {
-                        document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
-                        item.classList.add('active');
-                        loadDocument(doc);
-                    });
-                    
-                    categoryDiv.appendChild(item);
+                // Group documents by category
+                const categories = {};
+                processedDocs.forEach(doc => {
+                    const cat = doc.frontmatter?.category || 
+                              doc.category || 
+                              doc.meta?.category ||
+                              'uncategorized';
+                    if (!categories[cat]) categories[cat] = [];
+                    categories[cat].push(doc);
                 });
                 
-                leftPanel.appendChild(categoryDiv);
-            });
+                console.log('Categories:', categories);
+
+                // Build UI for each category
+                Object.keys(categories).sort().forEach(cat => {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'doc-category';
+                    
+                    const h3 = document.createElement('h3');
+                    h3.textContent = cat.toUpperCase();
+                    categoryDiv.appendChild(h3);
+                    
+                    categories[cat].forEach(doc => {
+                        const item = document.createElement('div');
+                        item.className = 'document-item';
+                        item.dataset.id = doc.id;
+                        
+                        const lenses = doc.frontmatter?.lens || doc.lens || doc.lenses || doc.tags || [];
+                        item.dataset.lenses = Array.isArray(lenses) ? lenses.join(' ') : '';
+                        
+                        const title = doc.frontmatter?.title || 
+                                    doc.title || 
+                                    doc.name ||
+                                    doc.filename ||
+                                    doc.id ||
+                                    'Untitled';
+                        
+                        const status = doc.frontmatter?.status ||
+                                     doc.status || 
+                                     doc.meta?.status ||
+                                     'draft';
+                        
+                        item.innerHTML = `
+                            <div>${title}</div>
+                            <span style="font-size: 11px; color: #6c757d;">● ${status}</span>
+                        `;
+                        
+                        item.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            console.log('Document clicked:', doc);
+                            document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
+                            item.classList.add('active');
+                            
+                            item.docData = doc;
+                            loadDocument(doc);
+                        });
+                        
+                        categoryDiv.appendChild(item);
+                    });
+                    
+                    leftPanel.appendChild(categoryDiv);
+                });
+                
+            } catch (error) {
+                console.error('Error building left panel:', error);
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+                errorMsg.innerHTML = `Error loading documents<br><small style="font-size:10px;">${error.message}</small>`;
+                leftPanel.appendChild(errorMsg);
+            }
         }
 
-        // Load and display document
-        function loadDocument(doc) {
+        // Load document content from GitHub
+        async function loadDocument(doc) {
             currentDocument = doc;
             
-            // Parse content and extract footnotes
-            const { content, footnotes } = parseMarkdownWithFootnotes(doc.content);
-            currentComments = footnotes;
-            nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
-            
-            // Convert to HTML with footnote references
-            const htmlContent = markdownToHtml(content);
-            
-            // Display content
-            document.getElementById('center-panel').innerHTML = `
-                <article class="document-content" id="document-content">
-                    ${htmlContent}
-                </article>
-            `;
-            
-            // Display comments
-            displayComments();
-            
-            // Add click handlers for footnote references
-            addFootnoteClickHandlers();
+            try {
+                console.log('Loading document:', doc);
+                
+                let text = doc.fullContent || doc.content;
+                if (!text) {
+                    const filename = doc.filename || doc.id || `${doc.id}.md`;
+                    const contentPath = `/content/${filename}`;
+                    console.log('Fetching content from:', contentPath);
+                    
+                    const res = await fetch(contentPath);
+                    if (!res.ok) {
+                        throw new Error(`Failed to fetch content: ${res.status} ${res.statusText}`);
+                    }
+                    text = await res.text();
+                    console.log('Content loaded successfully, length:', text.length);
+                }
+                
+                // Parse markdown and extract footnotes
+                const { content, footnotes } = parseMarkdownWithFootnotes(text);
+                currentComments = footnotes;
+                nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
+                
+                console.log('Parsed footnotes:', footnotes);
+                console.log('Next comment number:', nextCommentNumber);
+                
+                // Convert to HTML with footnote references
+                const htmlContent = markdownToHtml(content);
+                
+                // Display content
+                document.getElementById('center-panel').innerHTML = `
+                    <article class="document-content" id="document-content">
+                        ${htmlContent}
+                    </article>
+                `;
+                
+                // Display comments
+                displayComments();
+                
+                // Add click handlers for footnote references
+                addFootnoteClickHandlers();
+                
+                // Enable add comment button
+                document.querySelector('.new-comment-btn').disabled = false;
+                
+            } catch (e) {
+                console.error('Error loading document:', e);
+                document.getElementById('center-panel').innerHTML = `
+                    <div class="document-content">
+                        <h2>Error loading document</h2>
+                        <p style="color: #dc3545;">${e.message}</p>
+                    </div>
+                `;
+            }
         }
 
         // Parse markdown and extract footnotes
@@ -807,7 +917,7 @@ Research priorities include developing computational[^5] models that implement r
             const footnoteRefs = [];
             const footnoteDefinitions = {};
             
-            // Extract footnote definitions [^n]: content
+            // Extract footnote definitions [^n]: type:content:author:timestamp
             const definitionRegex = /^\[(\^[^\]]+)\]:\s*(.+)$/gm;
             let match;
             while ((match = definitionRegex.exec(content)) !== null) {
@@ -845,6 +955,9 @@ Research priorities include developing computational[^5] models that implement r
         function markdownToHtml(markdown) {
             let html = markdown;
             
+            // Remove frontmatter
+            html = html.replace(/^---[\s\S]*?---\n/, '');
+            
             // Headers
             html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
             html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
@@ -872,7 +985,7 @@ Research priorities include developing computational[^5] models that implement r
             html = html.replace(/\n\n/g, '</p><p>');
             html = '<p>' + html + '</p>';
             
-            // Clean up empty paragraphs
+            // Clean up empty paragraphs and fix header/list formatting
             html = html.replace(/<p><\/p>/g, '');
             html = html.replace(/<p>(<h[1-6]>)/g, '$1');
             html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
@@ -998,10 +1111,15 @@ Research priorities include developing computational[^5] models that implement r
             if (docContent) {
                 docContent.classList.remove('selection-mode');
             }
+            
+            // Reset form button
+            const addButton = form.querySelector('.btn-primary');
+            addButton.textContent = 'Add Comment';
+            addButton.onclick = addComment;
         }
 
         // Add new comment
-        function addComment() {
+        async function addComment() {
             const type = document.getElementById('comment-type').value;
             const text = document.getElementById('comment-text').value.trim();
             
@@ -1034,15 +1152,15 @@ Research priorities include developing computational[^5] models that implement r
                 ref: `^${nextCommentNumber}`
             };
             
+            // Insert footnote reference at selection
+            insertFootnoteAtSelection(nextCommentNumber);
+            
             // Add to current comments
             currentComments.push(newComment);
             currentComments.sort((a, b) => a.number - b.number);
             
-            // Insert footnote reference at selection
-            insertFootnoteAtSelection(nextCommentNumber);
-            
-            // Update the document content to include new footnote definition
-            updateDocumentWithNewComment(newComment);
+            // Save to GitHub
+            await saveCommentToGitHub(newComment);
             
             // Increment counter
             nextCommentNumber++;
@@ -1077,16 +1195,38 @@ Research priorities include developing computational[^5] models that implement r
             selection.removeAllRanges();
         }
 
-        // Update document markdown with new comment
-        function updateDocumentWithNewComment(comment) {
-            if (!currentDocument) return;
-            
-            // Add footnote definition to document content
-            const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
-            currentDocument.content += '\n' + footnoteDefinition;
-            
-            // In a real implementation, this would save to GitHub via API
-            console.log('Would save to GitHub:', footnoteDefinition);
+        // Save comment to GitHub via API
+        async function saveCommentToGitHub(comment) {
+            try {
+                const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
+                
+                console.log('Saving comment to GitHub:', footnoteDefinition);
+                
+                const response = await fetch('/api/save-comment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        docId: currentDocument.id,
+                        comment: footnoteDefinition,
+                        type: 'footnote',
+                        action: 'add'
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    console.error('Failed to save comment to GitHub:', response.status, errorData);
+                    alert('Failed to save comment to GitHub. It will be lost when you refresh.');
+                    return;
+                }
+                
+                const result = await response.json();
+                console.log('Comment saved to GitHub successfully:', result);
+                
+            } catch (error) {
+                console.error('Error saving comment to GitHub:', error);
+                console.log('API endpoint not available - comment will be lost on refresh.');
+            }
         }
 
         // Edit comment
@@ -1108,7 +1248,7 @@ Research priorities include developing computational[^5] models that implement r
         }
 
         // Update existing comment
-        function updateComment(commentNumber) {
+        async function updateComment(commentNumber) {
             const type = document.getElementById('comment-type').value;
             const text = document.getElementById('comment-text').value.trim();
             
@@ -1120,48 +1260,68 @@ Research priorities include developing computational[^5] models that implement r
             // Update comment in array
             const comment = currentComments.find(c => c.number === commentNumber);
             if (comment) {
+                const oldComment = {...comment};
                 comment.type = type;
                 comment.text = text;
                 comment.timestamp = Date.now();
+                
+                // Update footnote reference styling
+                const ref = document.querySelector(`[data-comment-number="${commentNumber}"]`);
+                if (ref) {
+                    ref.className = `footnote-ref ${type}`;
+                }
+                
+                // Save to GitHub
+                await updateCommentInGitHub(oldComment, comment);
+                
+                // Refresh display
+                displayComments();
             }
-            
-            // Update footnote reference styling
-            const ref = document.querySelector(`[data-comment-number="${commentNumber}"]`);
-            if (ref) {
-                ref.className = `footnote-ref ${type}`;
-            }
-            
-            // Refresh display
-            displayComments();
             
             // Reset form
-            const form = document.getElementById('comment-form');
-            form.classList.remove('show');
-            document.getElementById('comment-text').value = '';
-            
-            const addButton = form.querySelector('.btn-primary');
-            addButton.textContent = 'Add Comment';
-            addButton.onclick = addComment;
-            
-            // Update document
-            updateDocumentWithEditedComment(comment);
+            cancelComment();
         }
 
-        // Update document with edited comment
-        function updateDocumentWithEditedComment(comment) {
-            if (!currentDocument) return;
-            
-            // Update footnote definition in document content
-            const oldPattern = new RegExp(`\\[\\^${comment.number}\\]:\\s*[^\\n]+`, 'g');
-            const newDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
-            currentDocument.content = currentDocument.content.replace(oldPattern, newDefinition);
-            
-            console.log('Would update in GitHub:', newDefinition);
+        // Update comment in GitHub
+        async function updateCommentInGitHub(oldComment, newComment) {
+            try {
+                const oldFootnoteDefinition = `[^${oldComment.number}]: ${oldComment.type}:${oldComment.text}:${oldComment.author}:${oldComment.timestamp}`;
+                const newFootnoteDefinition = `[^${newComment.number}]: ${newComment.type}:${newComment.text}:${newComment.author}:${newComment.timestamp}`;
+                
+                console.log('Updating comment in GitHub:', { old: oldFootnoteDefinition, new: newFootnoteDefinition });
+                
+                const response = await fetch('/api/save-comment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        docId: currentDocument.id,
+                        oldComment: oldFootnoteDefinition,
+                        comment: newFootnoteDefinition,
+                        type: 'footnote',
+                        action: 'update'
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    console.error('Failed to update comment in GitHub:', response.status, errorData);
+                    return;
+                }
+                
+                const result = await response.json();
+                console.log('Comment updated in GitHub successfully:', result);
+                
+            } catch (error) {
+                console.error('Error updating comment in GitHub:', error);
+            }
         }
 
         // Delete comment
-        function deleteComment(commentNumber) {
+        async function deleteComment(commentNumber) {
             if (!confirm('Are you sure you want to delete this comment?')) return;
+            
+            const comment = currentComments.find(c => c.number === commentNumber);
+            if (!comment) return;
             
             // Remove from array
             currentComments = currentComments.filter(c => c.number !== commentNumber);
@@ -1172,16 +1332,43 @@ Research priorities include developing computational[^5] models that implement r
                 ref.remove();
             }
             
-            // Remove footnote definition from document content
-            if (currentDocument) {
-                const pattern = new RegExp(`\\[\\^${commentNumber}\\]:\\s*[^\\n]+\\n?`, 'g');
-                currentDocument.content = currentDocument.content.replace(pattern, '');
-            }
+            // Save to GitHub
+            await deleteCommentFromGitHub(comment);
             
             // Refresh display
             displayComments();
-            
-            console.log('Would delete from GitHub: comment', commentNumber);
+        }
+
+        // Delete comment from GitHub
+        async function deleteCommentFromGitHub(comment) {
+            try {
+                const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
+                
+                console.log('Deleting comment from GitHub:', footnoteDefinition);
+                
+                const response = await fetch('/api/save-comment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        docId: currentDocument.id,
+                        comment: footnoteDefinition,
+                        type: 'footnote',
+                        action: 'delete'
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    console.error('Failed to delete comment from GitHub:', response.status, errorData);
+                    return;
+                }
+                
+                const result = await response.json();
+                console.log('Comment deleted from GitHub successfully:', result);
+                
+            } catch (error) {
+                console.error('Error deleting comment from GitHub:', error);
+            }
         }
 
         // Modal functions
