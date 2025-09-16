@@ -4,7 +4,7 @@ category: "core"
 lens: ["philosophy", "cognition"]
 node: "pri-core"
 status: "developing"
----
+---[^1]
 
 # # Pattern Recognition Identity
 
@@ -88,6 +88,4 @@ mental disorders
 
 *Last updated: [Date]*
 
-: clarification:some clarification asked:anonymous:1758045404033
-
-: clarification:new clarification needed:anonymous:1758045545048
+[^1]: question:Nu era PRU?:anonymous:1758046358196
