@@ -15,7 +15,7 @@ pattern recognition.
 
 ## Core Thesis
 
-The central thesis of PRI is that what we experience as consciousness, 
+The central thesis <!-- ! I this it? | anonymous | 1758020032308 | The central thesis --> of PRI is that what we experience as consciousness, 
 identity, and subjective experience emerges from recursive pattern 
 recognition processes. Rather than consciousness being something that 
 recognizes patterns, consciousness *is* pattern recognition recognizing 
@@ -43,7 +43,8 @@ maintain coherence through ongoing pattern recognition processes.
 ### Implications
 
 This framework dissolves several traditional philosophical problems:
-
+ <!-- ? Why? | anonymous | 1758020044108 | This framework dissolves several traditional philosophical problems:
+ -->
 - **The Hard Problem of Consciousness**: Experience is not separate from 
   information processing but emerges from the recursive recognition of 
   pattern recognition itself.
@@ -94,8 +95,6 @@ experience 4. Investigating therapeutic applications for understanding
 mental disorders
 
 *Last updated: [Date]*
-
-<!-- ? de ce? | anonymous | 1757968607887 -->
 
 
 
