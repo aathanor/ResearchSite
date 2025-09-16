@@ -105,8 +105,28 @@ export async function onRequestPost(context) {
     console.log('File fetched successfully');
     
     // Decode the content
-    let content = atob(fileData.content.replace(/\n/g, ''));
+    let content;
+    try {
+      // FIXED: Proper UTF-8 decoding from GitHub API
+      const base64Content = fileData.content.replace(/\n/g, '');
+      console.log('Base64 content length:', base64Content.length);
+      
+      // Use modern decoding approach to avoid corruption
+      const binaryString = atob(base64Content);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      content = new TextDecoder('utf-8').decode(bytes);
+      console.log('Content decoded successfully with UTF-8');
+    } catch (error) {
+      console.error('UTF-8 decoding failed, falling back to old method:', error);
+      // Fallback to old method if new one fails
+      content = atob(fileData.content.replace(/\n/g, ''));
+    }
+    
     console.log('Original content length:', content.length);
+    console.log('Content sample after decoding:', content.substring(0, 200));
     
     let commitMessage = '';
     
@@ -149,6 +169,22 @@ export async function onRequestPost(context) {
     
     // Update the file on GitHub
     console.log('Attempting to update file on GitHub...');
+    console.log('Content length before encoding:', content.length);
+    console.log('Content sample before encoding:', content.substring(0, 200));
+    
+    // FIXED: Proper UTF-8 encoding for GitHub API
+    let encodedContent;
+    try {
+      // Use modern encoding approach to avoid corruption
+      const utf8Bytes = new TextEncoder().encode(content);
+      encodedContent = btoa(String.fromCharCode.apply(null, utf8Bytes));
+      console.log('Content encoded successfully with UTF-8');
+    } catch (error) {
+      console.error('UTF-8 encoding failed, falling back to old method:', error);
+      // Fallback to old method if new one fails
+      encodedContent = btoa(unescape(encodeURIComponent(content)));
+    }
+    
     const updateResponse = await fetch(fileUrl, {
       method: 'PUT',
       headers: {
@@ -159,7 +195,7 @@ export async function onRequestPost(context) {
       },
       body: JSON.stringify({
         message: commitMessage,
-        content: btoa(unescape(encodeURIComponent(content))),
+        content: encodedContent,
         sha: fileData.sha,
         committer: {
           name: 'Research Comments',
