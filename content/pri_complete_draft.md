@@ -7,7 +7,7 @@ tags: main_research, support_draft
 
 # The Pattern-Matching Confusion
 
-Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
+[^6]Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
 
 Pattern-matching involves:
 
@@ -17,14 +17,14 @@ Pattern-matching involves:
 * Decision algorithms
 * Temporal duration
 
-Many computer software algorithms exemplify pattern-matching strategies. Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines. Expert systems search through rule databases to find matching conditions.[^1]
+[^7]Many computer software algorithms exemplify pattern-matching strategies. Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines. Expert systems search through rule databases to find matching conditions.[^1]
 
 However, conflating all pattern-matching with pattern-recognition may obscure important distinctions about the nature of cognition.
 
 
 # The Immediacy of Recognition
 
-Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
+[^8]Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
 
 This immediacy suggests something qualitatively different from algorithmic matching. Consider the phenomenological difference between:
 
@@ -281,3 +281,9 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^4]: There is abundant neurosciences literature documenting these claims, with Libet et al. (1983), Sato et al. (2024) and Pulvermüller & Fadiga (2010) being some of the most well known. The neurological evidence for PRI is a connected research field but it must be said our approach is and needs to stay philosophical: PRI has important consequences in the Philosophy of Language, Reference Theory and the way we understand LLMs and AI in general.
 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
+
+[^6]: approved:Approved:anonymous:1758049907366
+
+[^7]: clarification:what?:anonymous:1758049941789
+
+[^8]: question:Why?:anonymous:1758050003922
