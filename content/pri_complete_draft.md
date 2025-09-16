@@ -26,7 +26,7 @@ However, conflating all pattern-matching with pattern-recognition may obscure im
 
 [^8]Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
 
-This immediacy suggests something qualitatively different from algorithmic matching. Consider the phenomenological difference between:
+This immediacy suggests something [^9]qualitatively different from algorithmic matching. Consider the phenomenological difference between:
 
 * Struggling to remember where you know someone from (effortful, temporal)
 * Instantly recognizing your childhood friend (immediate, effortless)
@@ -287,3 +287,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^7]: clarification:what?:anonymous:1758049941789
 
 [^8]: question:Why?:anonymous:1758050003922
+
+[^9]: clarification:numbers are still moved at the beggining of the paragraph:florin.cojocariu@s.unibuc.ro:1758050600500
