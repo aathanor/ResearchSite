@@ -62,7 +62,9 @@ This framework dissolves several traditional philosophical problems:
 
 ## Empirical Connections
 
-Current evidence supporting PRI includes:
+Current evidence supporting PRI includes: <!-- ? Where is the evidence? | anonymous | 1757999507537 | Current evidence supporting PRI includes: | 
+ | 
+ --> 
 
 - Semantic embedding structures in neural networks mirror conceptual organization in human cognition
 
