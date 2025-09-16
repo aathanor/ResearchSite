@@ -1056,14 +1056,27 @@
             handleCommentOption(type || 'question');
         };
         
-        // Debug function to check if elements exist
-        window.debugCommentSystem = function() {
-            console.log('=== Comment System Debug ===');
-            console.log('Comment menu:', document.getElementById('comment-menu'));
-            console.log('Comment options:', document.querySelectorAll('.comment-option'));
-            console.log('Current range:', currentCommentRange);
-            console.log('Document content:', document.getElementById('document-content'));
-            console.log('============================');
+        // Debug function to check current document content
+        window.debugFootnotes = function() {
+            console.log('=== Footnote Debug ===');
+            console.log('Current document:', currentDocument);
+            console.log('Current comments:', currentComments);
+            console.log('Next comment number:', nextCommentNumber);
+            
+            if (currentDocument) {
+                const content = currentDocument.fullContent || currentDocument.content || '';
+                console.log('Raw document content:');
+                console.log(content);
+                
+                console.log('\nFootnote definitions found:');
+                const definitionRegex = /^\[(\^[^\]]+)\]:\s*(.+)$/gm;
+                let match;
+                while ((match = definitionRegex.exec(content)) !== null) {
+                    console.log('- ', match[0]);
+                }
+            }
+            
+            console.log('======================');
         };
 
         // Add text selection handlers for commenting
@@ -1172,20 +1185,41 @@
             const footnoteRefs = [];
             const footnoteDefinitions = {};
             
+            console.log('=== Parsing footnotes from content ===');
+            console.log('Content length:', content.length);
+            console.log('Content preview:', content.substring(0, 500));
+            
             // Extract footnote definitions [^n]: content
-            const definitionRegex = /^\[(\^[^\]]+)\]:\s*(.+)$/gm;
+            // Updated regex to handle potential edge cases
+            const definitionRegex = /^\[(\^[^\]]+)\]:\s*(.+?)(?=\n\[|\n\n|\n$|$)/gms;
             let match;
+            const matches = [];
+            
             while ((match = definitionRegex.exec(content)) !== null) {
-                const [fullMatch, ref, definition] = match;
+                matches.push({
+                    fullMatch: match[0],
+                    ref: match[1],
+                    definition: match[2].trim()
+                });
+            }
+            
+            console.log('Found footnote matches:', matches);
+            
+            matches.forEach(({ fullMatch, ref, definition }) => {
+                console.log('Processing footnote:', { ref, definition });
                 
                 // Try to parse as comment footnote (type:text:author:timestamp)
                 const parts = definition.split(':');
-                if (parts.length >= 4 && ['question', 'clarification', 'approved'].includes(parts[0])) {
+                console.log('Definition parts:', parts);
+                
+                if (parts.length >= 4 && ['question', 'clarification', 'approved'].includes(parts[0].trim())) {
                     // This is a comment footnote
-                    const type = parts[0];
-                    const text = parts[1];
-                    const author = parts[2];
-                    const timestamp = parseInt(parts[3]);
+                    const type = parts[0].trim();
+                    const text = parts[1].trim();
+                    const author = parts[2].trim();
+                    const timestamp = parseInt(parts[3].trim());
+                    
+                    console.log('✓ Parsed as comment footnote:', { type, text, author, timestamp });
                     
                     footnoteDefinitions[ref] = {
                         ref: ref,
@@ -1198,6 +1232,8 @@
                     };
                 } else {
                     // This is a regular footnote
+                    console.log('✓ Parsed as regular footnote');
+                    
                     footnoteDefinitions[ref] = {
                         ref: ref,
                         number: parseInt(ref.replace('^', '')),
@@ -1211,16 +1247,24 @@
                 
                 // Remove from content
                 content = content.replace(fullMatch, '').trim();
-            }
+            });
             
             // Convert footnote definitions to array
             const footnotes = Object.values(footnoteDefinitions).sort((a, b) => a.number - b.number);
+            
+            console.log('Final parsed footnotes:', footnotes);
+            console.log('Comment footnotes:', footnotes.filter(f => f.isComment));
+            console.log('Regular footnotes:', footnotes.filter(f => !f.isComment));
+            console.log('=== End footnote parsing ===');
             
             return { content, footnotes };
         }
 
         // Convert markdown to HTML with footnote handling
         function markdownToHtml(markdown) {
+            console.log('=== Converting markdown to HTML ===');
+            console.log('currentComments at rendering time:', currentComments);
+            
             let html = markdown;
             
             // Remove frontmatter
@@ -1246,12 +1290,16 @@
                 const number = parseInt(ref.replace('^', ''));
                 const footnote = currentComments.find(f => f.number === number);
                 
+                console.log('Processing footnote reference:', { ref, number, footnote });
+                
                 if (footnote && footnote.isComment) {
                     // Comment footnote - colored circle
                     const type = footnote.type;
+                    console.log('Rendering as comment footnote:', type);
                     return `<a href="#comment-${number}" class="footnote-ref ${type}" data-comment-number="${number}">${number}</a>`;
                 } else {
                     // Regular footnote - normal underlined link
+                    console.log('Rendering as regular footnote');
                     return `<a href="#footnote-${number}" class="footnote-link" id="footnote-ref-${number}" data-footnote-number="${number}">${number}</a>`;
                 }
             });
@@ -1267,23 +1315,31 @@
             html = html.replace(/<p>(<li>)/g, '<ul>$1');
             html = html.replace(/(<\/li>)<\/p>/g, '$1</ul>');
             
+            console.log('=== End markdown to HTML conversion ===');
             return html;
         }
 
         // Display comments in right panel (only comment footnotes)
         function displayComments() {
+            console.log('=== Displaying comments ===');
+            console.log('All currentComments:', currentComments);
+            
             const commentsList = document.getElementById('comments-list');
             commentsList.innerHTML = '';
             
             // Filter to only show comment footnotes, not regular footnotes
             const commentFootnotes = currentComments.filter(comment => comment.isComment);
+            console.log('Filtered comment footnotes:', commentFootnotes);
             
             if (commentFootnotes.length === 0) {
+                console.log('No comment footnotes found, showing empty message');
                 commentsList.innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">No comments yet</div>';
                 return;
             }
             
             commentFootnotes.forEach(comment => {
+                console.log('Displaying comment:', comment);
+                
                 const commentItem = document.createElement('div');
                 commentItem.className = 'comment-item';
                 commentItem.id = `comment-${comment.number}`;
@@ -1316,6 +1372,8 @@
                 
                 commentsList.appendChild(commentItem);
             });
+            
+            console.log('=== End displaying comments ===');
         }
 
         // Add click handlers for footnote references
