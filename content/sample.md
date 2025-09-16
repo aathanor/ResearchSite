@@ -12,7 +12,7 @@ Pattern Recognition Identity (PRI) proposes a radical reconceptualization of
 consciousness and identity grounded in the fundamental process of 
 pattern recognition.
 
-## Core Thesis
+## [^2]Core Thesis
 
 The central thesis of PRI is that what we experience as consciousness, 
 identity, and subjective experience emerges from recursive pattern 
@@ -89,3 +89,5 @@ mental disorders
 *Last updated: [Date]*
 
 : question:Nu era PRU?:anonymous:1758046358196
+
+[^2]: clarification:This is done on the headline "Core Thesis":anonymous:1758046681083
