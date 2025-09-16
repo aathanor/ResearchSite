@@ -987,8 +987,10 @@
                 let processedDocs = [];
                 if (Array.isArray(docsArray)) {
                     processedDocs = docsArray;
-                } else if (docsArray.documents && Array.isArray(docsArray.documents)) {
-                    processedDocs = docsArray.documents;
+                } else if (docsArray.documents && typeof docsArray.documents === 'object') {
+                    // Handle the structure: {documents: {"sample.md": {...}}}
+                    processedDocs = Object.values(docsArray.documents);
+                    console.log('Extracted from documents object:', processedDocs);
                 } else if (typeof docsArray === 'object') {
                     // If it's an object, try to extract documents from various possible keys
                     processedDocs = Object.values(docsArray);
@@ -1012,7 +1014,7 @@
                 // Group by category
                 const categories = {};
                 Object.values(uniqueDocs).forEach(doc => {
-                    // Try multiple ways to get category
+                    // Try multiple ways to get category - prioritize frontmatter
                     const cat = doc.frontmatter?.category || 
                               doc.category || 
                               doc.meta?.category ||
@@ -1039,20 +1041,21 @@
                         item.className = 'document-item';
                         item.dataset.id = doc.id;
                         
-                        // Handle different lens/tag formats
-                        const lenses = doc.lens || doc.lenses || doc.tags || [];
+                        // Handle different lens/tag formats - prioritize frontmatter
+                        const lenses = doc.frontmatter?.lens || doc.lens || doc.lenses || doc.tags || [];
                         item.dataset.lenses = Array.isArray(lenses) ? lenses.join(' ') : '';
                         
-                        // Try multiple ways to get title
-                        const title = doc.title || 
-                                    doc.frontmatter?.title || 
+                        // Try multiple ways to get title - prioritize frontmatter
+                        const title = doc.frontmatter?.title || 
+                                    doc.title || 
                                     doc.name ||
                                     doc.filename ||
+                                    doc.id ||
                                     'Untitled';
                         
-                        // Try multiple ways to get status
-                        const status = doc.status || 
-                                     doc.frontmatter?.status ||
+                        // Try multiple ways to get status - prioritize frontmatter
+                        const status = doc.frontmatter?.status ||
+                                     doc.status || 
                                      doc.meta?.status ||
                                      'draft';
                         
