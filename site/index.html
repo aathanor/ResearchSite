@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pattern Constellations</title>
+    <title>Pattern Constellations - Footnote Comments</title>
     <style>
         * {
             margin: 0;
@@ -19,128 +19,7 @@
             display: flex;
             flex-direction: column;
         }
-        /* Document Typography */
-        .document-content {
-            max-width: 700px;
-            margin: 0 auto;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-            font-size: 17px;
-            line-height: 1.7;
-            color: #333;
-        }
-
-        .document-content h1 {
-            font-size: 2.2em;
-            font-weight: 700;
-            margin: 2rem 0 1.5rem 0;
-            line-height: 1.2;
-            color: #1a1a1a;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 0.5rem;
-        }
-
-        .document-content h2 {
-            font-size: 1.7em;
-            font-weight: 600;
-            margin: 2rem 0 1rem 0;
-            line-height: 1.3;
-            color: #2c3e50;
-        }
-
-        .document-content h3 {
-            font-size: 1.3em;
-            font-weight: 600;
-            margin: 1.5rem 0 0.8rem 0;
-            line-height: 1.4;
-            color: #34495e;
-        }
-
-        .document-content p {
-            margin: 0 0 1.2rem 0;
-            text-align: justify;
-            hyphens: auto;
-        }
-
-        .document-content ul, .document-content ol {
-            margin: 0 0 1.2rem 0;
-            padding-left: 2rem;
-        }
-
-        .document-content li {
-            margin-bottom: 0.5rem;
-            line-height: 1.7;
-        }
-
-        .document-content strong {
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-
-        .document-content em {
-            font-style: italic;
-        }
-
-        /* Better readability on screens */
-        @media screen and (min-width: 768px) {
-            .document-content {
-                font-size: 18px;
-                line-height: 1.8;
-            }
-        }
-
-        /* Selection and interaction */
-        .document-content .commentable {
-            cursor: text;
-            transition: background-color 0.2s;
-        }
-
-        .document-content .commentable:hover {
-            background-color: rgba(0, 102, 204, 0.03);
-        }
-
-        /* Code blocks if you have any */
-        .document-content code {
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-            font-size: 0.9em;
-            padding: 0.2em 0.4em;
-            background: #f4f4f4;
-            border-radius: 3px;
-        }
-
-        /* Improve comment markers */
-        .comment-marker {
-            background: rgba(255, 235, 59, 0.2);
-            padding: 0 3px;
-            border-radius: 3px;
-            margin: 0 2px;
-        }
-        .comment-marker {
-            position: relative;
-            display: inline;
-            background-color: rgba(255, 0, 0, 0.3); /* Default color, will be overridden by JS */
-            margin-left: 5px;
-            cursor: pointer;
-        }
-
-        .comment-tooltip {
-            position: absolute;
-            bottom: 100%;
-            left: 0;
-            z-index: 1000;
-            background: #fffeef;
-            border: 1px solid #e9e9e9;
-            border-radius: 4px;
-            padding: 8px;
-            white-space: nowrap;
-            pointer-events: auto;
-            font-size: 14px;
-            display: none;
-        }
-
-        .comment-marker:hover .comment-tooltip {
-            display: block;
-        }
-       
+        
         /* Header */
         .header {
             background: #f8f9fa;
@@ -259,17 +138,113 @@
             background: white;
             position: relative;
         }
-       
-        /* Right panel - Messages */
+        
+        /* Document Typography */
+        .document-content {
+            max-width: 700px;
+            margin: 0 auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            font-size: 17px;
+            line-height: 1.7;
+            color: #333;
+        }
+
+        .document-content h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin: 2rem 0 1.5rem 0;
+            line-height: 1.2;
+            color: #1a1a1a;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+
+        .document-content h2 {
+            font-size: 1.7em;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            line-height: 1.3;
+            color: #2c3e50;
+        }
+
+        .document-content h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 1.5rem 0 0.8rem 0;
+            line-height: 1.4;
+            color: #34495e;
+        }
+
+        .document-content p {
+            margin: 0 0 1.2rem 0;
+        }
+
+        .document-content ul, .document-content ol {
+            margin: 0 0 1.2rem 0;
+            padding-left: 2rem;
+        }
+
+        .document-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.7;
+        }
+
+        .document-content strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .document-content em {
+            font-style: italic;
+        }
+
+        /* Footnote references in text */
+        .footnote-ref {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            margin: 0 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            top: -2px;
+        }
+        
+        .footnote-ref.question {
+            background-color: #dc3545;
+        }
+        
+        .footnote-ref.clarification {
+            background-color: #ffc107;
+            color: #856404;
+        }
+        
+        .footnote-ref.approved {
+            background-color: #28a745;
+        }
+        
+        .footnote-ref:hover {
+            transform: scale(1.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* Right panel - Comments */
         .right-panel {
-            width: 25%;
+            width: 30%;
             background: #f8f9fa;
             border-left: 1px solid #dee2e6;
             display: flex;
             flex-direction: column;
         }
        
-        .messages-header {
+        .comments-header {
             padding: 15px;
             background: white;
             border-bottom: 1px solid #dee2e6;
@@ -278,13 +253,13 @@
             align-items: center;
         }
        
-        .messages-header h3 {
+        .comments-header h3 {
             font-size: 14px;
             font-weight: 600;
             color: #495057;
         }
        
-        .new-thread-btn {
+        .new-comment-btn {
             padding: 6px 12px;
             background: #28a745;
             color: white;
@@ -293,185 +268,173 @@
             cursor: pointer;
             font-size: 12px;
         }
-       
-        .topic-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 10px 15px;
-            border-bottom: 1px solid #dee2e6;
+        
+        .new-comment-btn:hover {
+            background: #218838;
         }
        
-        .topic-pill {
-            padding: 4px 10px;
-            background: #f0f0f0;
-            color: #666;
-            border-radius: 12px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-       
-        .topic-pill.active {
-            background: #0066cc;
-            color: white;
-        }
-       
-        .messages-list {
+        .comments-list {
             flex: 1;
             overflow-y: auto;
             padding: 15px;
         }
-       
-        .message-thread {
+        
+        .comment-item {
             background: white;
             border-radius: 8px;
-            margin-bottom: 10px;
-            padding: 12px;
-            cursor: pointer;
+            margin-bottom: 15px;
+            padding: 15px;
             border: 1px solid #e9ecef;
             transition: all 0.2s;
         }
-       
-        .message-thread:hover {
+        
+        .comment-item:hover {
             border-color: #0066cc;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-       
-        .message-thread.active {
+        
+        .comment-item.active {
             background: #e7f3ff;
             border-color: #0066cc;
         }
-       
-        .message-pills {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-       
-        .pill {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-       
-        .pill-subject {
-            background: #e7f3ff;
-            color: #0066cc;
-        }
-       
-        .pill-topic {
-            background: #f0f0f0;
-            color: #666;
-        }
-       
-        .pill-date {
-            background: #fff3cd;
-            color: #856404;
-        }
-       
-        .pill-new {
-            background: #dc3545;
-            color: white;
-        }
-       
-        .message-preview {
-            font-size: 13px;
-            color: #6c757d;
-            margin-top: 5px;
-        }
-       
-        .message-replies {
-            font-size: 11px;
-            color: #28a745;
-            margin-top: 5px;
-            font-weight: 500;
-        }
-       
-        /* Thread view styles */
-        .thread-messages {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-       
-        .thread-message {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #dee2e6;
-        }
-       
-        .reply-form {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-       
-        .reply-form textarea {
-            padding: 8px;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            resize: vertical;
-            min-height: 60px;
-        }
-       
-        .reply-form button {
-            align-self: flex-start;
-            padding: 6px 12px;
-            background: #0066cc;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-       
-        /* Comment Menu - VERTICAL */
-        .comment-menu {
-            position: absolute;
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            padding: 8px;
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            min-width: 180px;
-        }
-       
-        .comment-menu.show {
-            display: block;
-        }
-       
-        .comment-option {
+        
+        .comment-header {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 12px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background 0.2s;
+            margin-bottom: 10px;
+        }
+        
+        .comment-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .comment-type {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        
+        .comment-type.question {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .comment-type.clarification {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .comment-type.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .comment-content {
             font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        
+        .comment-meta {
+            font-size: 11px;
+            color: #6c757d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .comment-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .comment-action {
+            padding: 2px 6px;
+            font-size: 10px;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: #6c757d;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .comment-action:hover {
+            background: #f8f9fa;
             color: #495057;
         }
-       
-        .comment-option:hover {
-            background: #f8f9fa;
+        
+        /* New comment form */
+        .comment-form {
+            background: white;
+            border-top: 1px solid #dee2e6;
+            padding: 15px;
+            display: none;
         }
-       
-        .comment-option-icon {
-            font-size: 18px;
-            width: 24px;
-            text-align: center;
+        
+        .comment-form.show {
+            display: block;
         }
-       
-        .comment-option-text {
-            flex: 1;
+        
+        .form-group {
+            margin-bottom: 10px;
         }
-       
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn-primary {
+            background: #0066cc;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
         /* Overview Modal */
         .overview-modal {
             display: none;
@@ -554,75 +517,15 @@
             background: #fff3cd;
             border-color: #ffc107;
         }
-       
-        /* New thread form */
-        .new-thread-form {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            z-index: 3000;
-            display: none;
-            width: 400px;
+        
+        /* Selection highlighting for adding comments */
+        .document-content.selection-mode {
+            cursor: text;
         }
-       
-        .new-thread-form.show {
-            display: block;
+        
+        .document-content.selection-mode ::selection {
+            background-color: rgba(0, 102, 204, 0.3);
         }
-       
-        .form-group {
-            margin-bottom: 15px;
-        }
-       
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 13px;
-            color: #495057;
-        }
-       
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-       
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-       
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-       
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-       
-        .btn-primary {
-            background: #0066cc;
-            color: white;
-        }
-       
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-       
     </style>
 </head>
 <body>
@@ -657,34 +560,34 @@
             </div>
         </div>
        
-        <!-- Right Panel - Messages -->
+        <!-- Right Panel - Comments -->
         <div class="right-panel">
-            <div class="messages-header">
-                <h3>Messages</h3>
-                <button class="new-thread-btn" onclick="showNewThreadForm()">+ New Thread</button>
+            <div class="comments-header">
+                <h3>Comments</h3>
+                <button class="new-comment-btn" onclick="toggleCommentForm()">+ Add Comment</button>
             </div>
-            <div class="topic-filters" id="topic-filters">
-                <!-- Pills will be added here dynamically -->
+            <div class="comments-list" id="comments-list">
+                <!-- Comments will be added dynamically -->
             </div>
-            <div class="messages-list" id="messages-list">
-                <!-- Threads will be added dynamically -->
+            <!-- New comment form -->
+            <div class="comment-form" id="comment-form">
+                <div class="form-group">
+                    <label>Comment Type</label>
+                    <select id="comment-type">
+                        <option value="question">❓ Question</option>
+                        <option value="clarification">⚠️ Needs Clarification</option>
+                        <option value="approved">✅ Approved/Keep</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Comment Text</label>
+                    <textarea id="comment-text" placeholder="Enter your comment..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="cancelComment()">Cancel</button>
+                    <button class="btn btn-primary" onclick="addComment()">Add Comment</button>
+                </div>
             </div>
-        </div>
-    </div>
-   
-    <!-- Comment Menu - VERTICAL with TEXT -->
-    <div class="comment-menu" id="comment-menu">
-        <div class="comment-option" data-type="question">
-            <span class="comment-option-icon">❓</span>
-            <span class="comment-option-text">Ask question</span>
-        </div>
-        <div class="comment-option" data-type="clarification">
-            <span class="comment-option-icon">❗</span>
-            <span class="comment-option-text">Needs clarification</span>
-        </div>
-        <div class="comment-option" data-type="approved">
-            <span class="comment-option-icon">✅</span>
-            <span class="comment-option-text">Approved / Keep</span>
         </div>
     </div>
    
@@ -734,1352 +637,551 @@
             </div>
         </div>
     </div>
-   
-    <!-- New Thread Form -->
-    <div class="new-thread-form" id="new-thread-form">
-        <h3 style="margin-bottom: 20px;">New Discussion</h3>
-        <div class="form-group">
-            <label>Subject</label>
-            <input type="text" id="thread-subject" placeholder="Brief topic...">
-        </div>
-        <div class="form-group">
-            <label>Topic Category</label>
-            <input type="text" id="thread-topic" placeholder="e.g., Core Theory, Evidence, Questions...">
-        </div>
-        <div class="form-group">
-            <label>Message</label>
-            <textarea id="thread-message" placeholder="Your thoughts..."></textarea>
-        </div>
-        <div class="form-actions">
-            <button class="btn btn-secondary" onclick="hideNewThreadForm()">Cancel</button>
-            <button class="btn btn-primary" onclick="createThread()">Create Thread</button>
-        </div>
-    </div>
 
-    <!-- Comment Dialog -->
-    <div id="comment-dialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-         background: white; border: 1px solid #dee2e6; border-radius: 4px; padding: 20px; z-index: 3000;">
-        <h3 id="comment-dialog-title">Comment</h3>
-        <label id="comment-dialog-label" for="comment-dialog-text"></label>
-        <textarea id="comment-dialog-text" style="width: 100%; min-height: 80px; margin-top: 10px;"></textarea>
-        <div style="margin-top: 10px; text-align: right;">
-            <button onclick="hideCommentDialog()" style="margin-right: 10px;">Cancel</button>
-            <button onclick="submitComment()">Submit</button>
-        </div>
-    </div>
-   
     <script>
-        // User email (in real deployment, fetch from API)
-        let userEmail = 'you@example.com';
+        // Global state
+        let currentDocument = null;
+        let currentComments = [];
+        let nextCommentNumber = 1;
+        let isAddingComment = false;
+        let userEmail = 'researcher@example.com';
 
-        let currentCommentRange = null;  // store the selection range when showing dialog
-        let currentCommentType = '';     // store type of comment (question, clarification, approved)
-        let currentEditingInfo = null;   // track if a comment is being edited
-        let isInitialized = false;       // prevent duplicate initialization
-        
-        async function fetchUserEmail() {
-            try {
-                const res = await fetch('/api/user');
-                const data = await res.json();
-                userEmail = data.email || 'anonymous';
-            } catch {
-                userEmail = 'anonymous';
+        // Sample document data
+        const documents = {
+            'sample.md': {
+                id: 'sample.md',
+                title: 'Pattern Recognition Identity',
+                category: 'core',
+                lens: ['philosophy', 'cognition'],
+                status: 'developing',
+                content: `---
+title: "Pattern Recognition Identity"
+category: "core" 
+lens: ["philosophy", "cognition"]
+status: "developing"
+---
+
+# Pattern Recognition Identity
+
+Pattern Recognition Identity (PRI) proposes a radical reconceptualization of consciousness and identity grounded in the fundamental process of pattern recognition[^1].
+
+## Core Thesis
+
+The central thesis[^2] of PRI is that what we experience as consciousness, identity, and subjective experience emerges from recursive pattern recognition processes. Rather than consciousness being something that recognizes patterns, consciousness *is* pattern recognition recognizing itself.
+
+## Theoretical Framework
+
+### Primary Principles
+
+1. **Pattern Recognition as Fundamental**: All cognitive processes, from perception to abstract reasoning, operate through pattern recognition mechanisms.
+
+2. **Recursive Self-Recognition**: Consciousness emerges when pattern recognition systems recognize their own pattern recognition processes - a recursive loop of recognition recognizing recognition.
+
+3. **Identity as Pattern Constellation**: Personal identity is not a fixed entity but a dynamic constellation of interconnected patterns that maintain coherence through ongoing pattern recognition processes.
+
+### Implications
+
+This framework dissolves several traditional philosophical problems[^3]:
+
+- **The Hard Problem of Consciousness**: Experience is not separate from information processing but emerges from the recursive recognition of pattern recognition itself.
+
+- **The Symbol Grounding Problem**: Symbols ground themselves through pattern recognition processes that connect abstract representations to embodied pattern recognition systems.
+
+- **The Unity of Consciousness**: Unity emerges from the integrative nature of pattern recognition systems that can recognize patterns across multiple domains simultaneously.
+
+## Empirical Connections
+
+Current evidence supporting PRI includes[^4]: 
+
+- Semantic embedding structures in neural networks mirror conceptual organization in human cognition
+- Transformer architectures demonstrate emergent properties through attention mechanisms that resemble recursive pattern recognition
+- Neuroscientific evidence for predictive processing and pattern completion in cortical circuits
+
+## Future Directions
+
+Research priorities include developing computational[^5] models that implement recursive pattern recognition, testing empirical predictions about consciousness and identity, exploring connections to phenomenology and subjective experience, and investigating therapeutic applications for understanding mental disorders.
+
+[^1]: question:This is a very broad claim. What specific evidence supports pattern recognition as the fundamental basis?:researcher@example.com:1758100000000
+[^2]: clarification:Could you clarify what makes this thesis "central" compared to other theories of consciousness?:reviewer@example.com:1758110000000
+[^3]: question:How exactly does it "dissolve" these problems rather than just reframe them?:critic@example.com:1758120000000
+[^4]: approved:Good empirical grounding here:supervisor@example.com:1758130000000
+[^5]: clarification:What specific computational architectures are you envisioning?:researcher@example.com:1758140000000`
             }
-        }
-
-        // Thread data with better timestamp management
-        const threads = {
-            'Eastern Philosophy Connection': {
-                topic: 'Core Theory',
-                timestamp: Date.now() - 86400000 * 2,
-                lastActivity: Date.now() - 7200000,
-                messages: [
-                    {text: "I've been thinking about how PRI relates to Buddhist dependent origination. The recursive self-recognition aspect seems to mirror the Buddhist understanding of consciousness as a process rather than a thing.", timestamp: Date.now() - 86400000 * 2, user: 'supervisor@example.com'},
-                    {text: 'That\'s a compelling connection. The madhyamaka analysis of dependent origination might provide insights into how pattern recognition avoids the infinite regress problem.', timestamp: Date.now() - 7200000, user: 'you@example.com'},
-                    {text: 'Exactly. And the yogācāra school\'s analysis of consciousness (vijñāna) as transformative recognition could be directly relevant to our recursive model.', timestamp: Date.now() - 3600000, user: 'supervisor@example.com'},
-                    {text: 'We should explore whether ālaya-vijñāna (store consciousness) maps onto the pattern constellation structure we\'re proposing.', timestamp: Date.now() - 1800000, user: 'you@example.com'}
-                ]
-            },
-            'Symbol Grounding Dissolution': {
-                topic: 'Problems',
-                timestamp: Date.now() - 86400000 * 3,
-                lastActivity: Date.now() - 86400000,
-                messages: [
-                    {text: "The dissolution seems compelling but I'm not sure about the linguistic aspects. How does pattern recognition ground arbitrary symbols like words?", timestamp: Date.now() - 86400000 * 3, user: 'you@example.com'},
-                    {text: 'The key insight is that symbols don\'t need external grounding - they ground through recognition patterns that connect them to embodied recognition systems.', timestamp: Date.now() - 86400000 * 2, user: 'supervisor@example.com'},
-                    {text: 'But what about truly abstract concepts that seem divorced from embodied experience?', timestamp: Date.now() - 86400000 * 2, user: 'you@example.com'},
-                    {text: 'Even abstract concepts emerge from pattern recognition operating on other patterns. Mathematical concepts, for instance, recognize structural patterns that can exist independently of specific instantiations.', timestamp: Date.now() - 86400000, user: 'supervisor@example.com'},
-                    {text: 'So abstraction is pattern recognition operating on increasingly general pattern types rather than specific content?', timestamp: Date.now() - 86400000, user: 'you@example.com'}
-                ]
-            },
-            'Meeting Notes': {
-                topic: 'Admin',
-                timestamp: Date.now() - 86400000 * 7,
-                lastActivity: Date.now() - 86400000 * 6,
-                messages: [
-                    {text: "Summary of our discussion about the empirical evidence section. We agreed to focus on three main areas: semantic embeddings, transformer architectures, and predictive processing research.", timestamp: Date.now() - 86400000 * 7, user: 'supervisor@example.com'},
-                    {text: 'I\'ll start working on the semantic embeddings analysis this week.', timestamp: Date.now() - 86400000 * 6, user: 'you@example.com'}
-                ]
-            }
         };
 
-        // LocalStorage keys
-        const COMMENTS_KEY = 'doc_comments';
-        const READ_STATUS_KEY = 'thread_read_status_' + userEmail.replace('@', '_').replace('.', '_');
-
-        // Document metadata
-        const categoryMap = {
-            "core": "Core Theory",
-            "evidence": "Evidence",
-            "references": "References"
-        };
-        
-        const statusColors = {
-            "developing": "#28a745",
-            "draft": "#ffc107", 
-            "stable": "#0066cc"
-        };
-        
-        // Utility functions
-        function slugify(str) {
-            return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        }
-
-        function parseFrontmatter(text) {
-            if (!text.startsWith('---')) return {meta: {}, content: text};
-            const end = text.indexOf('---', 3);
-            if (end === -1) return {meta: {}, content: text};
-            const yamlText = text.substring(3, end).trim();
-            const meta = {};
-            yamlText.split('\n').forEach(line => {
-                const colon = line.indexOf(':');
-                if (colon > 0) {
-                    const key = line.substring(0, colon).trim();
-                    let val = line.substring(colon + 1).trim();
-                    if (val.startsWith('[')) {
-                        try {
-                            val = JSON.parse(val.replace(/'/g, '"'));
-                        } catch {
-                            val = val.replace(/[\[\]"]/g, '').split(',').map(s => s.trim());
-                        }
-                    } else if (val.startsWith('"')) {
-                        val = val.replace(/"/g, '');
-                    }
-                    meta[key] = val;
-                }
+        // Initialize the application
+        function init() {
+            buildLeftPanel();
+            
+            // Add lens tab functionality
+            document.querySelectorAll('.lens-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const lens = tab.dataset.lens;
+                    document.querySelectorAll('.document-item').forEach(doc => {
+                        const docLenses = doc.dataset.lenses ? doc.dataset.lenses.split(' ') : [];
+                        doc.style.display = (lens === 'all' || docLenses.includes(lens)) ? 'block' : 'none';
+                    });
+                });
             });
-            const content = text.substring(end + 3).trim();
-            return {meta, content};
         }
 
-        // Comment management
-        function getStoredComments() {
-            const stored = localStorage.getItem(COMMENTS_KEY);
-            return stored ? JSON.parse(stored) : {};
-        }
-
-        function saveComments(comments) {
-            localStorage.setItem(COMMENTS_KEY, JSON.stringify(comments));
-        }
-
-        // Read status management
-        function getReadStatus() {
-            const stored = localStorage.getItem(READ_STATUS_KEY);
-            return stored ? JSON.parse(stored) : {};
-        }
-
-        function saveReadStatus(status) {
-            localStorage.setItem(READ_STATUS_KEY, JSON.stringify(status));
-        }
-
-        function markThreadAsRead(subject) {
-            const status = getReadStatus();
-            status[subject] = Date.now();
-            saveReadStatus(status);
-            
-            // Remove NEW pill immediately
-            const threadElem = [...document.querySelectorAll('.message-thread')].find(t => 
-                t.querySelector('.pill-subject')?.textContent === subject
-            );
-            if (threadElem) {
-                const newPill = threadElem.querySelector('.pill-new');
-                if (newPill) {
-                    newPill.remove();
-                }
-            }
-        }
-
-        function isThreadNew(subject) {
-            const threadData = threads[subject];
-            if (!threadData) return false;
-            
-            const readStatus = getReadStatus();
-            const lastReadTime = readStatus[subject] || 0;
-            const lastActivity = threadData.lastActivity || threadData.timestamp;
-            
-            return lastActivity > lastReadTime;
-        }
-
-        // Load documents from site/data/documents.json
-        async function loadDocuments() {
-            try {
-                console.log('Attempting to fetch documents from /site/data/documents.json...');
-                const res = await fetch('/site/data/documents.json');
-                if (!res.ok) {
-                    console.error('Fetch failed with status:', res.status, res.statusText);
-                    throw new Error(`Documents fetch failed: ${res.status} ${res.statusText}`);
-                }
-                const docs = await res.json();
-                console.log('Documents loaded:', docs);
-                return docs;
-            } catch (err) {
-                console.error('Error loading documents:', err);
-                // Try alternative paths
-                const alternativePaths = [
-                    '/data/documents.json',
-                    '/documents.json',
-                    '/content/documents.json'
-                ];
-                
-                for (const path of alternativePaths) {
-                    try {
-                        console.log('Trying alternative path:', path);
-                        const res2 = await fetch(path);
-                        if (res2.ok) {
-                            const docs = await res2.json();
-                            console.log('Documents loaded from alternative path:', path, docs);
-                            return docs;
-                        }
-                    } catch (err2) {
-                        console.error(`Alternative path ${path} failed:`, err2);
-                    }
-                }
-                return [];
-            }
-        }
-
-        // Build left panel - FIXED to prevent duplicates
-        async function buildLeftPanel() {
+        // Build left panel with documents
+        function buildLeftPanel() {
             const leftPanel = document.querySelector('.left-panel');
             
-            // Clear only the document categories, not the lens tabs
-            leftPanel.querySelectorAll('.doc-category, .error-message').forEach(el => el.remove());
+            // Clear existing content except lens tabs
+            leftPanel.querySelectorAll('.doc-category').forEach(el => el.remove());
 
-            try {
-                const docsArray = await loadDocuments();
-                console.log('Raw documents array:', docsArray);
-                console.log('Array length:', docsArray ? docsArray.length : 'null/undefined');
+            // Group documents by category
+            const categories = {};
+            Object.values(documents).forEach(doc => {
+                const cat = doc.category || 'uncategorized';
+                if (!categories[cat]) categories[cat] = [];
+                categories[cat].push(doc);
+            });
+
+            // Build UI for each category
+            Object.keys(categories).sort().forEach(cat => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'doc-category';
                 
-                if (!docsArray || docsArray.length === 0) {
-                    const errorMsg = document.createElement('div');
-                    errorMsg.className = 'error-message';
-                    errorMsg.textContent = 'No documents found - check console for details';
-                    leftPanel.appendChild(errorMsg);
-                    return;
-                }
+                const h3 = document.createElement('h3');
+                h3.textContent = cat.toUpperCase();
+                categoryDiv.appendChild(h3);
                 
-                // Log first document structure for debugging
-                if (docsArray[0]) {
-                    console.log('First document structure:', JSON.stringify(docsArray[0], null, 2));
-                }
-                
-                // Handle different possible document structures
-                let processedDocs = [];
-                if (Array.isArray(docsArray)) {
-                    processedDocs = docsArray;
-                } else if (docsArray.documents && typeof docsArray.documents === 'object') {
-                    // Handle the structure: {documents: {"sample.md": {...}}}
-                    processedDocs = Object.values(docsArray.documents);
-                    console.log('Extracted from documents object:', processedDocs);
-                } else if (typeof docsArray === 'object') {
-                    // If it's an object, try to extract documents from various possible keys
-                    processedDocs = Object.values(docsArray);
-                }
-                
-                console.log('Processed documents:', processedDocs);
-                
-                // Debug the first document in detail
-                if (processedDocs.length > 0) {
-                    const firstDoc = processedDocs[0];
-                    console.log('First document detailed structure:');
-                    console.log('- id:', firstDoc.id);
-                    console.log('- title:', firstDoc.title);
-                    console.log('- frontmatter:', firstDoc.frontmatter);
-                    console.log('- frontmatter.title:', firstDoc.frontmatter?.title);
-                    console.log('- frontmatter.category:', firstDoc.frontmatter?.category);
-                    console.log('- frontmatter.lens:', firstDoc.frontmatter?.lens);
-                }
-                
-                // Deduplicate by ID and add debugging
-                const uniqueDocs = {};
-                processedDocs.forEach((doc, index) => {
-                    console.log(`Processing doc ${index}:`, {
-                        id: doc.id,
-                        title: doc.title,
-                        frontmatter: doc.frontmatter,
-                        hasContent: !!(doc.content || doc.fullContent)
+                categories[cat].forEach(doc => {
+                    const item = document.createElement('div');
+                    item.className = 'document-item';
+                    item.dataset.id = doc.id;
+                    item.dataset.lenses = Array.isArray(doc.lens) ? doc.lens.join(' ') : '';
+                    
+                    item.innerHTML = `
+                        <div>${doc.title}</div>
+                        <span style="font-size: 11px; color: #6c757d;">● ${doc.status}</span>
+                    `;
+                    
+                    item.addEventListener('click', () => {
+                        document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        loadDocument(doc);
                     });
                     
-                    const docId = doc.id || doc.slug || doc.filename || `doc_${index}`;
-                    if (!uniqueDocs[docId]) {
-                        // Ensure doc has an ID
-                        doc.id = docId;
-                        uniqueDocs[docId] = doc;
-                    } else {
-                        console.log(`Duplicate document found with id: ${docId}`);
-                    }
+                    categoryDiv.appendChild(item);
                 });
                 
-                console.log('Unique documents:', uniqueDocs);
-                
-                // Group by category
-                const categories = {};
-                Object.values(uniqueDocs).forEach(doc => {
-                    // Try multiple ways to get category - prioritize frontmatter
-                    const cat = doc.frontmatter?.category || 
-                              doc.category || 
-                              doc.meta?.category ||
-                              'uncategorized';
-                    if (!categories[cat]) categories[cat] = [];
-                    categories[cat].push(doc);
-                });
-                
-                console.log('Categories:', categories);
-                
-                // Build UI
-                Object.keys(categories).sort().forEach(cat => {
-                    const categoryDiv = document.createElement('div');
-                    categoryDiv.className = 'doc-category';
-                    
-                    const h3 = document.createElement('h3');
-                    h3.textContent = cat.toUpperCase();
-                    categoryDiv.appendChild(h3);
-                    
-                    const docsDiv = document.createElement('div');
-                    
-                    categories[cat].forEach(doc => {
-                        const item = document.createElement('div');
-                        item.className = 'document-item';
-                        item.dataset.id = doc.id;
-                        
-                        // Handle different lens/tag formats - prioritize frontmatter
-                        const lenses = doc.frontmatter?.lens || doc.lens || doc.lenses || doc.tags || [];
-                        item.dataset.lenses = Array.isArray(lenses) ? lenses.join(' ') : '';
-                        
-                        // Try multiple ways to get title - prioritize frontmatter
-                        const title = doc.frontmatter?.title || 
-                                    doc.title || 
-                                    doc.name ||
-                                    doc.filename ||
-                                    doc.id ||
-                                    'Untitled';
-                        
-                        // Try multiple ways to get status - prioritize frontmatter
-                        const status = doc.frontmatter?.status ||
-                                     doc.status || 
-                                     doc.meta?.status ||
-                                     'draft';
-                        
-                        item.innerHTML = `
-                            <div>${title}</div>
-                            <span style="font-size: 11px; color: #6c757d;">● ${status}</span>
-                        `;
-                        
-                        item.addEventListener('click', (e) => {
-                            e.preventDefault(); // Prevent any default link behavior
-                            e.stopPropagation(); // Prevent event bubbling
-                            
-                            console.log('Document clicked:', doc);
-                            document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
-                            item.classList.add('active');
-                            
-                            // Store document data reference for potential reloading
-                            item.docData = doc;
-                            
-                            loadDocContent(doc);
-                        });
-                        
-                        docsDiv.appendChild(item);
-                    });
-                    
-                    categoryDiv.appendChild(docsDiv);
-                    leftPanel.appendChild(categoryDiv);
-                });
-                
-            } catch (error) {
-                console.error('Error building left panel:', error);
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'error-message';
-                errorMsg.innerHTML = `Error loading documents<br><small style="font-size:10px;">${error.message}</small>`;
-                leftPanel.appendChild(errorMsg);
-            }
+                leftPanel.appendChild(categoryDiv);
+            });
         }
 
-        // Initialize topic filters
-        function initTopicFilters() {
-            const filters = document.getElementById('topic-filters');
-            filters.innerHTML = '';
+        // Load and display document
+        function loadDocument(doc) {
+            currentDocument = doc;
             
-            const allPill = document.createElement('span');
-            allPill.className = 'topic-pill active';
-            allPill.textContent = 'All';
-            allPill.dataset.topic = 'all';
-            filters.appendChild(allPill);
-
-            const uniqueTopics = new Set(Object.values(threads).map(t => t.topic));
-            uniqueTopics.forEach(topic => {
-                const pill = document.createElement('span');
-                pill.className = 'topic-pill';
-                pill.textContent = topic;
-                pill.dataset.topic = topic;
-                filters.appendChild(pill);
-            });
-
-            // Add click listeners
-            filters.querySelectorAll('.topic-pill').forEach(pill => {
-                pill.addEventListener('click', () => {
-                    filters.querySelectorAll('.topic-pill').forEach(p => p.classList.remove('active'));
-                    pill.classList.add('active');
-                    const selected = pill.dataset.topic;
-                    document.querySelectorAll('.message-thread').forEach(thread => {
-                        thread.style.display = (selected === 'all' || thread.dataset.topic === selected) ? 'block' : 'none';
-                    });
-                });
-            });
+            // Parse content and extract footnotes
+            const { content, footnotes } = parseMarkdownWithFootnotes(doc.content);
+            currentComments = footnotes;
+            nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
+            
+            // Convert to HTML with footnote references
+            const htmlContent = markdownToHtml(content);
+            
+            // Display content
+            document.getElementById('center-panel').innerHTML = `
+                <article class="document-content" id="document-content">
+                    ${htmlContent}
+                </article>
+            `;
+            
+            // Display comments
+            displayComments();
+            
+            // Add click handlers for footnote references
+            addFootnoteClickHandlers();
         }
 
-        // Build thread list
-        function buildThreadList() {
-            const messagesList = document.getElementById('messages-list');
-            messagesList.innerHTML = '';
-
-            Object.keys(threads).forEach(subject => {
-                const data = threads[subject];
-                const threadElem = document.createElement('div');
-                threadElem.className = 'message-thread';
-                threadElem.dataset.topic = data.topic;
+        // Parse markdown and extract footnotes
+        function parseMarkdownWithFootnotes(content) {
+            const footnoteRefs = [];
+            const footnoteDefinitions = {};
+            
+            // Extract footnote definitions [^n]: content
+            const definitionRegex = /^\[(\^[^\]]+)\]:\s*(.+)$/gm;
+            let match;
+            while ((match = definitionRegex.exec(content)) !== null) {
+                const [fullMatch, ref, definition] = match;
                 
-                const repliesCount = data.messages.length - 1;
-                const lastActivity = new Date(data.lastActivity || data.timestamp);
-                const isNew = isThreadNew(subject);
-                
-                threadElem.innerHTML = `
-                    <div class="message-pills">
-                        <span class="pill pill-subject">${subject}</span>
-                        <span class="pill pill-topic">${data.topic}</span>
-                        <span class="pill pill-date">${new Date(data.timestamp).toLocaleDateString()}</span>
-                        ${isNew ? '<span class="pill pill-new">new</span>' : ''}
-                    </div>
-                    <div class="message-preview">${data.messages[0].text.substring(0, 100)}${data.messages[0].text.length > 100 ? '...' : ''}</div>
-                    <div class="message-replies">${repliesCount} repl${repliesCount === 1 ? 'y' : 'ies'} · Last: ${lastActivity.toLocaleString()}</div>
-                `;
-                
-                messagesList.appendChild(threadElem);
-            });
-
-            attachThreadListeners();
-        }
-
-        // Load document content
-        async function loadDocContent(doc) {
-            try {
-                console.log('Loading document:', doc);
-                
-                let text = doc.fullContent || doc.content;
-                if (!text) {
-                    // Construct the path to the markdown file in /content/ folder
-                    const filename = doc.filename || doc.id || `${doc.id}.md`;
-                    const contentPath = `/content/${filename}`;
-                    console.log('Fetching content from:', contentPath);
+                // Parse the definition to extract type and metadata
+                const parts = definition.split(':');
+                if (parts.length >= 4) {
+                    const type = parts[0];
+                    const text = parts[1];
+                    const author = parts[2];
+                    const timestamp = parseInt(parts[3]);
                     
-                    const res = await fetch(contentPath);
-                    if (!res.ok) {
-                        throw new Error(`Failed to fetch content: ${res.status} ${res.statusText}`);
-                    }
-                    text = await res.text();
-                    console.log('Content loaded successfully, length:', text.length);
+                    footnoteDefinitions[ref] = {
+                        ref: ref,
+                        number: parseInt(ref.replace('^', '')),
+                        type: type,
+                        text: text,
+                        author: author,
+                        timestamp: timestamp
+                    };
                 }
                 
-                // Parse and render comments in the content
-                const renderComments = (content) => {
-                    console.log('Parsing existing comments from markdown...');
-                    // Updated regex to match markdown comment format: <!-- ? comment text | author | timestamp -->
-                    const commentRegex = /<!--\s*([?!✓])\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(\d+)(?:\s*\|\s*(.*?))?\s*-->/g;
-                    
-                    let lastIndex = 0;
-                    let result = '';
-                    let match;
-                    let commentCount = 0;
-                    
-                    while ((match = commentRegex.exec(content)) !== null) {
-                        commentCount++;
-                        console.log('Found existing comment:', match);
-                        
-                        // Add content before the comment
-                        result += content.substring(lastIndex, match.index);
-                        
-                        const [fullMatch, type, commentText, author, timestamp, highlightedText] = match;
-                        
-                        // Create highlighted text span
-                        const highlightedSpan = document.createElement('span');
-                        highlightedSpan.className = 'comment-marker';
-                        highlightedSpan.dataset.commentId = timestamp;
-                        highlightedSpan.dataset.originalText = highlightedText || commentText;
-                        
-                        // Set background color based on type
-                        if (type === '?') {
-                            highlightedSpan.style.backgroundColor = 'rgba(255, 0, 0, 0.3)';
-                        } else if (type === '!') {
-                            highlightedSpan.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
-                        } else if (type === '✓') {
-                            highlightedSpan.style.backgroundColor = 'rgba(0, 255, 0, 0.3)';
-                        }
-                        
-                        highlightedSpan.style.cursor = 'pointer';
-                        highlightedSpan.style.borderRadius = '2px';
-                        highlightedSpan.style.padding = '1px 2px';
-                        
-                        // Add the highlighted text (or fallback to comment text)
-                        const textToHighlight = highlightedText || commentText;
-                        highlightedSpan.textContent = textToHighlight;
-                        
-                        // Create tooltip
-                        const tooltip = document.createElement('div');
-                        tooltip.className = 'comment-tooltip';
-                        
-                        const dateStr = new Date(parseInt(timestamp)).toLocaleDateString();
-                        let tooltipHTML = '';
-                        
-                        if (commentText && commentText !== textToHighlight) {
-                            tooltipHTML += `<div style="margin-bottom: 5px;"><strong>${commentText}</strong></div>`;
-                        }
-                        
-                        tooltipHTML += `<div style="font-size:11px; opacity:0.8;">By ${author} on ${dateStr}</div>`;
-                        tooltipHTML += `<div style="margin-top:5px; font-size:10px;">
-                                        <button onclick="editComment(${timestamp})" style="margin-right:5px;">Edit</button>
-                                        <button onclick="deleteComment(${timestamp})">Delete</button>
-                                    </div>`;
-                        
-                        tooltip.innerHTML = tooltipHTML;
-                        highlightedSpan.appendChild(tooltip);
-                        
-                        // Add to result as HTML string
-                        result += highlightedSpan.outerHTML;
-                        
-                        lastIndex = match.index + fullMatch.length;
-                        
-                        // Store comment in localStorage for consistency
-                        storeCommentFromMarkdown(doc.id, type, commentText, author, parseInt(timestamp), textToHighlight);
-                    }
-                    
-                    // Add remaining content
-                    result += content.substring(lastIndex);
-                    
-                    console.log(`Found and rendered ${commentCount} existing comments from markdown`);
-                    return result;
+                // Remove from content
+                content = content.replace(fullMatch, '').trim();
+            }
+            
+            // Convert footnote definitions to array
+            const footnotes = Object.values(footnoteDefinitions).sort((a, b) => a.number - b.number);
+            
+            return { content, footnotes };
+        }
+
+        // Convert markdown to HTML with footnote handling
+        function markdownToHtml(markdown) {
+            let html = markdown;
+            
+            // Headers
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            
+            // Bold and italic
+            html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Lists
+            html = html.replace(/^\* (.+)$/gim, '<li>$1</li>');
+            html = html.replace(/^- (.+)$/gim, '<li>$1</li>');
+            html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>');
+            
+            // Footnote references [^n]
+            html = html.replace(/\[(\^[^\]]+)\]/g, (match, ref) => {
+                const number = parseInt(ref.replace('^', ''));
+                const footnote = currentComments.find(f => f.number === number);
+                const type = footnote ? footnote.type : 'question';
+                return `<a href="#comment-${number}" class="footnote-ref ${type}" data-comment-number="${number}">${number}</a>`;
+            });
+            
+            // Paragraphs
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = '<p>' + html + '</p>';
+            
+            // Clean up empty paragraphs
+            html = html.replace(/<p><\/p>/g, '');
+            html = html.replace(/<p>(<h[1-6]>)/g, '$1');
+            html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<li>)/g, '<ul>$1');
+            html = html.replace(/(<\/li>)<\/p>/g, '$1</ul>');
+            
+            return html;
+        }
+
+        // Display comments in right panel
+        function displayComments() {
+            const commentsList = document.getElementById('comments-list');
+            commentsList.innerHTML = '';
+            
+            if (currentComments.length === 0) {
+                commentsList.innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">No comments yet</div>';
+                return;
+            }
+            
+            currentComments.forEach(comment => {
+                const commentItem = document.createElement('div');
+                commentItem.className = 'comment-item';
+                commentItem.id = `comment-${comment.number}`;
+                
+                const typeDisplay = {
+                    'question': '❓ Question',
+                    'clarification': '⚠️ Clarification',
+                    'approved': '✅ Approved'
                 };
                 
-                // Simple markdown to HTML conversion
-                function markdownToHtml(markdown) {
-                    let html = markdown;
-                    
-                    // Headers
-                    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-                    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-                    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-                    
-                    // Bold and italic
-                    html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
-                    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-                    
-                    // Lists
-                    html = html.replace(/^\* (.+)$/gim, '<li>$1</li>');
-                    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-                    html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>');
-                    
-                    // Paragraphs - wrap lines that aren't already tags
-                    const lines = html.split('\n');
-                    const processedLines = [];
-                    let inParagraph = false;
-                    let paragraphIndex = 0;
-                    
-                    lines.forEach(line => {
-                        const trimmed = line.trim();
-                        if (!trimmed) {
-                            if (inParagraph) {
-                                processedLines.push('</p>');
-                                inParagraph = false;
-                            }
-                            processedLines.push('');
-                            return;
-                        }
-                        
-                        if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || 
-                            trimmed.startsWith('<li') || trimmed.startsWith('</')) {
-                            if (inParagraph) {
-                                processedLines.push('</p>');
-                                inParagraph = false;
-                            }
-                            processedLines.push(line);
-                        } else {
-                            if (!inParagraph) {
-                                processedLines.push(`<p class="commentable" data-para-index="${paragraphIndex}">`);
-                                inParagraph = true;
-                                paragraphIndex++;
-                            } else {
-                                processedLines.push('<br>');
-                            }
-                            processedLines.push(line);
-                        }
-                    });
-                    
-                    if (inParagraph) {
-                        processedLines.push('</p>');
-                    }
-                    
-                    return processedLines.join('\n');
-                }
-                
-                let htmlContent = markdownToHtml(text);
-                htmlContent = renderComments(htmlContent);
-                
-                document.getElementById('center-panel').innerHTML = `
-                    <article class="document-content">
-                        ${htmlContent}
-                    </article>
-                `;
-                
-                restoreComments(doc.id);
-                attachCommentListeners();
-                
-            } catch (e) {
-                console.error('Error loading document:', e);
-                document.getElementById('center-panel').innerHTML = `
-                    <div class="document-content">
-                        <h2>Error loading document</h2>
-                        <p style="color: #dc3545;">${e.message}</p>
+                commentItem.innerHTML = `
+                    <div class="comment-header">
+                        <div class="comment-number ${comment.type}">${comment.number}</div>
+                        <div class="comment-type ${comment.type}">${typeDisplay[comment.type] || comment.type}</div>
+                    </div>
+                    <div class="comment-content">${comment.text}</div>
+                    <div class="comment-meta">
+                        <span>By ${comment.author} • ${new Date(comment.timestamp).toLocaleDateString()}</span>
+                        <div class="comment-actions">
+                            <button class="comment-action" onclick="editComment(${comment.number})">Edit</button>
+                            <button class="comment-action" onclick="deleteComment(${comment.number})">Delete</button>
+                        </div>
                     </div>
                 `;
-            }
-        }
-
-        // Helper functions
-        function getHighlightColor(type) {
-            const colors = {
-                'question': 'rgba(255, 0, 0, 0.3)',
-                'clarification': 'rgba(255, 255, 0, 0.3)',
-                'approved': 'rgba(0, 255, 0, 0.3)'
-            };
-            return colors[type] || 'rgba(0, 0, 255, 0.3)';
-        }
-
-        function getCommentIcon(type) {
-            const icons = {
-                'question': '❓',
-                'clarification': '❗',
-                'approved': '✅'
-            };
-            return icons[type] || '💬';
-        }
-
-        // Restore comments from storage - FIXED to replace original text instead of appending
-        function restoreComments(docId) {
-            const comments = getStoredComments()[docId];
-            if (!comments) return;
-            
-            Object.keys(comments).forEach(paraIndex => {
-                if (paraIndex === 'general') {
-                    comments[paraIndex].forEach(comment => {
-                        console.log('General comment found:', comment);
-                    });
-                    return;
-                }
                 
-                const paragraph = document.querySelector(`[data-para-index="${paraIndex}"]`);
-                if (!paragraph) {
-                    console.log(`Paragraph ${paraIndex} not found for comments`);
-                    return;
-                }
+                // Add click handler to highlight in document
+                commentItem.addEventListener('click', () => {
+                    highlightCommentInDocument(comment.number);
+                });
                 
-                comments[paraIndex].forEach(comment => {
-                    const existingComment = document.querySelector(`[data-comment-id="${comment.timestamp}"]`);
-                    if (existingComment) return;
-                    
-                    // Get the text that should be highlighted (original selected text)
-                    const highlightedText = comment.highlightedText || comment.text || '';
-                    
-                    // Don't create empty comments
-                    if (!highlightedText) return;
-                    
-                    // Find and replace the original text within the paragraph
-                    const paragraphText = paragraph.textContent;
-                    const textIndex = paragraphText.indexOf(highlightedText);
-                    
-                    if (textIndex !== -1) {
-                        // Found the text - we need to replace it with a highlighted version
-                        console.log(`Found text "${highlightedText}" at index ${textIndex} in paragraph ${paraIndex}`);
-                        
-                        // Create the comment span
-                        const commentSpan = document.createElement('span');
-                        commentSpan.className = 'comment-marker';
-                        commentSpan.dataset.commentId = comment.timestamp;
-                        commentSpan.dataset.originalText = highlightedText;
-                        commentSpan.style.backgroundColor = getHighlightColor(comment.type);
-                        commentSpan.style.cursor = 'pointer';
-                        commentSpan.style.borderRadius = '2px';
-                        commentSpan.style.padding = '1px 2px';
-                        
-                        // Add the highlighted text to the span
-                        commentSpan.appendChild(document.createTextNode(highlightedText));
-                        
-                        // Create tooltip with the actual comment
-                        const tooltip = document.createElement('div');
-                        tooltip.className = 'comment-tooltip';
-                        
-                        const dateStr = new Date(comment.timestamp).toLocaleDateString();
-                        let tooltipContent = '';
-                        
-                        // Show the comment text in the tooltip (if different from highlighted text)
-                        if (comment.text && comment.text !== highlightedText) {
-                            tooltipContent += `<div style="margin-bottom: 5px;"><strong>${comment.text}</strong></div>`;
-                        }
-                        
-                        tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${comment.user} on ${dateStr}</div>`;
-                        tooltipContent += `<div style="margin-top:5px; font-size:10px;">
-                                            <button onclick="editComment(${comment.timestamp})" style="margin-right:5px;">Edit</button>
-                                            <button onclick="deleteComment(${comment.timestamp})">Delete</button>
-                                        </div>`;
-                        
-                        tooltip.innerHTML = tooltipContent;
-                        commentSpan.appendChild(tooltip);
-                        
-                        // Now we need to replace the text within the paragraph
-                        // This is tricky because we need to find the exact text node containing our target text
-                        replaceTextInParagraph(paragraph, highlightedText, commentSpan);
-                        
-                    } else {
-                        console.log(`Text "${highlightedText}" not found in paragraph ${paraIndex}, skipping comment restoration`);
-                    }
+                commentsList.appendChild(commentItem);
+            });
+        }
+
+        // Add click handlers for footnote references
+        function addFootnoteClickHandlers() {
+            document.querySelectorAll('.footnote-ref').forEach(ref => {
+                ref.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const commentNumber = parseInt(ref.dataset.commentNumber);
+                    highlightCommentInPanel(commentNumber);
                 });
             });
         }
-        
-        // Helper function to replace specific text within a paragraph with a comment span
-        function replaceTextInParagraph(paragraph, targetText, replacementSpan) {
-            const walker = document.createTreeWalker(
-                paragraph,
-                NodeFilter.SHOW_TEXT,
-                null,
-                false
-            );
+
+        // Highlight comment in document
+        function highlightCommentInDocument(commentNumber) {
+            // Remove existing highlights
+            document.querySelectorAll('.footnote-ref').forEach(ref => {
+                ref.classList.remove('active');
+            });
             
-            let node;
-            while (node = walker.nextNode()) {
-                const nodeText = node.textContent;
-                const textIndex = nodeText.indexOf(targetText);
+            // Highlight the specific footnote reference
+            const ref = document.querySelector(`[data-comment-number="${commentNumber}"]`);
+            if (ref) {
+                ref.classList.add('active');
+                ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Highlight comment in panel
+        function highlightCommentInPanel(commentNumber) {
+            // Remove existing highlights
+            document.querySelectorAll('.comment-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Highlight the specific comment
+            const commentItem = document.getElementById(`comment-${commentNumber}`);
+            if (commentItem) {
+                commentItem.classList.add('active');
+                commentItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Toggle comment form
+        function toggleCommentForm() {
+            const form = document.getElementById('comment-form');
+            if (form.classList.contains('show')) {
+                cancelComment();
+            } else {
+                form.classList.add('show');
+                document.getElementById('comment-text').focus();
+                isAddingComment = true;
                 
-                if (textIndex !== -1) {
-                    // Found the target text in this text node
-                    const beforeText = nodeText.substring(0, textIndex);
-                    const afterText = nodeText.substring(textIndex + targetText.length);
-                    
-                    // Create text nodes for before and after
-                    const beforeNode = beforeText ? document.createTextNode(beforeText) : null;
-                    const afterNode = afterText ? document.createTextNode(afterText) : null;
-                    
-                    // Replace the original text node
-                    const parent = node.parentNode;
-                    
-                    if (beforeNode) parent.insertBefore(beforeNode, node);
-                    parent.insertBefore(replacementSpan, node);
-                    if (afterNode) parent.insertBefore(afterNode, node);
-                    
-                    parent.removeChild(node);
-                    break; // We've found and replaced the text, so we're done
+                // Enable text selection mode
+                const docContent = document.getElementById('document-content');
+                if (docContent) {
+                    docContent.classList.add('selection-mode');
                 }
             }
         }
 
-        // Comment functionality
-        function attachCommentListeners() {
-            document.querySelectorAll('.commentable').forEach(p => {
-                p.style.cursor = 'text';
-                p.addEventListener('contextmenu', (e) => { e.preventDefault(); });
-                p.removeEventListener('mouseup', commentableMouseUpHandler);
-                p.addEventListener('mouseup', commentableMouseUpHandler);
-            });
-        }
-
-        function commentableMouseUpHandler(e) {
-            setTimeout(() => {
-                const selection = window.getSelection();
-                if (!selection.isCollapsed && selection.toString().trim().length > 0) {
-                    const range = selection.getRangeAt(0);
-                    if (!this.contains(range.commonAncestorContainer)) return;
-                    const rect = range.getBoundingClientRect();
-                    const menu = document.getElementById('comment-menu');
-                    menu.style.left = (rect.left + window.scrollX) + 'px';
-                    menu.style.top = (rect.bottom + window.scrollY) + 'px';
-                    menu.classList.add('show');
-                    menu.selectionRange = range;
-                }
-            }, 0);
-        }
-
-        function initializeCommentSystem() {
-            attachCommentListeners();
-        }
-
-        // Load thread content
-        function loadThreadContent(subject) {
-            const data = threads[subject];
-            if (!data) return;
-
-            let html = `
-                <div style="max-width: 700px;">
-                    <h2>${subject}</h2>
-                    <div class="thread-messages">
-            `;
+        // Cancel adding comment
+        function cancelComment() {
+            const form = document.getElementById('comment-form');
+            form.classList.remove('show');
+            document.getElementById('comment-text').value = '';
+            isAddingComment = false;
             
-            data.messages.forEach(msg => {
-                const dateStr = new Date(msg.timestamp).toLocaleString();
-                const isCurrentUser = msg.user === userEmail;
-                html += `
-                    <div class="thread-message" style="${isCurrentUser ? 'margin-left: 20px; background: #e7f3ff;' : ''}">
-                        <p>${msg.text}</p>
-                        <small style="color: #6c757d;">By ${msg.user} at ${dateStr}</small>
-                    </div>
-                `;
-            });
-            
-            html += `
-                    </div>
-                    <div class="reply-form">
-                        <textarea id="reply-text" placeholder="Add a reply..."></textarea>
-                        <button onclick="addReply('${subject}')">Reply</button>
-                    </div>
-                </div>
-            `;
-            
-            const center = document.getElementById('center-panel');
-            center.innerHTML = html;
-        }
-
-        // Add reply
-        function addReply(subject) {
-            const textarea = document.getElementById('reply-text');
-            const text = textarea.value.trim();
-            if (!text) return;
-
-            const now = Date.now();
-            const data = threads[subject];
-            
-            data.messages.push({
-                text: text,
-                timestamp: now,
-                user: userEmail
-            });
-            
-            data.lastActivity = now;
-            textarea.value = '';
-            
-            loadThreadContent(subject);
-            buildThreadList();
-        }
-
-        // Lens tab switching
-        document.querySelectorAll('.lens-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                const lens = tab.dataset.lens;
-                document.querySelectorAll('.document-item').forEach(doc => {
-                    const lenses = doc.dataset.lenses.split(' ');
-                    doc.style.display = (lens === 'all' || lenses.includes(lens)) ? 'block' : 'none';
-                });
-            });
-        });
-
-        // Comment option handling
-        document.querySelectorAll('.comment-option').forEach(option => {
-            option.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const type = option.dataset.type; 
-                const menu = document.getElementById('comment-menu');
-                const range = menu.selectionRange;
-                if (!range) return;
-                
-                let highlightColor = '';
-                if (type === 'question') { 
-                    highlightColor = 'rgba(255, 0, 0, 0.3)';
-                    currentCommentType = 'question';
-                    showCommentDialog('question');
-                    currentCommentRange = range;
-                    menu.classList.remove('show');
-                    window.getSelection().removeAllRanges();
-                    return;
-                } else if (type === 'clarification') {
-                    highlightColor = 'rgba(255, 255, 0, 0.3)';
-                    currentCommentType = 'clarification';
-                    showCommentDialog('clarification');
-                    currentCommentRange = range;
-                    menu.classList.remove('show');
-                    window.getSelection().removeAllRanges();
-                    return;
-                } else if (type === 'approved') {
-                    highlightColor = 'rgba(0, 255, 0, 0.3)';
-                    currentCommentType = 'approved';
-                    addHighlight(range, highlightColor, '', currentCommentType);
-                }
-                menu.classList.remove('show');
-                window.getSelection().removeAllRanges();
-            });
-        });
-
-        function addHighlight(range, highlightColor, commentText, type) {
-            const now = Date.now();
-            const commentSpan = document.createElement('span');
-            commentSpan.className = 'comment-marker';
-            commentSpan.dataset.commentId = now;
-            commentSpan.style.backgroundColor = highlightColor;
-            commentSpan.style.marginLeft = '5px';
-            commentSpan.style.cursor = 'pointer';
-            
-            const extractedContent = range.extractContents();
-            const originalText = extractedContent.textContent;
-            commentSpan.dataset.originalText = originalText;
-            
-            const startContainer = range.startContainer;
-            const startOffset = range.startOffset;
-            const endOffset = range.endOffset;
-            
-            const paragraph = startContainer.parentElement.closest('.commentable');
-            const paragraphText = paragraph.textContent;
-            
-            const textBefore = paragraphText.substring(0, startOffset);
-            const textAfter = paragraphText.substring(endOffset);
-            
-            commentSpan.appendChild(extractedContent);
-            range.insertNode(commentSpan);
-            
-            const tooltip = document.createElement('div');
-            tooltip.className = 'comment-tooltip';
-            
-            const dateStr = new Date(now).toLocaleDateString();
-            
-            let tooltipContent = '';
-            if (commentText) {
-                tooltipContent += `<div>${commentText}</div>`;
+            // Disable selection mode
+            const docContent = document.getElementById('document-content');
+            if (docContent) {
+                docContent.classList.remove('selection-mode');
             }
-            tooltipContent += `<div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>`;
-            tooltipContent += `<div style="margin-top:5px; font-size:10px;">
-                                <button onclick="editComment(${now})" style="margin-right:5px;">Edit</button>
-                                <button onclick="deleteComment(${now})">Delete</button>
-                            </div>`;
-            tooltip.innerHTML = tooltipContent;
-            
-            commentSpan.appendChild(tooltip);
-            
-            const currentDocItem = document.querySelector('.document-item.active');
-            if (!currentDocItem) {
-                console.error('No active document found');
-                return;
-            }
-            
-            const docId = currentDocItem.dataset.id;
-            const p = commentSpan.closest('.commentable');
-            
-            if (!p) {
-                console.error('Comment target paragraph not found');
-                const comments = getStoredComments();
-                comments[docId] = comments[docId] || {};
-                comments[docId]['general'] = comments[docId]['general'] || [];
-                comments[docId]['general'].push({
-                    text: commentText,
-                    user: userEmail,
-                    timestamp: now,
-                    type: type,
-                    highlightedText: originalText,
-                    contextBefore: textBefore,
-                    contextAfter: textAfter
-                });
-                saveComments(comments);
-                return;
-            }
-            
-            const paraIndex = p.dataset.paraIndex;
-            const comments = getStoredComments();
-            comments[docId] = comments[docId] || {};
-            comments[docId][paraIndex] = comments[docId][paraIndex] || [];
-            comments[docId][paraIndex].push({
-                text: commentText,
-                user: userEmail,
-                timestamp: now,
-                type: type,
-                highlightedText: originalText,
-                contextBefore: textBefore,
-                contextAfter: textAfter
-            });
-            saveComments(comments);
-            
-            saveCommentToMarkdown(docId, paraIndex, type === 'question' ? '?' : type === 'clarification' ? '!' : '✓', 
-                                commentText, userEmail, now, originalText, textBefore, textAfter);
         }
 
-        function showCommentDialog(type) {
-            const dialog = document.getElementById('comment-dialog');
-            const title = document.getElementById('comment-dialog-title');
-            const label = document.getElementById('comment-dialog-label');
-            const textarea = document.getElementById('comment-dialog-text');
-
-            if (type === 'question') {
-                title.textContent = 'Ask Question';
-                label.textContent = 'Question text:';
-                textarea.placeholder = 'What would you like to clarify or ask about this section?';
-            } else if (type === 'clarification') {
-                title.textContent = 'Request Clarification';
-                label.textContent = 'Clarification needed:';
-                textarea.placeholder = 'What needs to be clarified or expanded in this section?';
-            }
-
-            textarea.value = '';
-            dialog.classList.add('show');
-            dialog.style.display = 'block';
-            textarea.focus();
-        }
-
-        function hideCommentDialog() {
-            const dialog = document.getElementById('comment-dialog');
-            dialog.classList.remove('show');
-            dialog.style.display = 'none';
-            currentCommentType = '';
-        }
-
-        function submitComment() {
-            const textarea = document.getElementById('comment-dialog-text');
-            const newText = textarea.value.trim();
+        // Add new comment
+        function addComment() {
+            const type = document.getElementById('comment-type').value;
+            const text = document.getElementById('comment-text').value.trim();
             
-            // If editing, update the comment
-            if (currentEditingInfo) {
-                if (!newText) {
-                    alert('Please enter comment text');
-                    return;
-                }
-                
-                const docId = currentEditingInfo.docId;
-                const paraIndex = currentEditingInfo.paraIndex;
-                const commentIndex = currentEditingInfo.commentIndex;
-                const commentsData = getStoredComments();
-                
-                if (!commentsData[docId] || !commentsData[docId][paraIndex] || !commentsData[docId][paraIndex][commentIndex]) {
-                    console.error('Stored comment not found for editing');
-                    alert('Error: Comment not found in storage');
-                    currentEditingInfo = null;
-                    hideCommentDialog();
-                    return;
-                }
-                
-                const newTimestamp = Date.now();
-                commentsData[docId][paraIndex][commentIndex].text = newText;
-                commentsData[docId][paraIndex][commentIndex].timestamp = newTimestamp;
-                saveComments(commentsData);
-                
-                // Update the DOM element
-                const domElem = currentEditingInfo.domElement;
-                if (domElem) {
-                    domElem.dataset.commentId = newTimestamp;
-                    
-                    // Update tooltip
-                    const tooltip = domElem.querySelector('.comment-tooltip');
-                    if (tooltip) {
-                        const dateStr = new Date(newTimestamp).toLocaleDateString();
-                        tooltip.innerHTML = `<button onclick="editComment(${newTimestamp})" style="margin-right:5px;">Edit</button>
-                                            <button onclick="deleteComment(${newTimestamp})">Delete</button>
-                                            <div style="font-size:11px; opacity:0.8;">By ${userEmail} on ${dateStr}</div>
-                                            <div>${newText}</div>`;
-                    }
-                }
-                
-                currentEditingInfo = null;
-                hideCommentDialog();
-                return;
-            }
-
-            // For new comments: ensure text is provided if needed.
-            if ((currentCommentType === 'question' || currentCommentType === 'clarification') && !newText) {
+            if (!text) {
                 alert('Please enter comment text');
                 return;
             }
-            let highlightColor = '';
-            if (currentCommentType === 'question') highlightColor = 'rgba(255, 0, 0, 0.3)';
-            else if (currentCommentType === 'clarification') highlightColor = 'rgba(255, 255, 0, 0.3)';
-            else if (currentCommentType === 'approved') highlightColor = 'rgba(0, 255, 0, 0.3)';
             
-            if (currentCommentRange) {
-                addHighlight(currentCommentRange, highlightColor, newText, currentCommentType);
-            } else {
-                console.error("No selection range available.");
+            if (!currentDocument) {
+                alert('Please select a document first');
+                return;
             }
-            hideCommentDialog();
-            currentCommentRange = null;
-            currentCommentType = '';
+            
+            // Get selected text or show selection prompt
+            const selection = window.getSelection();
+            const selectedText = selection.toString().trim();
+            
+            if (!selectedText) {
+                alert('Please select some text in the document to comment on');
+                return;
+            }
+            
+            // Create new comment
+            const newComment = {
+                number: nextCommentNumber,
+                type: type,
+                text: text,
+                author: userEmail,
+                timestamp: Date.now(),
+                ref: `^${nextCommentNumber}`
+            };
+            
+            // Add to current comments
+            currentComments.push(newComment);
+            currentComments.sort((a, b) => a.number - b.number);
+            
+            // Insert footnote reference at selection
+            insertFootnoteAtSelection(nextCommentNumber);
+            
+            // Update the document content to include new footnote definition
+            updateDocumentWithNewComment(newComment);
+            
+            // Increment counter
+            nextCommentNumber++;
+            
+            // Refresh display
+            displayComments();
+            addFootnoteClickHandlers();
+            
+            // Close form
+            cancelComment();
         }
 
-        function editComment(commentTimestamp) {
-            console.log('Editing comment:', commentTimestamp);
+        // Insert footnote reference at current selection
+        function insertFootnoteAtSelection(number) {
+            const selection = window.getSelection();
+            if (selection.rangeCount === 0) return;
             
-            // Find the comment in storage
-            const currentDocItem = document.querySelector('.document-item.active');
-            if (!currentDocItem) {
-                console.error('No active document found');
-                return;
-            }
+            const range = selection.getRangeAt(0);
             
-            const docId = currentDocItem.dataset.id;
-            const commentsData = getStoredComments();
+            // Create footnote reference element
+            const footnoteRef = document.createElement('a');
+            footnoteRef.href = `#comment-${number}`;
+            footnoteRef.className = `footnote-ref ${document.getElementById('comment-type').value}`;
+            footnoteRef.dataset.commentNumber = number;
+            footnoteRef.textContent = number;
             
-            if (!commentsData[docId]) {
-                console.error('No comments for this document');
-                return;
-            }
+            // Insert at end of selection
+            range.collapse(false); // Move to end of selection
+            range.insertNode(footnoteRef);
             
-            let foundComment = null;
-            let foundInfo = null;
-            
-            // Search through all paragraphs for this comment
-            for (const paraIndex in commentsData[docId]) {
-                const commentsArr = commentsData[docId][paraIndex];
-                for (let i = 0; i < commentsArr.length; i++) {
-                    if (commentsArr[i].timestamp == commentTimestamp) {
-                        foundComment = commentsArr[i];
-                        foundInfo = {
-                            docId: docId,
-                            paraIndex: paraIndex,
-                            commentIndex: i,
-                            originalText: commentsArr[i].text,
-                            domElement: document.querySelector(`[data-comment-id="${commentTimestamp}"]`)
-                        };
-                        break;
-                    }
-                }
-                if (foundComment) break;
-            }
-            
-            if (!foundComment) {
-                console.error('Comment not found for editing');
-                return;
-            }
-            
-            // Set up editing state
-            currentEditingInfo = foundInfo;
-            
-            // Open the dialog prefilled for editing
-            const dialog = document.getElementById('comment-dialog');
-            const dlgTitle = document.getElementById('comment-dialog-title');
-            const label = document.getElementById('comment-dialog-label');
-            const textarea = document.getElementById('comment-dialog-text');
-            
-            dlgTitle.textContent = 'Edit Comment';
-            label.textContent = 'Edit your comment:';
-            textarea.value = foundComment.text || '';
-            
-            dialog.style.display = 'block';
-            dialog.classList.add('show');
-            textarea.focus();
+            // Clear selection
+            selection.removeAllRanges();
         }
 
-        async function deleteComment(commentTimestamp) {
-            const commentElement = document.querySelector(`[data-comment-id="${commentTimestamp}"]`);
+        // Update document markdown with new comment
+        function updateDocumentWithNewComment(comment) {
+            if (!currentDocument) return;
             
-            if (!commentElement) {
-                console.error('Comment element not found in DOM');
+            // Add footnote definition to document content
+            const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
+            currentDocument.content += '\n' + footnoteDefinition;
+            
+            // In a real implementation, this would save to GitHub via API
+            console.log('Would save to GitHub:', footnoteDefinition);
+        }
+
+        // Edit comment
+        function editComment(commentNumber) {
+            const comment = currentComments.find(c => c.number === commentNumber);
+            if (!comment) return;
+            
+            // Show form with existing values
+            document.getElementById('comment-type').value = comment.type;
+            document.getElementById('comment-text').value = comment.text;
+            
+            const form = document.getElementById('comment-form');
+            form.classList.add('show');
+            
+            // Change button behavior temporarily
+            const addButton = form.querySelector('.btn-primary');
+            addButton.textContent = 'Update Comment';
+            addButton.onclick = () => updateComment(commentNumber);
+        }
+
+        // Update existing comment
+        function updateComment(commentNumber) {
+            const type = document.getElementById('comment-type').value;
+            const text = document.getElementById('comment-text').value.trim();
+            
+            if (!text) {
+                alert('Please enter comment text');
                 return;
             }
             
-            // Remove from stored comments first
-            const currentDocItem = document.querySelector('.document-item.active');
-            if (!currentDocItem) {
-                console.error('No active document found');
-                return;
+            // Update comment in array
+            const comment = currentComments.find(c => c.number === commentNumber);
+            if (comment) {
+                comment.type = type;
+                comment.text = text;
+                comment.timestamp = Date.now();
             }
             
-            const docId = currentDocItem.dataset.id;
-            const commentsData = getStoredComments();
-            let commentDeleted = false;
-            
-            if (commentsData[docId]) {
-                for (const paraIndex in commentsData[docId]) {
-                    const commentsArr = commentsData[docId][paraIndex];
-                    for (let i = 0; i < commentsArr.length; i++) {
-                        if (commentsArr[i].timestamp == commentTimestamp) {
-                            commentsArr.splice(i, 1);
-                            if (commentsArr.length === 0) {
-                                delete commentsData[docId][paraIndex];
-                            }
-                            saveComments(commentsData);
-                            commentDeleted = true;
-                            break;
-                        }
-                    }
-                    if (commentDeleted) break;
-                }
+            // Update footnote reference styling
+            const ref = document.querySelector(`[data-comment-number="${commentNumber}"]`);
+            if (ref) {
+                ref.className = `footnote-ref ${type}`;
             }
             
-            if (commentDeleted) {
-                // Find the document data and reload the content to refresh the display
-                console.log('Comment deleted, reloading document content...');
-                
-                // Get the document data from the active item's stored reference
-                // We'll need to reload from the stored document data
-                const docData = currentDocItem.docData;
-                if (docData) {
-                    loadDocContent(docData);
-                } else {
-                    // Fallback: try to reload from the original documents
-                    console.log('Document data not found in item, attempting to reload...');
-                    // For now, just remove the comment element and its text
-                    const originalText = commentElement.dataset.originalText || 
-                                       Array.from(commentElement.childNodes)
-                                           .filter(node => node.nodeType === Node.TEXT_NODE || 
-                                                           (node.nodeType === Node.ELEMENT_NODE && 
-                                                           !node.classList.contains('comment-tooltip')))
-                                           .map(node => node.textContent)
-                                           .join('');
-                    
-                    const textNode = document.createTextNode(originalText);
-                    commentElement.parentNode.replaceChild(textNode, commentElement);
-                }
-            } else {
-                console.error('Comment not found in storage for deletion');
-            }
+            // Refresh display
+            displayComments();
+            
+            // Reset form
+            const form = document.getElementById('comment-form');
+            form.classList.remove('show');
+            document.getElementById('comment-text').value = '';
+            
+            const addButton = form.querySelector('.btn-primary');
+            addButton.textContent = 'Add Comment';
+            addButton.onclick = addComment;
+            
+            // Update document
+            updateDocumentWithEditedComment(comment);
         }
 
-        // Helper function to store comments parsed from markdown into localStorage
-        function storeCommentFromMarkdown(docId, type, commentText, author, timestamp, highlightedText) {
-            const comments = getStoredComments();
-            comments[docId] = comments[docId] || {};
+        // Update document with edited comment
+        function updateDocumentWithEditedComment(comment) {
+            if (!currentDocument) return;
             
-            // For now, store as general comments since we don't have paragraph index from markdown
-            // In a more sophisticated version, we'd need to track paragraph positions
-            comments[docId]['general'] = comments[docId]['general'] || [];
+            // Update footnote definition in document content
+            const oldPattern = new RegExp(`\\[\\^${comment.number}\\]:\\s*[^\\n]+`, 'g');
+            const newDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
+            currentDocument.content = currentDocument.content.replace(oldPattern, newDefinition);
             
-            // Check if comment already exists
-            const existingComment = comments[docId]['general'].find(c => c.timestamp === timestamp);
-            if (!existingComment) {
-                comments[docId]['general'].push({
-                    text: commentText,
-                    user: author,
-                    timestamp: timestamp,
-                    type: type === '?' ? 'question' : type === '!' ? 'clarification' : 'approved',
-                    highlightedText: highlightedText
-                });
-                saveComments(comments);
-            }
-        }
-        
-        // Updated saveCommentToMarkdown function with better error handling and debugging
-        async function saveCommentToMarkdown(docId, paraIndex, prefix, text, user, timestamp, highlightedText, contextBefore, contextAfter) {
-            console.log('Attempting to save comment to markdown:', {
-                docId, paraIndex, prefix, text, user, timestamp, highlightedText
-            });
-            
-            // Format the markdown comment
-            const mdComment = highlightedText ? 
-                `<!-- ${prefix} ${text} | ${user} | ${timestamp} | ${highlightedText} -->` :
-                `<!-- ${prefix} ${text} | ${user} | ${timestamp} -->`;
-            
-            console.log('Formatted markdown comment:', mdComment);
-            
-            try {
-                const response = await fetch('/api/save-comment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        docId,
-                        paraIndex, 
-                        comment: mdComment,
-                        highlightedText,
-                        contextBefore,
-                        contextAfter
-                    })
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.text();
-                    console.error('Failed to save comment to markdown:', response.status, errorData);
-                    
-                    // Show user-friendly error
-                    alert(`Failed to save comment to markdown file. Error: ${response.status}. Comment saved locally only.`);
-                    return;
-                }
-                
-                const result = await response.json();
-                console.log('Comment saved to markdown successfully:', result);
-                
-            } catch (error) {
-                console.error('Error saving comment to markdown:', error);
-                
-                // For development/testing - try to save to a mock endpoint or show helpful message
-                console.log('API endpoint not available. In a real deployment, this would save to GitHub.');
-                console.log('Mock API call would be:');
-                console.log(`POST /api/save-comment`, {
-                    docId,
-                    comment: mdComment,
-                    action: 'add'
-                });
-                
-                // Don't show alert for network errors in development, just log
-                // alert(`Network error: ${error.message}. Comment saved locally only.`);
-            }
-        }
-        
-        // Function to remove comment from markdown file
-        async function removeCommentFromMarkdown(docId, paraIndex, timestamp) {
-            console.log('Attempting to remove comment from markdown:', { docId, paraIndex, timestamp });
-            
-            try {
-                const response = await fetch('/api/save-comment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        docId,
-                        paraIndex,
-                        timestamp,
-                        action: 'remove'
-                    })
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.text();
-                    console.error('Failed to remove comment from markdown:', response.status, errorData);
-                    return;
-                }
-                
-                console.log('Comment removed from markdown successfully');
-                
-            } catch (error) {
-                console.error('Error removing comment from markdown:', error);
-                console.log('Mock API call would be:');
-                console.log(`POST /api/save-comment`, {
-                    docId,
-                    timestamp,
-                    action: 'remove'
-                });
-            }
+            console.log('Would update in GitHub:', newDefinition);
         }
 
-        function attachThreadListeners() {
-            document.querySelectorAll('.message-thread').forEach(thread => {
-                thread.addEventListener('click', () => {
-                    document.querySelectorAll('.document-item, .message-thread').forEach(i => i.classList.remove('active'));
-                    thread.classList.add('active');
-                    
-                    const subject = thread.querySelector('.pill-subject').textContent;
-                    loadThreadContent(subject);
-                    markThreadAsRead(subject);
-                });
-            });
+        // Delete comment
+        function deleteComment(commentNumber) {
+            if (!confirm('Are you sure you want to delete this comment?')) return;
+            
+            // Remove from array
+            currentComments = currentComments.filter(c => c.number !== commentNumber);
+            
+            // Remove footnote reference from document
+            const ref = document.querySelector(`[data-comment-number="${commentNumber}"]`);
+            if (ref) {
+                ref.remove();
+            }
+            
+            // Remove footnote definition from document content
+            if (currentDocument) {
+                const pattern = new RegExp(`\\[\\^${commentNumber}\\]:\\s*[^\\n]+\\n?`, 'g');
+                currentDocument.content = currentDocument.content.replace(pattern, '');
+            }
+            
+            // Refresh display
+            displayComments();
+            
+            console.log('Would delete from GitHub: comment', commentNumber);
         }
 
         // Modal functions
@@ -2091,96 +1193,8 @@
             document.getElementById('overview-modal').classList.remove('show');
         }
 
-        // Thread form functions
-        function showNewThreadForm() {
-            document.getElementById('new-thread-form').classList.add('show');
-        }
-
-        function hideNewThreadForm() {
-            document.getElementById('new-thread-form').classList.remove('show');
-            document.getElementById('thread-subject').value = '';
-            document.getElementById('thread-topic').value = '';
-            document.getElementById('thread-message').value = '';
-        }
-
-        function createThread() {
-            const subject = document.getElementById('thread-subject').value.trim();
-            const topic = document.getElementById('thread-topic').value.trim();
-            const message = document.getElementById('thread-message').value.trim();
-            
-            if (!subject || !topic || !message) {
-                alert('Please fill in all fields');
-                return;
-            }
-
-            const now = Date.now();
-
-            threads[subject] = {
-                topic: topic,
-                timestamp: now,
-                lastActivity: now,
-                messages: [{
-                    text: message,
-                    timestamp: now,
-                    user: userEmail
-                }]
-            };
-
-            markThreadAsRead(subject);
-            buildThreadList();
-            initTopicFilters();
-            hideNewThreadForm();
-        }
-
-        // Hide comment menu on click outside
-        document.addEventListener('click', () => {
-            document.getElementById('comment-menu').classList.remove('show');
-        });
-
-        // Initialize everything - SINGLE INIT FUNCTION
-        async function init() {
-            if (isInitialized) return; // Prevent duplicate initialization
-            isInitialized = true;
-            
-            try {
-                await fetchUserEmail();
-                await buildLeftPanel();
-                initTopicFilters();
-                buildThreadList();
-                initializeCommentSystem();
-                
-                // Add lens tab event listeners
-                document.querySelectorAll('.lens-tab').forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
-                        tab.classList.add('active');
-                        const lens = tab.dataset.lens;
-                        document.querySelectorAll('.document-item').forEach(doc => {
-                            const lenses = doc.dataset.lenses.split(' ');
-                            doc.style.display = (lens === 'all' || lenses.includes(lens)) ? 'block' : 'none';
-                        });
-                    });
-                });
-                
-            } catch (error) {
-                console.error('Error during initialization:', error);
-            }
-        }
-
-        // Start the application only after DOM is fully loaded
+        // Initialize on load
         document.addEventListener('DOMContentLoaded', init);
-
-        // Add comment marker click handling
-        document.addEventListener('click', function(e) {
-            const marker = e.target.closest('.comment-marker');
-            if (marker) {
-                const tooltip = marker.querySelector('.comment-tooltip');
-                if (tooltip) {
-                    tooltip.style.display = (tooltip.style.display === "block") ? "none" : "block";
-                    e.stopPropagation();
-                }
-            }
-        });
     </script>
 </body>
 </html>
