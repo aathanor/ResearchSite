@@ -508,14 +508,66 @@
             background: #fff3cd;
             border-color: #ffc107;
         }
-        
-        /* Selection highlighting for adding comments */
-        .document-content.selection-mode {
-            cursor: text;
+        /* Comment Menu - Pop-up after text selection */
+        .comment-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 4px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+            min-width: 160px;
+            animation: fadeIn 0.15s ease-out;
         }
         
-        .document-content.selection-mode ::selection {
-            background-color: rgba(0, 102, 204, 0.3);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+       
+        .comment-menu.show {
+            display: block;
+        }
+       
+        .comment-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.15s;
+            font-size: 13px;
+            color: #495057;
+            margin: 1px 0;
+        }
+       
+        .comment-option:hover {
+            background: #f8f9fa;
+            color: #212529;
+        }
+       
+        .comment-option-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+       
+        .comment-option-text {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        /* Selected text highlighting */
+        #document-content ::selection {
+            background-color: rgba(0, 102, 204, 0.2);
+        }
+        
+        #document-content::-moz-selection {
+            background-color: rgba(0, 102, 204, 0.2);
         }
         
         /* Loading state */
@@ -535,6 +587,45 @@
         <div class="header-actions">
             <button class="btn-overview" onclick="showOverview()">📊 Project Overview</button>
         </div>
+   
+    <!-- Comment Menu - Pop-up after text selection -->
+    <div class="comment-menu" id="comment-menu">
+        <div class="comment-option" data-type="question">
+            <span class="comment-option-icon">❓</span>
+            <span class="comment-option-text">Ask question</span>
+        </div>
+        <div class="comment-option" data-type="clarification">
+            <span class="comment-option-icon">⚠️</span>
+            <span class="comment-option-text">Needs clarification</span>
+        </div>
+        <div class="comment-option" data-type="approved">
+            <span class="comment-option-icon">✅</span>
+            <span class="comment-option-text">Approved / Keep</span>
+        </div>
+    </div>
+   
+    <!-- Comment Dialog -->
+    <div id="comment-dialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+         background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; z-index: 3000; 
+         box-shadow: 0 8px 32px rgba(0,0,0,0.12); min-width: 400px;">
+        <h3 id="comment-dialog-title" style="margin: 0 0 15px 0; color: #212529;">Comment</h3>
+        <label id="comment-dialog-label" for="comment-dialog-text" style="display: block; margin-bottom: 8px; font-weight: 500; color: #495057;"></label>
+        <textarea id="comment-dialog-text" 
+                  style="width: 100%; min-height: 80px; margin-top: 0; padding: 10px; border: 1px solid #dee2e6; 
+                         border-radius: 4px; font-family: inherit; resize: vertical; font-size: 14px;"
+                  onkeydown="if(event.key==='Enter' && (event.ctrlKey || event.metaKey)) submitComment()"></textarea>
+        <div style="margin-top: 15px; text-align: right;">
+            <button onclick="hideCommentDialog()" 
+                    style="margin-right: 10px; padding: 8px 16px; border: 1px solid #dee2e6; background: white; 
+                           border-radius: 4px; cursor: pointer; color: #6c757d;">Cancel</button>
+            <button onclick="submitComment()" 
+                    style="padding: 8px 16px; background: #0066cc; color: white; border: none; border-radius: 4px; 
+                           cursor: pointer; font-weight: 500;">Submit</button>
+        </div>
+        <div style="margin-top: 8px; font-size: 12px; color: #6c757d; text-align: right;">
+            Press Ctrl+Enter to submit
+        </div>
+    </div>
     </div>
    
     <!-- Main container -->
@@ -564,29 +655,9 @@
         <div class="right-panel">
             <div class="comments-header">
                 <h3>Comments</h3>
-                <button class="new-comment-btn" onclick="toggleCommentForm()" disabled>+ Add Comment</button>
             </div>
             <div class="comments-list" id="comments-list">
                 <div class="loading">No document selected</div>
-            </div>
-            <!-- New comment form -->
-            <div class="comment-form" id="comment-form">
-                <div class="form-group">
-                    <label>Comment Type</label>
-                    <select id="comment-type">
-                        <option value="question">❓ Question</option>
-                        <option value="clarification">⚠️ Needs Clarification</option>
-                        <option value="approved">✅ Approved/Keep</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Comment Text</label>
-                    <textarea id="comment-text" placeholder="Enter your comment..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-secondary" onclick="cancelComment()">Cancel</button>
-                    <button class="btn btn-primary" onclick="addComment()">Add Comment</button>
-                </div>
             </div>
         </div>
     </div>
@@ -643,9 +714,10 @@
         let currentDocument = null;
         let currentComments = [];
         let nextCommentNumber = 1;
-        let isAddingComment = false;
         let userEmail = 'anonymous';
         let isInitialized = false;
+        let currentCommentRange = null;
+        let currentCommentType = '';
 
         // Initialize the application
         async function init() {
@@ -879,8 +951,8 @@
                 // Add click handlers for footnote references
                 addFootnoteClickHandlers();
                 
-                // Enable add comment button
-                document.querySelector('.new-comment-btn').disabled = false;
+                // Add text selection handlers for comments
+                addTextSelectionHandlers();
                 
             } catch (e) {
                 console.error('Error loading document:', e);
@@ -891,6 +963,95 @@
                     </div>
                 `;
             }
+        }
+
+        // Add text selection handlers for commenting
+        function addTextSelectionHandlers() {
+            const docContent = document.getElementById('document-content');
+            if (!docContent) return;
+            
+            console.log('Adding text selection handlers');
+            
+            // Remove existing listeners
+            docContent.removeEventListener('mouseup', handleTextSelection);
+            docContent.removeEventListener('contextmenu', preventContextMenu);
+            
+            // Add new listeners
+            docContent.addEventListener('mouseup', handleTextSelection);
+            docContent.addEventListener('contextmenu', preventContextMenu);
+        }
+        
+        // Handle text selection
+        function handleTextSelection(e) {
+            setTimeout(() => {
+                const selection = window.getSelection();
+                const selectedText = selection.toString().trim();
+                
+                console.log('Text selected:', selectedText);
+                
+                if (!selection.isCollapsed && selectedText.length > 0) {
+                    const range = selection.getRangeAt(0);
+                    const docContent = document.getElementById('document-content');
+                    
+                    // Check if selection is within the document content
+                    if (!docContent.contains(range.commonAncestorContainer)) {
+                        console.log('Selection not in document content');
+                        return;
+                    }
+                    
+                    const rect = range.getBoundingClientRect();
+                    const menu = document.getElementById('comment-menu');
+                    
+                    // Position menu near selection
+                    menu.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 200) + 'px';
+                    menu.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+                    menu.classList.add('show');
+                    
+                    // Store the range for later use
+                    currentCommentRange = range.cloneRange();
+                    
+                    console.log('Comment menu shown at:', menu.style.left, menu.style.top);
+                } else {
+                    // Hide menu if no selection
+                    document.getElementById('comment-menu').classList.remove('show');
+                }
+            }, 10);
+        }
+        
+        // Prevent context menu on right click in document
+        function preventContextMenu(e) {
+            if (e.target.closest('#document-content')) {
+                e.preventDefault();
+            }
+        }
+        
+        // Handle comment option selection
+        function handleCommentOption(type) {
+            console.log('Comment option selected:', type);
+            
+            const menu = document.getElementById('comment-menu');
+            menu.classList.remove('show');
+            
+            if (!currentCommentRange) {
+                console.error('No comment range available');
+                alert('Error: No text selection found');
+                return;
+            }
+            
+            currentCommentType = type;
+            
+            if (type === 'approved') {
+                // For approved comments, add immediately
+                console.log('Adding approved comment immediately');
+                addComment(type, 'Approved', currentCommentRange);
+            } else {
+                // For questions and clarifications, show dialog
+                console.log('Showing dialog for', type);
+                showCommentDialog(type);
+            }
+            
+            // Clear text selection
+            window.getSelection().removeAllRanges();
         }
 
         // Parse markdown and extract footnotes
@@ -1064,45 +1225,17 @@
 
         // Toggle comment form
         function toggleCommentForm() {
-            const form = document.getElementById('comment-form');
-            if (form.classList.contains('show')) {
-                cancelComment();
-            } else {
-                form.classList.add('show');
-                document.getElementById('comment-text').focus();
-                isAddingComment = true;
-                
-                // Enable text selection mode
-                const docContent = document.getElementById('document-content');
-                if (docContent) {
-                    docContent.classList.add('selection-mode');
-                }
-            }
+            // This function is no longer used but kept for compatibility
         }
 
         // Cancel adding comment
         function cancelComment() {
-            const form = document.getElementById('comment-form');
-            form.classList.remove('show');
-            document.getElementById('comment-text').value = '';
-            isAddingComment = false;
-            
-            // Disable selection mode
-            const docContent = document.getElementById('document-content');
-            if (docContent) {
-                docContent.classList.remove('selection-mode');
-            }
-            
-            // Reset form button
-            const addButton = form.querySelector('.btn-primary');
-            addButton.textContent = 'Add Comment';
-            addButton.onclick = addComment;
+            // This function is no longer used but kept for compatibility
         }
 
-        // Add new comment
-        async function addComment() {
-            const type = document.getElementById('comment-type').value;
-            const text = document.getElementById('comment-text').value.trim();
+        // Add new comment (called from dialog)
+        async function addComment(type, text, range) {
+            console.log('addComment called with:', { type, text, range: range ? range.toString() : 'null' });
             
             if (!text) {
                 alert('Please enter comment text');
@@ -1114,12 +1247,17 @@
                 return;
             }
             
-            // Get selected text or show selection prompt
-            const selection = window.getSelection();
-            const selectedText = selection.toString().trim();
+            if (!range) {
+                alert('No text selection found');
+                return;
+            }
+            
+            // Get the selected text for context
+            const selectedText = range.toString().trim();
+            console.log('Selected text for comment:', selectedText);
             
             if (!selectedText) {
-                alert('Please select some text in the document to comment on');
+                alert('No text was selected');
                 return;
             }
             
@@ -1130,50 +1268,48 @@
                 text: text,
                 author: userEmail,
                 timestamp: Date.now(),
-                ref: `^${nextCommentNumber}`
+                ref: `^${nextCommentNumber}`,
+                selectedText: selectedText
             };
             
-            // Insert footnote reference at selection
-            insertFootnoteAtSelection(nextCommentNumber);
+            console.log('Creating comment:', newComment);
             
-            // Add to current comments
+            // Insert footnote reference at selection in the DOM (visual feedback)
+            insertFootnoteAtRange(range, nextCommentNumber);
+            
+            // Add to current comments array
             currentComments.push(newComment);
             currentComments.sort((a, b) => a.number - b.number);
             
-            // Save to GitHub
+            // Save to GitHub with selected text context
             await saveCommentToGitHub(newComment);
             
-            // Increment counter
+            // Increment counter for next comment
             nextCommentNumber++;
             
             // Refresh display
             displayComments();
             addFootnoteClickHandlers();
             
-            // Close form
-            cancelComment();
+            // Clear selection and range
+            window.getSelection().removeAllRanges();
+            currentCommentRange = null;
+            
+            console.log('Comment added successfully');
         }
 
-        // Insert footnote reference at current selection
-        function insertFootnoteAtSelection(number) {
-            const selection = window.getSelection();
-            if (selection.rangeCount === 0) return;
-            
-            const range = selection.getRangeAt(0);
-            
+        // Insert footnote reference at specific range
+        function insertFootnoteAtRange(range, number) {
             // Create footnote reference element
             const footnoteRef = document.createElement('a');
             footnoteRef.href = `#comment-${number}`;
-            footnoteRef.className = `footnote-ref ${document.getElementById('comment-type').value}`;
+            footnoteRef.className = `footnote-ref ${currentCommentType}`;
             footnoteRef.dataset.commentNumber = number;
             footnoteRef.textContent = number;
             
             // Insert at end of selection
             range.collapse(false); // Move to end of selection
             range.insertNode(footnoteRef);
-            
-            // Clear selection
-            selection.removeAllRanges();
         }
 
         // Save comment to GitHub via API
@@ -1182,6 +1318,7 @@
                 const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
                 
                 console.log('Saving comment to GitHub:', footnoteDefinition);
+                console.log('Selected text context:', comment.selectedText);
                 
                 const response = await fetch('/api/save-comment', {
                     method: 'POST',
@@ -1189,6 +1326,8 @@
                     body: JSON.stringify({ 
                         docId: currentDocument.id,
                         comment: footnoteDefinition,
+                        footnoteRef: `[^${comment.number}]`,
+                        selectedText: comment.selectedText,
                         type: 'footnote',
                         action: 'add'
                     })
@@ -1215,52 +1354,36 @@
             const comment = currentComments.find(c => c.number === commentNumber);
             if (!comment) return;
             
-            // Show form with existing values
-            document.getElementById('comment-type').value = comment.type;
-            document.getElementById('comment-text').value = comment.text;
-            
-            const form = document.getElementById('comment-form');
-            form.classList.add('show');
-            
-            // Change button behavior temporarily
-            const addButton = form.querySelector('.btn-primary');
-            addButton.textContent = 'Update Comment';
-            addButton.onclick = () => updateComment(commentNumber);
+            // Show dialog with existing values
+            currentCommentType = comment.type;
+            showCommentDialog(comment.type, comment.text, true, commentNumber);
         }
 
         // Update existing comment
-        async function updateComment(commentNumber) {
-            const type = document.getElementById('comment-type').value;
-            const text = document.getElementById('comment-text').value.trim();
+        async function updateComment(commentNumber, newText) {
+            const comment = currentComments.find(c => c.number === commentNumber);
+            if (!comment) return;
             
-            if (!text) {
+            if (!newText.trim()) {
                 alert('Please enter comment text');
                 return;
             }
             
-            // Update comment in array
-            const comment = currentComments.find(c => c.number === commentNumber);
-            if (comment) {
-                const oldComment = {...comment};
-                comment.type = type;
-                comment.text = text;
-                comment.timestamp = Date.now();
-                
-                // Update footnote reference styling
-                const ref = document.querySelector(`[data-comment-number="${commentNumber}"]`);
-                if (ref) {
-                    ref.className = `footnote-ref ${type}`;
-                }
-                
-                // Save to GitHub
-                await updateCommentInGitHub(oldComment, comment);
-                
-                // Refresh display
-                displayComments();
+            const oldComment = {...comment};
+            comment.text = newText.trim();
+            comment.timestamp = Date.now();
+            
+            // Update footnote reference styling (type doesn't change in edit)
+            const ref = document.querySelector(`[data-comment-number="${commentNumber}"]`);
+            if (ref) {
+                ref.className = `footnote-ref ${comment.type}`;
             }
             
-            // Reset form
-            cancelComment();
+            // Save to GitHub
+            await updateCommentInGitHub(oldComment, comment);
+            
+            // Refresh display
+            displayComments();
         }
 
         // Update comment in GitHub
@@ -1363,6 +1486,134 @@
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', init);
+        
+        // Comment menu and dialog handling
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle comment option clicks
+            document.querySelectorAll('.comment-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const type = option.dataset.type;
+                    const menu = document.getElementById('comment-menu');
+                    const range = menu.selectionRange;
+                    
+                    if (!range) {
+                        console.error('No selection range found');
+                        return;
+                    }
+                    
+                    currentCommentType = type;
+                    currentCommentRange = range;
+                    
+                    if (type === 'approved') {
+            // For approved comments, add immediately without dialog
+                        addComment(type, 'Approved', range);
+                        console.log('Selected text for approved comment:', range.toString());
+                    } else {
+                        // For questions and clarifications, show dialog
+                        showCommentDialog(type);
+                    }
+                    
+                    menu.classList.remove('show');
+                    window.getSelection().removeAllRanges();
+                });
+            });
+            
+            // Hide comment menu on click outside
+            document.addEventListener('click', (e) => {
+                const menu = document.getElementById('comment-menu');
+                if (!menu.contains(e.target)) {
+                    menu.classList.remove('show');
+                }
+            });
+        });
+        
+        // Show comment dialog
+        function showCommentDialog(type, existingText = '', isEdit = false, editCommentNumber = null) {
+            console.log('Showing comment dialog for:', type, 'isEdit:', isEdit);
+            
+            const dialog = document.getElementById('comment-dialog');
+            const title = document.getElementById('comment-dialog-title');
+            const label = document.getElementById('comment-dialog-label');
+            const textarea = document.getElementById('comment-dialog-text');
+            
+            if (type === 'question') {
+                title.textContent = isEdit ? 'Edit Question' : 'Ask Question';
+                label.textContent = 'Question text:';
+                textarea.placeholder = 'What would you like to clarify or ask about this section?';
+            } else if (type === 'clarification') {
+                title.textContent = isEdit ? 'Edit Clarification' : 'Request Clarification';
+                label.textContent = 'Clarification needed:';
+                textarea.placeholder = 'What needs to be clarified or expanded in this section?';
+            }
+            
+            textarea.value = existingText;
+            dialog.style.display = 'block';
+            
+            // Store edit info on dialog element
+            dialog.isEdit = isEdit;
+            dialog.editCommentNumber = editCommentNumber;
+            
+            // Focus and select text
+            setTimeout(() => {
+                textarea.focus();
+                if (existingText) {
+                    textarea.select();
+                }
+            }, 100);
+            
+            console.log('Comment dialog shown');
+        }
+        
+        // Hide comment dialog
+        function hideCommentDialog() {
+            console.log('Hiding comment dialog');
+            const dialog = document.getElementById('comment-dialog');
+            dialog.style.display = 'none';
+            document.getElementById('comment-dialog-text').value = '';
+            
+            // Clear state
+            currentCommentType = '';
+            if (!dialog.isEdit) {
+                currentCommentRange = null;
+            }
+            
+            // Clear edit info
+            dialog.isEdit = false;
+            dialog.editCommentNumber = null;
+        }
+        
+        // Submit comment from dialog
+        function submitComment() {
+            console.log('Submitting comment');
+            
+            const dialog = document.getElementById('comment-dialog');
+            const textarea = document.getElementById('comment-dialog-text');
+            const text = textarea.value.trim();
+            
+            if (!text) {
+                alert('Please enter comment text');
+                return;
+            }
+            
+            if (dialog.isEdit && dialog.editCommentNumber) {
+                // Update existing comment
+                console.log('Updating existing comment:', dialog.editCommentNumber);
+                updateComment(dialog.editCommentNumber, text);
+            } else {
+                // Add new comment
+                console.log('Adding new comment with range:', currentCommentRange);
+                if (currentCommentRange && currentCommentType) {
+                    addComment(currentCommentType, text, currentCommentRange);
+                } else {
+                    console.error('Missing comment range or type');
+                    alert('Error: Missing selection or comment type');
+                    return;
+                }
+            }
+            
+            hideCommentDialog();
+        }
     </script>
 </body>
 </html>
