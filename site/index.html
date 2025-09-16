@@ -818,13 +818,85 @@
 
         // Fetch user email
         async function fetchUserEmail() {
+            console.log('=== Fetching user email ===');
+            
             try {
+                console.log('Trying /api/user...');
                 const res = await fetch('/api/user');
-                const data = await res.json();
-                userEmail = data.email || 'anonymous';
-            } catch {
-                userEmail = 'anonymous';
+                console.log('Response status:', res.status);
+                console.log('Response headers:', [...res.headers.entries()]);
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log('User data received:', data);
+                    userEmail = data.email || data.user?.email || data.userEmail || 'anonymous';
+                    console.log('Set userEmail to:', userEmail);
+                } else {
+                    console.warn('/api/user failed with status:', res.status);
+                    throw new Error(`API returned ${res.status}`);
+                }
+            } catch (error) {
+                console.warn('Primary user fetch failed:', error.message);
+                
+                // Try alternative endpoints
+                const alternativeEndpoints = [
+                    '/api/auth/user',
+                    '/auth/user', 
+                    '/user',
+                    '/.auth/me'  // Common for Azure/Cloudflare zero trust
+                ];
+                
+                for (const endpoint of alternativeEndpoints) {
+                    try {
+                        console.log(`Trying alternative endpoint: ${endpoint}...`);
+                        const res2 = await fetch(endpoint);
+                        
+                        if (res2.ok) {
+                            const data = await res2.json();
+                            console.log(`Data from ${endpoint}:`, data);
+                            
+                            // Try different possible fields
+                            userEmail = data.email || 
+                                       data.user?.email || 
+                                       data.userEmail ||
+                                       data.preferred_username ||
+                                       data.upn ||
+                                       data.name ||
+                                       (Array.isArray(data) && data[0]?.user_id) ||
+                                       'anonymous';
+                            
+                            if (userEmail !== 'anonymous') {
+                                console.log(`✓ Found user email from ${endpoint}:`, userEmail);
+                                break;
+                            }
+                        }
+                    } catch (err) {
+                        console.warn(`${endpoint} failed:`, err.message);
+                    }
+                }
+                
+                if (userEmail === 'anonymous') {
+                    console.warn('All authentication endpoints failed, defaulting to anonymous');
+                }
             }
+            
+            console.log('Final userEmail:', userEmail);
+            
+            // Update UI
+            const userInfoElement = document.getElementById('user-info');
+            if (userInfoElement) {
+                if (userEmail === 'anonymous') {
+                    userInfoElement.textContent = '👤 Anonymous';
+                    userInfoElement.style.color = '#dc3545';
+                    userInfoElement.title = 'Authentication failed - comments will be saved as anonymous';
+                } else {
+                    userInfoElement.textContent = `👤 ${userEmail}`;
+                    userInfoElement.style.color = '#28a745';
+                    userInfoElement.title = 'Authenticated user';
+                }
+            }
+            
+            console.log('=== End user email fetch ===');
         }
 
         // Load documents from GitHub
@@ -1056,12 +1128,41 @@
             handleCommentOption(type || 'question');
         };
         
+        // Debug function for authentication
+        window.debugAuth = function() {
+            console.log('=== Authentication Debug ===');
+            console.log('Current userEmail:', userEmail);
+            console.log('Document cookies:', document.cookie);
+            console.log('=== Testing endpoints ===');
+            
+            const endpoints = ['/api/user', '/api/auth/user', '/auth/user', '/user', '/.auth/me'];
+            
+            endpoints.forEach(async (endpoint) => {
+                try {
+                    const res = await fetch(endpoint);
+                    console.log(`${endpoint}: Status ${res.status}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        console.log(`${endpoint} data:`, data);
+                    } else {
+                        const text = await res.text();
+                        console.log(`${endpoint} error text:`, text);
+                    }
+                } catch (err) {
+                    console.log(`${endpoint}: ${err.message}`);
+                }
+            });
+            
+            console.log('=== End Authentication Debug ===');
+        };
+
         // Debug function to check current document content
         window.debugFootnotes = function() {
             console.log('=== Footnote Debug ===');
             console.log('Current document:', currentDocument);
             console.log('Current comments:', currentComments);
             console.log('Next comment number:', nextCommentNumber);
+            console.log('Current user email:', userEmail);
             
             if (currentDocument) {
                 const content = currentDocument.fullContent || currentDocument.content || '';
