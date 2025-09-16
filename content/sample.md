@@ -96,8 +96,6 @@ mental disorders
 
 *Last updated: [Date]*
 
-<!-- ? de ce? | anonymous | 1757968607887 -->
-
 
 
 
