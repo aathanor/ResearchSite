@@ -1100,12 +1100,27 @@ function getCommentIcon(type) {
     return icons[type] || '💬';
 }
 
+async function loadDocuments() {
+        try {
+            const res = await fetch('/content/manifest.json');
+            if (!res.ok) throw new Error('Manifest fetch failed');
+            return await res.json(); // Assume array of {id, title, category, lenses, status, frontmatter}
+        } catch (err) {
+            console.error('Error loading documents:', err);
+            return []; // Fallback to empty to avoid pane crash
+        }
+    }
+
 // Updated buildLeftPanel that groups documents by frontmatter.category
 async function buildLeftPanel() {
-    const leftPanel = document.querySelector('.left-panel');
-    leftPanel.querySelectorAll('.doc-category').forEach(cat => cat.remove());
-    
-    const docsArray = await loadDocuments();
+const leftPanel = document.querySelector('.left-panel');
+leftPanel.querySelectorAll('.doc-category').forEach(cat => cat.remove());
+
+const docsArray = await loadDocuments();
+if (docsArray.length === 0) {
+    leftPanel.innerHTML += '<p style="color: #dc3545; text-align: center;">No documents found</p>'; // UX feedback
+    return;
+}
     
     // Deduplicate by ID
     const uniqueDocs = {};
@@ -1155,6 +1170,17 @@ async function buildLeftPanel() {
         
         categoryDiv.appendChild(docsDiv);
         leftPanel.appendChild(categoryDiv);
+    });
+
+    async function init() {
+    await buildLeftPanel(); // Await dynamic load
+    initTopicFilters();
+    buildThreadList();
+    initializeCommentSystem();
+  }
+
+  document.addEventListener('DOMContentLoaded', async function() {
+    await init();
     });
 }
 
@@ -1870,7 +1896,7 @@ async function buildLeftPanel() {
             textarea.focus();
         }
 
-        function deleteComment(commentTimestamp) {
+        async function deleteComment(commentTimestamp) {
             const commentElement = document.querySelector(`[data-comment-id="${commentTimestamp}"]`);
             
             if (!commentElement) {
@@ -1929,6 +1955,16 @@ async function buildLeftPanel() {
                 console.error('Comment not found for deletion in storage');
             } else {
                 saveComments(commentsData);
+            }
+
+            // Get docId and paraIndex for removal
+            const currentDocItem = document.querySelector('.document-item.active');
+            if (currentDocItem) {
+                const docId = currentDocItem.dataset.id;
+                const paraIndex = commentElement.closest('.commentable')?.dataset.paraIndex;
+                if (paraIndex !== undefined) {
+                    await removeCommentFromMarkdown(docId, paraIndex, commentTimestamp);
+                }
             }
         }
 
@@ -2118,6 +2154,32 @@ async function buildLeftPanel() {
                 // [Rest of the function remains the same]
             } catch (error) {
                 // [Error handling remains the same]
+            }
+        }
+
+        async function removeCommentFromMarkdown(docId, paraIndex, timestamp) {
+            try {
+                const response = await fetch('/api/save-comment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    docId,
+                    paraIndex,
+                    remove: true,
+                    timestamp
+                })
+                });
+                
+                if (!response.ok) {
+                const errorData = await response.json();
+                showError('Removal Failed', 'Could not remove comment from file', errorData.details);
+                return;
+                }
+                
+                console.log('Comment removed from Markdown');
+            } catch (error) {
+                console.error('Error removing comment from Markdown:', error);
+                showError('Network Error', 'Failed to connect to server for removal');
             }
         }
 
