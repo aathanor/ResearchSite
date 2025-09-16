@@ -998,14 +998,35 @@
                 
                 console.log('Processed documents:', processedDocs);
                 
-                // Deduplicate by ID
+                // Debug the first document in detail
+                if (processedDocs.length > 0) {
+                    const firstDoc = processedDocs[0];
+                    console.log('First document detailed structure:');
+                    console.log('- id:', firstDoc.id);
+                    console.log('- title:', firstDoc.title);
+                    console.log('- frontmatter:', firstDoc.frontmatter);
+                    console.log('- frontmatter.title:', firstDoc.frontmatter?.title);
+                    console.log('- frontmatter.category:', firstDoc.frontmatter?.category);
+                    console.log('- frontmatter.lens:', firstDoc.frontmatter?.lens);
+                }
+                
+                // Deduplicate by ID and add debugging
                 const uniqueDocs = {};
                 processedDocs.forEach((doc, index) => {
+                    console.log(`Processing doc ${index}:`, {
+                        id: doc.id,
+                        title: doc.title,
+                        frontmatter: doc.frontmatter,
+                        hasContent: !!(doc.content || doc.fullContent)
+                    });
+                    
                     const docId = doc.id || doc.slug || doc.filename || `doc_${index}`;
                     if (!uniqueDocs[docId]) {
                         // Ensure doc has an ID
                         doc.id = docId;
                         uniqueDocs[docId] = doc;
+                    } else {
+                        console.log(`Duplicate document found with id: ${docId}`);
                     }
                 });
                 
@@ -1064,7 +1085,11 @@
                             <span style="font-size: 11px; color: #6c757d;">● ${status}</span>
                         `;
                         
-                        item.addEventListener('click', () => {
+                        item.addEventListener('click', (e) => {
+                            e.preventDefault(); // Prevent any default link behavior
+                            e.stopPropagation(); // Prevent event bubbling
+                            
+                            console.log('Document clicked:', doc);
                             document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
                             item.classList.add('active');
                             loadDocContent(doc);
