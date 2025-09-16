@@ -62,7 +62,9 @@ This framework dissolves several traditional philosophical problems:
 
 ## Empirical Connections
 
-Current evidence supporting PRI includes:
+Current evidence supporting PRI includes: <!-- ? Where is the evidence? | anonymous | 1757999507537 | Current evidence supporting PRI includes: | 
+ | 
+ --> 
 
 - Semantic embedding structures in neural networks mirror conceptual organization in human cognition
 
@@ -77,7 +79,19 @@ Current evidence supporting PRI includes:
 Research priorities include:
 
 1.
- Developing computational models that implement recursive pattern 
+ Developing computational <!-- ! This is a clarification added on the text "Developing computational" at the beginning of the paragraph. | anonymous | 1757999578464 | Developing computational | 
+1 | .
+
+  models that implement recursive pattern 
+
+recognition 2. Testing empirical predictions about consciousness and 
+
+identity 3. Exploring connections to phenomenology and subjective 
+
+experience 4. Investigating therapeutic applications for understanding 
+
+mental disorders
+ -->  models that implement recursive pattern 
 recognition 2. Testing empirical predictions about consciousness and 
 identity 3. Exploring connections to phenomenology and subjective 
 experience 4. Investigating therapeutic applications for understanding 
