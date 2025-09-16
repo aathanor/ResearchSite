@@ -279,6 +279,28 @@
             transition: background-color 0.3s;
         }
         
+        /* Footnote back links */
+        .footnote-back {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9em;
+            margin-left: 0.5em;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        
+        .footnote-back:hover {
+            color: #0066cc;
+            background: rgba(0, 102, 204, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .footnote-back:active {
+            transform: translateY(0);
+        }
+        
         /* Right panel - Comments */
         .right-panel {
             width: 30%;
@@ -992,7 +1014,11 @@
                 if (regularFootnotes.length > 0) {
                     footnotesSection = '<hr style="margin: 2rem 0; border: none; border-top: 1px solid #dee2e6;"><h3>Footnotes</h3>';
                     regularFootnotes.forEach(footnote => {
-                        footnotesSection += `<p id="footnote-${footnote.number}"><strong>${footnote.number}.</strong> ${footnote.text}</p>`;
+                        footnotesSection += `
+                            <p id="footnote-${footnote.number}">
+                                <strong>${footnote.number}.</strong> ${footnote.text} 
+                                <a href="#" class="footnote-back" data-footnote-number="${footnote.number}" title="Return to text">↩</a>
+                            </p>`;
                     });
                 }
                 
@@ -1226,7 +1252,7 @@
                     return `<a href="#comment-${number}" class="footnote-ref ${type}" data-comment-number="${number}">${number}</a>`;
                 } else {
                     // Regular footnote - normal underlined link
-                    return `<a href="#footnote-${number}" class="footnote-link" data-footnote-number="${number}">${number}</a>`;
+                    return `<a href="#footnote-${number}" class="footnote-link" id="footnote-ref-${number}" data-footnote-number="${number}">${number}</a>`;
                 }
             });
             
@@ -1315,6 +1341,27 @@
                         footnoteElement.style.background = 'rgba(0, 102, 204, 0.1)';
                         setTimeout(() => {
                             footnoteElement.style.background = '';
+                        }, 2000);
+                    }
+                });
+            });
+            
+            // Handle back links from footnotes to original position
+            document.querySelectorAll('.footnote-back').forEach(backLink => {
+                backLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const footnoteNumber = parseInt(backLink.dataset.footnoteNumber);
+                    const footnoteRef = document.getElementById(`footnote-ref-${footnoteNumber}`);
+                    if (footnoteRef) {
+                        footnoteRef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Add temporary highlight to the reference
+                        footnoteRef.style.background = 'rgba(0, 102, 204, 0.2)';
+                        footnoteRef.style.borderRadius = '3px';
+                        footnoteRef.style.padding = '1px 3px';
+                        setTimeout(() => {
+                            footnoteRef.style.background = '';
+                            footnoteRef.style.borderRadius = '';
+                            footnoteRef.style.padding = '';
                         }, 2000);
                     }
                 });
