@@ -900,39 +900,106 @@
         }
 
         // Load documents from GitHub
-        async function loadDocuments() {
+        async function loadDocument(doc) {
+            currentDocument = doc;
+            
             try {
-                console.log('Attempting to fetch documents from /site/data/documents.json...');
-                const res = await fetch('/site/data/documents.json');
-                if (!res.ok) {
-                    console.error('Fetch failed with status:', res.status, res.statusText);
-                    throw new Error(`Documents fetch failed: ${res.status} ${res.statusText}`);
-                }
-                const data = await res.json();
-                console.log('Documents loaded:', data);
-                return data;
-            } catch (err) {
-                console.error('Error loading documents:', err);
-                const alternativePaths = [
-                    '/data/documents.json',
-                    '/documents.json',
-                    '/content/documents.json'
-                ];
+                console.log('=== Loading document with FRESH fetch (no cache) ===');
+                console.log('Loading document:', doc);
                 
-                for (const path of alternativePaths) {
-                    try {
-                        console.log('Trying alternative path:', path);
-                        const res2 = await fetch(path);
-                        if (res2.ok) {
-                            const docs = await res2.json();
-                            console.log('Documents loaded from alternative path:', path, docs);
-                            return docs;
-                        }
-                    } catch (err2) {
-                        console.error(`Alternative path ${path} failed:`, err2);
+                // NEVER use doc.fullContent || doc.content - always fetch fresh from GitHub
+                const filename = doc.filename || doc.id || `${doc.id}.md`;
+                const cacheBuster = Date.now();
+                const contentPath = `/content/${filename}?v=${cacheBuster}&nocache=true`;
+                
+                console.log('Fetching FRESH content from:', contentPath);
+                
+                const res = await fetch(contentPath, {
+                    method: 'GET',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0',
+                        'If-None-Match': '*'
                     }
+                });
+                
+                if (!res.ok) {
+                    throw new Error(`Failed to fetch fresh content: ${res.status} ${res.statusText}`);
                 }
-                return [];
+                
+                let text = await res.text();
+                console.log('FRESH content loaded, length:', text.length);
+                
+                // Update the document object with fresh content
+                currentDocument.content = text;
+                currentDocument.fullContent = text;
+                currentDocument.lastFetched = Date.now();
+                
+                // Check for and fix encoding issues
+                if (text.includes('Ã') || text.includes('Â') || text.includes('â€')) {
+                    console.error('⚠️ ENCODING CORRUPTION DETECTED in raw content!');
+                    text = fixEncodingIssues(text);
+                }
+                
+                // Parse markdown and extract footnotes
+                const { content, footnotes } = parseMarkdownWithFootnotes(text);
+                currentComments = footnotes;
+                nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
+                
+                // Convert to HTML with footnote references
+                const htmlContent = markdownToHtml(content);
+                
+                // Create footnotes section for regular footnotes
+                const regularFootnotes = footnotes.filter(f => !f.isComment);
+                let footnotesSection = '';
+                
+                if (regularFootnotes.length > 0) {
+                    footnotesSection = '<hr style="margin: 2rem 0; border: none; border-top: 1px solid #dee2e6;"><h3>Footnotes</h3>';
+                    regularFootnotes.forEach(footnote => {
+                        footnotesSection += `
+                            <p id="footnote-${footnote.number}">
+                                <strong>${footnote.number}.</strong> ${footnote.text} 
+                                <a href="#" class="footnote-back" data-footnote-number="${footnote.number}" title="Return to text">↩</a>
+                            </p>`;
+                    });
+                }
+                
+                // Display content
+                document.getElementById('center-panel').innerHTML = `
+                    <article class="document-content" id="document-content">
+                        ${htmlContent}
+                        ${footnotesSection}
+                    </article>
+                `;
+                
+                // Display comments
+                displayComments();
+                
+                // Add click handlers for footnote references
+                addFootnoteClickHandlers();
+                
+                // Add text selection handlers for comments
+                addTextSelectionHandlers();
+                
+                console.log('=== FRESH document loading complete ===');
+                
+            } catch (e) {
+                console.error('Error loading fresh document content:', e);
+                
+                // Only use cached content as absolute last resort
+                let fallbackText = doc.fullContent || doc.content;
+                if (fallbackText) {
+                    console.log('Using fallback cached content');
+                    // ... rest of fallback logic
+                } else {
+                    document.getElementById('center-panel').innerHTML = `
+                        <div class="document-content">
+                            <h2>Error loading document</h2>
+                            <p style="color: #dc3545;">Could not load fresh content: ${e.message}</p>
+                        </div>
+                    `;
+                }
             }
         }
 
@@ -2081,6 +2148,35 @@
             }
         }
 
+        async function updateCachedDocumentContent() {
+            if (!currentDocument) return;
+            
+            try {
+                console.log('=== Force refreshing after GitHub save ===');
+                
+                const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
+                const cacheBuster = Date.now();
+                const freshContentPath = `/content/${filename}?v=${cacheBuster}&force=${Math.random()}`;
+                
+                const res = await fetch(freshContentPath, {
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
+                
+                if (res.ok) {
+                    const updatedContent = await res.text();
+                    currentDocument.content = updatedContent;
+                    currentDocument.fullContent = updatedContent;
+                    console.log('✓ Content forcefully refreshed after save');
+                }
+            } catch (error) {
+                console.error('Error force refreshing:', error);
+            }
+        }
+        
         // Modal functions
         function showOverview() {
             document.getElementById('overview-modal').classList.add('show');
