@@ -72,7 +72,7 @@ The _structure_ is identical to simple recognition—immediate constellation-a
 
 This phenomenological analysis finds striking support in neuroscience, but it's crucial to clarify the methodological relationship. Rather than deriving PRI from empirical findings, our approach starts with **conceptual analysis** of what recognition actually _is_, then finds neuroscience evidence that supports this analysis. This sidesteps the usual objection "but you're just describing very fast sequential processing" by arguing that sequential processing is the wrong conceptual model entirely.
 
-## [^10]Neural Evidence for Constellation-Activation
+## Neural Evidence for Constellation-Activation
 
 Neuroscience reveals that neural systems operate through constellation-activation rather than sequential processing. The most direct support comes from studies of unconscious neural processing, which consistently show that specific response circuits activate before conscious awareness of stimuli.
 
@@ -160,7 +160,7 @@ PRI's primary test is whether long-standing problems genuinely disappear rather 
 
 **The Hard Problem of Consciousness**: Traditional formulations assume a gap between objective neural processes and subjective experience. PRI proposes consciousness IS pattern-recognition recognizing itself reflexively—a cat pattern-recognizes but doesn't recognize its own pattern-recognition; humans do.
 
-**[^10]The Frame Problem**: Current approaches struggle with "how an agent context-sensitively determines relevance". PRI proposes relevance is intrinsic to pattern-constellations through embodied developmental history rather than computed algorithmically.
+**The Frame Problem**: Current approaches struggle with "how an agent context-sensitively determines relevance". PRI proposes relevance is intrinsic to pattern-constellations through embodied developmental history rather than computed algorithmically.
 
 **Empirical question**: Whether these dissolutions are genuine or merely conceptual sleight-of-hand requires careful analysis of whether the proposed alternatives actually eliminate the problematic phenomena or simply relocate them.
 
@@ -290,7 +290,7 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^9]: clarification:Understanding as Recognition
 notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
 
-[^10]: clarification:Now, here is a comment without a line break.:florin.cojocariu@s.unibuc.ro:1758052575981
+: clarification:Now, here is a comment without a line break.:florin.cojocariu@s.unibuc.ro:1758052575981
 
 : question:this is a question without line break:florin.cojocariu@s.unibuc.ro:1758053319186
 
