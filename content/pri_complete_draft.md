@@ -21,10 +21,9 @@ Pattern-matching involves:
 
 [^13]However, conflating all pattern-matching with pattern-recognition may obscure important distinctions about the nature of cognition.
 
-
 # The Immediacy of Recognition
 
-[^8]Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
+Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
 
 This immediacy suggests something [^9]qualitatively different from algorithmic matching. Consider the phenomenological difference between:
 
@@ -286,7 +285,7 @@ Both types of existence are internal to pattern-recognition events - there's no 
 
 [^7]: clarification:what?:anonymous:1758049941789
 
-[^8]: question:Why?:anonymous:1758050003922
+: question:Why?:anonymous:1758050003922
 
 [^9]: clarification:Understanding as Recognition
 notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
