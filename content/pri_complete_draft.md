@@ -35,7 +35,7 @@ The first involves conscious search and explicit comparison. The second appears 
 
 # Recognition as Readiness-Availability
 
-What do we actually mean when we say we "recognize" something? Phenomenological analysis suggests that recognition involves the immediate availability of appropriate attitudes and reactions for a given situation.
+[^14]What do we actually mean when we say we "recognize" something? Phenomenological analysis suggests that recognition involves the immediate availability of appropriate attitudes and reactions for a given situation.
 
 When I recognize a cat, what becomes immediately available includes:
 
@@ -167,13 +167,13 @@ PRI's primary test is whether long-standing problems genuinely disappear rather 
 
 # Philosophical Consequences
 
-[^11]PRI has implications for foundational philosophical questions, though these remain interpretive rather than empirically established:
+PRI has implications for foundational philosophical questions, though these remain interpretive rather than empirically established:
 
 ## Truth and Reference - Dissolving Primitive Reference
 
 Hartry Field's formulation of the primitive reference problem highlights a fundamental issue in semantic theory: how do basic referring terms get their reference without relying on other referring terms? Traditional approaches assume words must somehow "hook onto" objects in the external world, but this leads to infinite regress—what grounds the grounding relation itself?
 
-[^12]Field's challenge to Tarski's truth schema illustrates the core problem. Tarski proposed: "Snow is white" is true if and only if snow is white. Field's concern is that the right side {snow is white} (using braces to avoid quotation confusion) appears to be just another bunch of words with no primitive reference to actual snow. Where is the connection to the external world?
+Field's challenge to Tarski's truth schema illustrates the core problem. Tarski proposed: "Snow is white" is true if and only if snow is white. Field's concern is that the right side {snow is white} (using braces to avoid quotation confusion) appears to be just another bunch of words with no primitive reference to actual snow. Where is the connection to the external world?
 
 **PRI's dissolution**: The problem dissolves when we recognize that {snow is white} is not disconnected words floating in semantic space, but word-patterns as they exist **integrated with sensation-patterns** within the snow-constellation-pattern. This constellation includes:
 
@@ -293,14 +293,6 @@ notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
 
 [^10]: clarification:Now, here is a comment without a line break.:florin.cojocariu@s.unibuc.ro:1758052575981
 
-[^11]: clarification:And here is one
-    with a line break:florin.cojocariu@s.unibuc.ro:1758052596183
-
-[^12]: question:While
-    this
-    one
-    has many line breaks:florin.cojocariu@s.unibuc.ro:1758052620108
-
-[^10]: question:It seems are not saved now with or without line breaks:florin.cojocariu@s.unibuc.ro:1758052693045
-
 [^13]: question:this is a question without line break:florin.cojocariu@s.unibuc.ro:1758053319186
+
+[^14]: clarification:A new comment Wednesday 8:46:florin.cojocariu@s.unibuc.ro:1758087975032
