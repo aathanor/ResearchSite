@@ -782,8 +782,8 @@
         // Load documents from GitHub/JSON
         async function loadDocuments() {
             try {
-                console.log('Attempting to fetch documents from /site/data/documents.json...');
-                const res = await fetch('/site/data/documents.json');
+                console.log('Attempting to fetch documents from /data/documents.json...');
+                const res = await fetch('/data/documents.json');
                 if (!res.ok) {
                     console.error('Fetch failed with status:', res.status, res.statusText);
                     throw new Error(`Documents fetch failed: ${res.status} ${res.statusText}`);
@@ -793,25 +793,6 @@
                 return docs;
             } catch (err) {
                 console.error('Error loading documents:', err);
-                const alternativePaths = [
-                    '/data/documents.json',
-                    '/documents.json',
-                    '/content/documents.json'
-                ];
-                
-                for (const path of alternativePaths) {
-                    try {
-                        console.log('Trying alternative path:', path);
-                        const res2 = await fetch(path);
-                        if (res2.ok) {
-                            const docs = await res2.json();
-                            console.log('Documents loaded from alternative path:', path, docs);
-                            return docs;
-                        }
-                    } catch (err2) {
-                        console.error(`Alternative path ${path} failed:`, err2);
-                    }
-                }
                 return [];
             }
         }
