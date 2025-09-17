@@ -38,6 +38,12 @@
         .header-actions {
             display: flex;
             gap: 15px;
+            align-items: center;
+        }
+        
+        .header-info {
+            font-size: 12px;
+            color: #6c757d;
         }
        
         .btn-overview {
@@ -262,14 +268,6 @@
             border-top: 1px solid #dee2e6;
         }
         
-        .document-content h3 {
-            font-size: 1.3em;
-            font-weight: 600;
-            margin: 1.5rem 0 0.8rem 0;
-            line-height: 1.4;
-            color: #34495e;
-        }
-        
         .document-content p[id^="footnote-"] {
             font-size: 0.9em;
             line-height: 1.6;
@@ -369,6 +367,19 @@
             color: white;
         }
         
+        .comment-number.question {
+            background-color: #dc3545;
+        }
+        
+        .comment-number.clarification {
+            background-color: #ffc107;
+            color: #856404;
+        }
+        
+        .comment-number.approved {
+            background-color: #28a745;
+        }
+        
         .comment-type {
             font-size: 12px;
             padding: 2px 6px;
@@ -424,67 +435,6 @@
         .comment-action:hover {
             background: #f8f9fa;
             color: #495057;
-        }
-        
-        /* New comment form */
-        .comment-form {
-            background: white;
-            border-top: 1px solid #dee2e6;
-            padding: 15px;
-            display: none;
-        }
-        
-        .comment-form.show {
-            display: block;
-        }
-        
-        .form-group {
-            margin-bottom: 10px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #495057;
-        }
-        
-        .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 6px;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-        
-        .form-group textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-        
-        .btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .btn-primary {
-            background: #0066cc;
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
         }
         
         /* Overview Modal */
@@ -569,6 +519,7 @@
             background: #fff3cd;
             border-color: #ffc107;
         }
+        
         /* Comment Menu - Pop-up after text selection */
         .comment-menu {
             position: absolute;
@@ -647,6 +598,16 @@
             color: #6c757d;
             font-style: italic;
         }
+        
+        /* Encoding fix utilities */
+        .encoding-fix {
+            background: #fff3cd;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid #ffc107;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -654,8 +615,11 @@
     <div class="header">
         <h1>Pattern Constellations Research</h1>
         <div class="header-actions">
+            <span id="user-info" class="header-info">👤 Loading...</span>
+            <span id="cache-info" class="header-info">📄 Ready</span>
             <button class="btn-overview" onclick="showOverview()">📊 Project Overview</button>
         </div>
+    </div>
    
     <!-- Comment Menu - Pop-up after text selection -->
     <div class="comment-menu" id="comment-menu">
@@ -694,7 +658,6 @@
         <div style="margin-top: 8px; font-size: 12px; color: #6c757d; text-align: right;">
             Press Ctrl+Enter to submit
         </div>
-    </div>
     </div>
    
     <!-- Main container -->
@@ -816,6 +779,43 @@
             }
         }
 
+        // Load documents from GitHub/JSON
+        async function loadDocuments() {
+            try {
+                console.log('Attempting to fetch documents from /site/data/documents.json...');
+                const res = await fetch('/site/data/documents.json');
+                if (!res.ok) {
+                    console.error('Fetch failed with status:', res.status, res.statusText);
+                    throw new Error(`Documents fetch failed: ${res.status} ${res.statusText}`);
+                }
+                const docs = await res.json();
+                console.log('Documents loaded:', docs);
+                return docs;
+            } catch (err) {
+                console.error('Error loading documents:', err);
+                const alternativePaths = [
+                    '/data/documents.json',
+                    '/documents.json',
+                    '/content/documents.json'
+                ];
+                
+                for (const path of alternativePaths) {
+                    try {
+                        console.log('Trying alternative path:', path);
+                        const res2 = await fetch(path);
+                        if (res2.ok) {
+                            const docs = await res2.json();
+                            console.log('Documents loaded from alternative path:', path, docs);
+                            return docs;
+                        }
+                    } catch (err2) {
+                        console.error(`Alternative path ${path} failed:`, err2);
+                    }
+                }
+                return [];
+            }
+        }
+
         // Fetch user email
         async function fetchUserEmail() {
             console.log('=== Fetching user email ===');
@@ -824,7 +824,6 @@
                 console.log('Trying /api/user...');
                 const res = await fetch('/api/user');
                 console.log('Response status:', res.status);
-                console.log('Response headers:', [...res.headers.entries()]);
                 
                 if (res.ok) {
                     const data = await res.json();
@@ -897,110 +896,6 @@
             }
             
             console.log('=== End user email fetch ===');
-        }
-
-        // Load documents from GitHub
-        async function loadDocument(doc) {
-            currentDocument = doc;
-            
-            try {
-                console.log('=== Loading document with FRESH fetch (no cache) ===');
-                console.log('Loading document:', doc);
-                
-                // NEVER use doc.fullContent || doc.content - always fetch fresh from GitHub
-                const filename = doc.filename || doc.id || `${doc.id}.md`;
-                const cacheBuster = Date.now();
-                const contentPath = `/content/${filename}?v=${cacheBuster}&nocache=true`;
-                
-                console.log('Fetching FRESH content from:', contentPath);
-                
-                const res = await fetch(contentPath, {
-                    method: 'GET',
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0',
-                        'If-None-Match': '*'
-                    }
-                });
-                
-                if (!res.ok) {
-                    throw new Error(`Failed to fetch fresh content: ${res.status} ${res.statusText}`);
-                }
-                
-                let text = await res.text();
-                console.log('FRESH content loaded, length:', text.length);
-                
-                // Update the document object with fresh content
-                currentDocument.content = text;
-                currentDocument.fullContent = text;
-                currentDocument.lastFetched = Date.now();
-                
-                // Check for and fix encoding issues
-                if (text.includes('Ã') || text.includes('Â') || text.includes('â€')) {
-                    console.error('⚠️ ENCODING CORRUPTION DETECTED in raw content!');
-                    text = fixEncodingIssues(text);
-                }
-                
-                // Parse markdown and extract footnotes
-                const { content, footnotes } = parseMarkdownWithFootnotes(text);
-                currentComments = footnotes;
-                nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
-                
-                // Convert to HTML with footnote references
-                const htmlContent = markdownToHtml(content);
-                
-                // Create footnotes section for regular footnotes
-                const regularFootnotes = footnotes.filter(f => !f.isComment);
-                let footnotesSection = '';
-                
-                if (regularFootnotes.length > 0) {
-                    footnotesSection = '<hr style="margin: 2rem 0; border: none; border-top: 1px solid #dee2e6;"><h3>Footnotes</h3>';
-                    regularFootnotes.forEach(footnote => {
-                        footnotesSection += `
-                            <p id="footnote-${footnote.number}">
-                                <strong>${footnote.number}.</strong> ${footnote.text} 
-                                <a href="#" class="footnote-back" data-footnote-number="${footnote.number}" title="Return to text">↩</a>
-                            </p>`;
-                    });
-                }
-                
-                // Display content
-                document.getElementById('center-panel').innerHTML = `
-                    <article class="document-content" id="document-content">
-                        ${htmlContent}
-                        ${footnotesSection}
-                    </article>
-                `;
-                
-                // Display comments
-                displayComments();
-                
-                // Add click handlers for footnote references
-                addFootnoteClickHandlers();
-                
-                // Add text selection handlers for comments
-                addTextSelectionHandlers();
-                
-                console.log('=== FRESH document loading complete ===');
-                
-            } catch (e) {
-                console.error('Error loading fresh document content:', e);
-                
-                // Only use cached content as absolute last resort
-                let fallbackText = doc.fullContent || doc.content;
-                if (fallbackText) {
-                    console.log('Using fallback cached content');
-                    // ... rest of fallback logic
-                } else {
-                    document.getElementById('center-panel').innerHTML = `
-                        <div class="document-content">
-                            <h2>Error loading document</h2>
-                            <p style="color: #dc3545;">Could not load fresh content: ${e.message}</p>
-                        </div>
-                    `;
-                }
-            }
         }
 
         // Build left panel with documents from GitHub
@@ -1147,28 +1042,18 @@
                     throw new Error(`Failed to fetch fresh content: ${res.status} ${res.statusText}`);
                 }
                 
-                // Debug the response
-                console.log('Fresh fetch response headers:', [...res.headers.entries()]);
-                console.log('Content-Type:', res.headers.get('Content-Type'));
-                console.log('Cache-Control:', res.headers.get('Cache-Control'));
-                
                 let text = await res.text();
                 console.log('Fresh content loaded, length:', text.length);
-                console.log('First 200 chars of fresh content:', JSON.stringify(text.substring(0, 200)));
                 
                 // Update the document object with fresh content
                 currentDocument.content = text;
                 currentDocument.fullContent = text;
                 currentDocument.lastFetched = Date.now();
                 
-                console.log('Content before processing:', JSON.stringify(text.substring(0, 300)));
-                
                 // Check for and fix encoding issues
-                if (text.includes('Ã') || text.includes('Â') || text.includes('â€')) {
-                    console.error('⚠️ ENCODING CORRUPTION DETECTED in raw content!');
-                    console.log('Attempting to fix encoding issues...');
+                if (text.includes('Ã') || text.includes('â€')) {
+                    console.log('Fixing encoding issues...');
                     text = fixEncodingIssues(text);
-                    console.log('Content after encoding fix:', JSON.stringify(text.substring(0, 300)));
                 }
                 
                 // Parse markdown and extract footnotes
@@ -1176,22 +1061,8 @@
                 currentComments = footnotes;
                 nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
                 
-                console.log('Content after footnote parsing:', JSON.stringify(content.substring(0, 300)));
-                
-                // Check for encoding issues after parsing
-                if (content.includes('Ã') || content.includes('Â')) {
-                    console.error('⚠️ ENCODING CORRUPTION DETECTED after footnote parsing!');
-                }
-                
                 // Convert to HTML with footnote references
                 const htmlContent = markdownToHtml(content);
-                
-                console.log('Content after HTML conversion:', htmlContent.substring(0, 300));
-                
-                // Check for encoding issues after HTML conversion
-                if (htmlContent.includes('Ã') || htmlContent.includes('Â')) {
-                    console.error('⚠️ ENCODING CORRUPTION DETECTED after HTML conversion!');
-                }
                 
                 // Create footnotes section for regular footnotes
                 const regularFootnotes = footnotes.filter(f => !f.isComment);
@@ -1253,7 +1124,7 @@
                     document.getElementById('center-panel').innerHTML = `
                         <article class="document-content" id="document-content">
                             ${htmlContent}
-                            <div style="background: #fff3cd; padding: 10px; margin: 20px 0; border-radius: 4px; border: 1px solid #ffc107;">
+                            <div class="encoding-fix">
                                 ⚠️ Using cached content - fresh content could not be loaded: ${e.message}
                             </div>
                         </article>
@@ -1289,292 +1160,15 @@
             }
         }
 
-        // Debug function for testing (accessible from browser console)
-        window.testCommentOption = function(type) {
-            console.log('Testing comment option:', type);
-            handleCommentOption(type || 'question');
-        };
-        
-        // Debug function for authentication
-        window.debugAuth = function() {
-            console.log('=== Authentication Debug ===');
-            console.log('Current userEmail:', userEmail);
-            console.log('Document cookies:', document.cookie);
-            console.log('=== Testing endpoints ===');
-            
-            const endpoints = ['/api/user', '/api/auth/user', '/auth/user', '/user', '/.auth/me'];
-            
-            endpoints.forEach(async (endpoint) => {
-                try {
-                    const res = await fetch(endpoint);
-                    console.log(`${endpoint}: Status ${res.status}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        console.log(`${endpoint} data:`, data);
-                    } else {
-                        const text = await res.text();
-                        console.log(`${endpoint} error text:`, text);
-                    }
-                } catch (err) {
-                    console.log(`${endpoint}: ${err.message}`);
-                }
-            });
-            
-            console.log('=== End Authentication Debug ===');
-        };
-
-        // Debug function for cache issues
-        window.debugCache = function() {
-            console.log('=== Cache Debug ===');
-            console.log('Current document:', currentDocument);
-            console.log('Document last fetched:', currentDocument?.lastFetched ? new Date(currentDocument.lastFetched) : 'Never');
-            console.log('Current comments:', currentComments);
-            
-            if (currentDocument) {
-                const content = currentDocument.fullContent || currentDocument.content || '';
-                console.log('Cached content length:', content.length);
-                console.log('Cached content preview:', JSON.stringify(content.substring(0, 300)));
-                
-                // Check for recent comments
-                const recentComments = content.match(/\[\^[\d]+\]:\s*[^:]+:[^:]+:[^:]+:\d+/g);
-                console.log('Footnote comments found in cached content:', recentComments?.length || 0);
-                if (recentComments) {
-                    console.log('Recent comments:', recentComments.slice(-3));
-                }
-            }
-            
-            console.log('Browser cache status check...');
-            if ('caches' in window) {
-                caches.keys().then(cacheNames => {
-                    console.log('Available caches:', cacheNames);
-                    if (currentDocument) {
-                        const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
-                        cacheNames.forEach(async cacheName => {
-                            const cache = await caches.open(cacheName);
-                            const cachedResponse = await cache.match(`/content/${filename}`);
-                            console.log(`Cache ${cacheName} has /content/${filename}:`, !!cachedResponse);
-                        });
-                    }
-                });
-            }
-            
-            console.log('To force refresh current document: forceRefreshDocument()');
-            console.log('=== End Cache Debug ===');
-        };
-
-        // Force refresh current document
-        window.forceRefreshDocument = function() {
-            if (!currentDocument) {
-                console.log('No document to refresh');
-                return;
-            }
-            
-            console.log('Force refreshing current document...');
-            loadDocument(currentDocument);
-        };
-        window.debugEncoding = function() {
-            console.log('=== Encoding Debug ===');
-            
-            if (currentDocument) {
-                const content = currentDocument.fullContent || currentDocument.content || '';
-                console.log('Raw content length:', content.length);
-                console.log('Raw content sample:', JSON.stringify(content.substring(0, 500)));
-                
-                // Look for specific corruption patterns
-                const corruptionIndex = content.indexOf('Ã');
-                if (corruptionIndex !== -1) {
-                    console.log('Corruption found at index:', corruptionIndex);
-                    console.log('Context around corruption:');
-                    console.log(JSON.stringify(content.substring(Math.max(0, corruptionIndex - 50), corruptionIndex + 100)));
-                    
-                    // Show character codes
-                    const corruptSection = content.substring(corruptionIndex, corruptionIndex + 20);
-                    console.log('Character codes in corrupted section:');
-                    for (let i = 0; i < corruptSection.length; i++) {
-                        const char = corruptSection[i];
-                        console.log(`"${char}" = ${char.charCodeAt(0)} (0x${char.charCodeAt(0).toString(16)})`);
-                    }
-                }
-                
-                const hasCorruption = content.includes('Ã') || content.includes('Â') || content.includes('â€');
-                console.log('Has encoding corruption:', hasCorruption);
-                
-                if (hasCorruption) {
-                    console.log('Attempting encoding fix...');
-                    const fixed = fixEncodingIssues(content);
-                    console.log('Fixed content sample:', JSON.stringify(fixed.substring(0, 500)));
-                    
-                    // Show the user they can reload with fixed encoding
-                    console.log('To reload with fixed encoding, run: reloadWithEncodingFix()');
-                    window.reloadWithEncodingFix = () => {
-                        const fixedDoc = {...currentDocument};
-                        fixedDoc.content = fixed;
-                        fixedDoc.fullContent = fixed;
-                        loadDocument(fixedDoc);
-                    };
-                }
-                
-                // Also check what's in the GitHub file vs what we're getting
-                console.log('To check the original GitHub file, run: checkGitHubSource()');
-                window.checkGitHubSource = async () => {
-                    try {
-                        const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
-                        const res = await fetch(`/content/${filename}`, {
-                            headers: {
-                                'Accept': 'text/plain; charset=utf-8'
-                            }
-                        });
-                        const rawText = await res.text();
-                        
-                        console.log('=== GitHub Source Check ===');
-                        console.log('Content-Type:', res.headers.get('Content-Type'));
-                        console.log('Character encoding test around em-dashes and underscores:');
-                        
-                        // Look for actual em-dashes and underscores
-                        const testChars = ['_', '—', '*', '`'];
-                        testChars.forEach(char => {
-                            const index = rawText.indexOf(char);
-                            if (index !== -1) {
-                                console.log(`Character "${char}" (${char.charCodeAt(0)}) found at index ${index}`);
-                                console.log('Context:', JSON.stringify(rawText.substring(index - 10, index + 10)));
-                            }
-                        });
-                        
-                        console.log('Raw GitHub content preview:', JSON.stringify(rawText.substring(0, 300)));
-                    } catch (err) {
-                        console.error('Error fetching GitHub source:', err);
-                    }
-                };
-            } else {
-                console.log('No current document loaded');
-            }
-            
-            console.log('=== End Encoding Debug ===');
-        };
-
-        // Debug function to check current document content
-        window.debugFootnotes = function() {
-            console.log('=== Footnote Debug ===');
-            console.log('Current document:', currentDocument);
-            console.log('Current comments:', currentComments);
-            console.log('Next comment number:', nextCommentNumber);
-            console.log('Current user email:', userEmail);
-            
-            if (currentDocument) {
-                const content = currentDocument.fullContent || currentDocument.content || '';
-                console.log('Raw document content:');
-                console.log(content);
-                
-                console.log('\nFootnote definitions found:');
-                const definitionRegex = /^\[(\^[^\]]+)\]:\s*(.+)$/gm;
-                let match;
-                while ((match = definitionRegex.exec(content)) !== null) {
-                    console.log('- ', match[0]);
-                }
-            }
-            
-            console.log('======================');
-        };
-
-        // Add text selection handlers for commenting
-        function addTextSelectionHandlers() {
-            const docContent = document.getElementById('document-content');
-            if (!docContent) return;
-            
-            console.log('Adding text selection handlers');
-            
-            // Remove existing listeners
-            docContent.removeEventListener('mouseup', handleTextSelection);
-            docContent.removeEventListener('contextmenu', preventContextMenu);
-            
-            // Add new listeners
-            docContent.addEventListener('mouseup', handleTextSelection);
-            docContent.addEventListener('contextmenu', preventContextMenu);
-        }
-        
-        // Handle text selection
-        function handleTextSelection(e) {
-            setTimeout(() => {
-                const selection = window.getSelection();
-                const selectedText = selection.toString().trim();
-                
-                console.log('Text selected:', selectedText);
-                
-                if (!selection.isCollapsed && selectedText.length > 0) {
-                    const range = selection.getRangeAt(0);
-                    const docContent = document.getElementById('document-content');
-                    
-                    // Check if selection is within the document content
-                    if (!docContent.contains(range.commonAncestorContainer)) {
-                        console.log('Selection not in document content');
-                        return;
-                    }
-                    
-                    const rect = range.getBoundingClientRect();
-                    const menu = document.getElementById('comment-menu');
-                    
-                    // Position menu near selection
-                    menu.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 200) + 'px';
-                    menu.style.top = (rect.bottom + window.scrollY + 5) + 'px';
-                    menu.classList.add('show');
-                    
-                    // Store the range for later use
-                    currentCommentRange = range.cloneRange();
-                    
-                    console.log('Comment menu shown at:', menu.style.left, menu.style.top);
-                } else {
-                    // Hide menu if no selection
-                    document.getElementById('comment-menu').classList.remove('show');
-                }
-            }, 10);
-        }
-        
-        // Prevent context menu on right click in document
-        function preventContextMenu(e) {
-            if (e.target.closest('#document-content')) {
-                e.preventDefault();
-            }
-        }
-        
-        // Handle comment option selection
-        function handleCommentOption(type) {
-            console.log('=== handleCommentOption called ===');
-            console.log('Type:', type);
-            console.log('currentCommentRange:', currentCommentRange);
-            
-            const menu = document.getElementById('comment-menu');
-            if (menu) {
-                menu.classList.remove('show');
-                console.log('Menu hidden');
-            }
-            
-            if (!currentCommentRange) {
-                console.error('No comment range available');
-                alert('Error: No text selection found. Please select text first.');
-                return;
-            }
-            
-            currentCommentType = type;
-            console.log('Comment type set to:', currentCommentType);
-            
-            try {
-                if (type === 'approved') {
-                    // For approved comments, add immediately
-                    console.log('Adding approved comment immediately');
-                    addComment(type, 'Approved', currentCommentRange);
-                } else {
-                    // For questions and clarifications, show dialog
-                    console.log('Showing dialog for', type);
-                    showCommentDialog(type);
-                }
-            } catch (error) {
-                console.error('Error in handleCommentOption:', error);
-                alert('Error processing comment: ' + error.message);
-            }
-            
-            // Clear text selection
-            window.getSelection().removeAllRanges();
-            console.log('=== handleCommentOption complete ===');
+        // Fix encoding issues
+        function fixEncodingIssues(text) {
+            // Common encoding issue fixes
+            text = text.replace(/Ã¢â‚¬â€/g, '—'); // em dash
+            text = text.replace(/Ã¢â‚¬Å"/g, '"'); // smart quotes
+            text = text.replace(/Ã¢â‚¬Â/g, '"'); // smart quotes
+            text = text.replace(/Ã¢â‚¬â„¢/g, "'"); // smart apostrophe
+            text = text.replace(/Ã¯Â¿Â½/g, ""); // replacement character
+            return text;
         }
 
         // Parse markdown and extract footnotes
@@ -1584,10 +1178,8 @@
             
             console.log('=== Parsing footnotes from content ===');
             console.log('Content length:', content.length);
-            console.log('Content preview:', content.substring(0, 500));
             
             // Extract footnote definitions [^n]: content
-            // Updated regex to handle potential edge cases
             const definitionRegex = /^\[(\^[^\]]+)\]:\s*(.+?)(?=\n\[|\n\n|\n$|$)/gms;
             let match;
             const matches = [];
@@ -1773,6 +1365,107 @@
             console.log('=== End displaying comments ===');
         }
 
+        // Add text selection handlers for commenting
+        function addTextSelectionHandlers() {
+            const docContent = document.getElementById('document-content');
+            if (!docContent) return;
+            
+            console.log('Adding text selection handlers');
+            
+            // Remove existing listeners
+            docContent.removeEventListener('mouseup', handleTextSelection);
+            docContent.removeEventListener('contextmenu', preventContextMenu);
+            
+            // Add new listeners
+            docContent.addEventListener('mouseup', handleTextSelection);
+            docContent.addEventListener('contextmenu', preventContextMenu);
+        }
+        
+        // Handle text selection
+        function handleTextSelection(e) {
+            setTimeout(() => {
+                const selection = window.getSelection();
+                const selectedText = selection.toString().trim();
+                
+                console.log('Text selected:', selectedText);
+                
+                if (!selection.isCollapsed && selectedText.length > 0) {
+                    const range = selection.getRangeAt(0);
+                    const docContent = document.getElementById('document-content');
+                    
+                    // Check if selection is within the document content
+                    if (!docContent.contains(range.commonAncestorContainer)) {
+                        console.log('Selection not in document content');
+                        return;
+                    }
+                    
+                    const rect = range.getBoundingClientRect();
+                    const menu = document.getElementById('comment-menu');
+                    
+                    // Position menu near selection
+                    menu.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 200) + 'px';
+                    menu.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+                    menu.classList.add('show');
+                    
+                    // Store the range for later use
+                    currentCommentRange = range.cloneRange();
+                    
+                    console.log('Comment menu shown at:', menu.style.left, menu.style.top);
+                } else {
+                    // Hide menu if no selection
+                    document.getElementById('comment-menu').classList.remove('show');
+                }
+            }, 10);
+        }
+        
+        // Prevent context menu on right click in document
+        function preventContextMenu(e) {
+            if (e.target.closest('#document-content')) {
+                e.preventDefault();
+            }
+        }
+        
+        // Handle comment option selection
+        function handleCommentOption(type) {
+            console.log('=== handleCommentOption called ===');
+            console.log('Type:', type);
+            console.log('currentCommentRange:', currentCommentRange);
+            
+            const menu = document.getElementById('comment-menu');
+            if (menu) {
+                menu.classList.remove('show');
+                console.log('Menu hidden');
+            }
+            
+            if (!currentCommentRange) {
+                console.error('No comment range available');
+                alert('Error: No text selection found. Please select text first.');
+                return;
+            }
+            
+            currentCommentType = type;
+            console.log('Comment type set to:', currentCommentType);
+            
+            try {
+                if (type === 'approved') {
+                    // For approved comments, add immediately
+                    console.log('Adding approved comment immediately');
+                    addComment(type, 'Approved', currentCommentRange);
+                } else {
+                    // For questions and clarifications, show dialog
+                    console.log('Showing dialog for', type);
+                    showCommentDialog(type);
+                }
+            } catch (error) {
+                console.error('Error in handleCommentOption:', error);
+                alert('Error processing comment: ' + error.message);
+            }
+            
+            // Clear text selection
+            window.getSelection().removeAllRanges();
+            console.log('=== handleCommentOption complete ===');
+        }
+
         // Add click handlers for footnote references
         function addFootnoteClickHandlers() {
             // Handle comment footnote references (colored circles)
@@ -1851,16 +1544,6 @@
                 commentItem.classList.add('active');
                 commentItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-        }
-
-        // Toggle comment form
-        function toggleCommentForm() {
-            // This function is no longer used but kept for compatibility
-        }
-
-        // Cancel adding comment
-        function cancelComment() {
-            // This function is no longer used but kept for compatibility
         }
 
         // Add new comment (called from dialog)
@@ -1949,21 +1632,6 @@
                 const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
                 
                 console.log('Saving comment to GitHub:', footnoteDefinition);
-                console.log('Selected text context:', comment.selectedText);
-                
-                // Get more context about the selection
-                const docContent = document.getElementById('document-content');
-                let beforeContext = '';
-                let afterContext = '';
-                
-                if (docContent) {
-                    const fullText = docContent.textContent || docContent.innerText;
-                    const selectedIndex = fullText.indexOf(comment.selectedText);
-                    if (selectedIndex !== -1) {
-                        beforeContext = fullText.substring(Math.max(0, selectedIndex - 50), selectedIndex);
-                        afterContext = fullText.substring(selectedIndex + comment.selectedText.length, selectedIndex + comment.selectedText.length + 50);
-                    }
-                }
                 
                 const response = await fetch('/api/save-comment', {
                     method: 'POST',
@@ -1973,8 +1641,6 @@
                         comment: footnoteDefinition,
                         footnoteRef: `[^${comment.number}]`,
                         selectedText: comment.selectedText,
-                        beforeContext: beforeContext,
-                        afterContext: afterContext,
                         type: 'footnote',
                         action: 'add'
                     })
@@ -1990,25 +1656,8 @@
                 const result = await response.json();
                 console.log('Comment saved to GitHub successfully:', result);
                 
-                // FIXED: Update cached document content after successful save
+                // Update cached document content after successful save
                 await updateCachedDocumentContent();
-                
-                // Update UI to show authentication status
-                if (result.userWasAuthenticated) {
-                    console.log('✓ Comment saved with authenticated user:', result.authenticatedUser);
-                    if (userEmail === 'anonymous' && result.authenticatedUser !== 'anonymous') {
-                        // Update the userEmail if backend found authentication
-                        userEmail = result.authenticatedUser;
-                        const userInfoElement = document.getElementById('user-info');
-                        if (userInfoElement) {
-                            userInfoElement.textContent = `👤 ${userEmail}`;
-                            userInfoElement.style.color = '#28a745';
-                            userInfoElement.title = 'Authenticated user';
-                        }
-                    }
-                } else {
-                    console.warn('Comment saved but user was not authenticated');
-                }
                 
             } catch (error) {
                 console.error('Error saving comment to GitHub:', error);
@@ -2082,7 +1731,7 @@
                 const result = await response.json();
                 console.log('Comment updated in GitHub successfully:', result);
                 
-                // FIXED: Update cached document content after successful update
+                // Update cached document content after successful update
                 await updateCachedDocumentContent();
                 
             } catch (error) {
@@ -2140,7 +1789,7 @@
                 const result = await response.json();
                 console.log('Comment deleted from GitHub successfully:', result);
                 
-                // FIXED: Update cached document content after successful delete
+                // Update cached document content after successful delete
                 await updateCachedDocumentContent();
                 
             } catch (error) {
@@ -2148,6 +1797,7 @@
             }
         }
 
+        // Update cached document content after GitHub changes
         async function updateCachedDocumentContent() {
             if (!currentDocument) return;
             
@@ -2177,59 +1827,6 @@
             }
         }
         
-        // Modal functions
-        function showOverview() {
-            document.getElementById('overview-modal').classList.add('show');
-        }
-
-        function hideOverview() {
-            document.getElementById('overview-modal').classList.remove('show');
-        }
-
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', init);
-        
-        // Comment menu and dialog handling
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle comment option clicks
-            document.querySelectorAll('.comment-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const type = option.dataset.type;
-                    const menu = document.getElementById('comment-menu');
-                    const range = menu.selectionRange;
-                    
-                    if (!range) {
-                        console.error('No selection range found');
-                        return;
-                    }
-                    
-                    currentCommentType = type;
-                    currentCommentRange = range;
-                    
-                    if (type === 'approved') {
-            // For approved comments, add immediately without dialog
-                        addComment(type, 'Approved', range);
-                        console.log('Selected text for approved comment:', range.toString());
-                    } else {
-                        // For questions and clarifications, show dialog
-                        showCommentDialog(type);
-                    }
-                    
-                    menu.classList.remove('show');
-                    window.getSelection().removeAllRanges();
-                });
-            });
-            
-            // Hide comment menu on click outside
-            document.addEventListener('click', (e) => {
-                const menu = document.getElementById('comment-menu');
-                if (!menu.contains(e.target)) {
-                    menu.classList.remove('show');
-                }
-            });
-        });
-        
         // Show comment dialog
         function showCommentDialog(type, existingText = '', isEdit = false, editCommentNumber = null) {
             console.log('Showing comment dialog for:', type, 'isEdit:', isEdit);
@@ -2256,7 +1853,6 @@
                 try {
                     const rect = currentCommentRange.getBoundingClientRect();
                     const dialogWidth = 400; // From CSS min-width
-                    const dialogHeight = 200; // Approximate height
                     
                     // Position 150px above selection
                     let top = rect.top + window.scrollY - 150;
@@ -2359,6 +1955,86 @@
             
             hideCommentDialog();
         }
+        
+        // Modal functions
+        function showOverview() {
+            document.getElementById('overview-modal').classList.add('show');
+        }
+
+        function hideOverview() {
+            document.getElementById('overview-modal').classList.remove('show');
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Hide comment menu on click outside
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('comment-menu');
+            if (!menu.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
+        // Debug functions (accessible from browser console)
+        window.debugAuth = function() {
+            console.log('=== Authentication Debug ===');
+            console.log('Current userEmail:', userEmail);
+            console.log('Document cookies:', document.cookie);
+            console.log('=== Testing endpoints ===');
+            
+            const endpoints = ['/api/user', '/api/auth/user', '/auth/user', '/user', '/.auth/me'];
+            
+            endpoints.forEach(async (endpoint) => {
+                try {
+                    const res = await fetch(endpoint);
+                    console.log(`${endpoint}: Status ${res.status}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        console.log(`${endpoint} data:`, data);
+                    } else {
+                        const text = await res.text();
+                        console.log(`${endpoint} error text:`, text);
+                    }
+                } catch (err) {
+                    console.log(`${endpoint}: ${err.message}`);
+                }
+            });
+            
+            console.log('=== End Authentication Debug ===');
+        };
+
+        window.debugFootnotes = function() {
+            console.log('=== Footnote Debug ===');
+            console.log('Current document:', currentDocument);
+            console.log('Current comments:', currentComments);
+            console.log('Next comment number:', nextCommentNumber);
+            console.log('Current user email:', userEmail);
+            
+            if (currentDocument) {
+                const content = currentDocument.fullContent || currentDocument.content || '';
+                console.log('Raw document content length:', content.length);
+                
+                console.log('\nFootnote definitions found:');
+                const definitionRegex = /^\[(\^[^\]]+)\]:\s*(.+)$/gm;
+                let match;
+                while ((match = definitionRegex.exec(content)) !== null) {
+                    console.log('- ', match[0]);
+                }
+            }
+            
+            console.log('======================');
+        };
+
+        window.forceRefreshDocument = function() {
+            if (!currentDocument) {
+                console.log('No document to refresh');
+                return;
+            }
+            
+            console.log('Force refreshing current document...');
+            loadDocument(currentDocument);
+        };
     </script>
 </body>
 </html>
