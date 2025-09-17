@@ -990,46 +990,37 @@
             }
         }
 
-        // Load document content from GitHub (always fresh)
+        // Load document content from GitHub (use cached first, fresh as backup)
         async function loadDocument(doc) {
             currentDocument = doc;
             
             try {
-                console.log('=== Loading document with fresh fetch ===');
+                console.log('=== Loading document ===');
                 console.log('Loading document:', doc);
                 
-                // ALWAYS fetch fresh content from GitHub, never use cached content
-                const filename = doc.filename || doc.id || `${doc.id}.md`;
-                const contentPath = `/content/${filename}`;
+                // FIRST: Try to use content from documents.json (like old working version)
+                let text = doc.fullContent || doc.content;
                 
-                // Add timestamp for aggressive cache busting
-                const cacheBuster = Date.now();
-                const freshContentPath = `${contentPath}?v=${cacheBuster}&nocache=true`;
-                
-                console.log('Fetching FRESH content from:', freshContentPath);
-                
-                const res = await fetch(freshContentPath, {
-                    method: 'GET',
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0',
-                        'If-None-Match': '*',
-                        'If-Modified-Since': 'Thu, 01 Jan 1970 00:00:00 GMT'
+                if (!text) {
+                    // Only fetch if no content in documents.json
+                    const filename = doc.filename || doc.id || `${doc.id}.md`;
+                    const contentPath = `/content/${filename}`;
+                    console.log('No cached content, fetching from:', contentPath);
+                    
+                    const res = await fetch(contentPath);
+                    if (!res.ok) {
+                        throw new Error(`Failed to fetch content: ${res.status} ${res.statusText}`);
                     }
-                });
-                
-                if (!res.ok) {
-                    throw new Error(`Failed to fetch fresh content: ${res.status} ${res.statusText}`);
+                    
+                    text = await res.text();
+                    console.log('Fetched content length:', text.length);
+                    
+                    // Update the document object with fetched content
+                    currentDocument.content = text;
+                    currentDocument.fullContent = text;
+                } else {
+                    console.log('Using cached content from documents.json, length:', text.length);
                 }
-                
-                let text = await res.text();
-                console.log('Fresh content loaded, length:', text.length);
-                
-                // Update the document object with fresh content
-                currentDocument.content = text;
-                currentDocument.fullContent = text;
-                currentDocument.lastFetched = Date.now();
                 
                 // Check for and fix encoding issues
                 if (text.includes('Ã') || text.includes('â€')) {
@@ -1080,63 +1071,29 @@
                 // Update cache info in header
                 const cacheInfoElement = document.getElementById('cache-info');
                 if (cacheInfoElement) {
-                    cacheInfoElement.textContent = `📄 Fresh: ${new Date().toLocaleTimeString()}`;
+                    const source = (doc.fullContent || doc.content) ? 'JSON' : 'Fresh';
+                    cacheInfoElement.textContent = `📄 ${source}: ${new Date().toLocaleTimeString()}`;
                     cacheInfoElement.style.color = '#28a745';
-                    cacheInfoElement.title = 'Content freshly loaded from GitHub';
+                    cacheInfoElement.title = `Content loaded from ${source.toLowerCase()}`;
                 }
                 
-                console.log('=== End document loading (fresh fetch successful) ===');
+                console.log('=== End document loading successful ===');
                 
             } catch (e) {
-                console.error('Error loading fresh document content:', e);
-                console.log('Attempting fallback to cached content...');
+                console.error('Error loading document:', e);
+                document.getElementById('center-panel').innerHTML = `
+                    <div class="document-content">
+                        <h2>Error loading document</h2>
+                        <p style="color: #dc3545;">${e.message}</p>
+                    </div>
+                `;
                 
-                // Fallback to cached content if available
-                let fallbackText = doc.fullContent || doc.content;
-                if (fallbackText) {
-                    console.log('Using fallback cached content, length:', fallbackText.length);
-                    
-                    const { content, footnotes } = parseMarkdownWithFootnotes(fallbackText);
-                    currentComments = footnotes;
-                    nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
-                    
-                    const htmlContent = markdownToHtml(content);
-                    
-                    document.getElementById('center-panel').innerHTML = `
-                        <article class="document-content" id="document-content">
-                            ${htmlContent}
-                            <div class="encoding-fix">
-                                ⚠️ Using cached content - fresh content could not be loaded: ${e.message}
-                            </div>
-                        </article>
-                    `;
-                    
-                    displayComments();
-                    addFootnoteClickHandlers();
-                    addTextSelectionHandlers();
-                    
-                    // Update cache info in header
-                    const cacheInfoElement = document.getElementById('cache-info');
-                    if (cacheInfoElement) {
-                        cacheInfoElement.textContent = `📄 Cached (fetch failed)`;
-                        cacheInfoElement.style.color = '#ffc107';
-                        cacheInfoElement.title = 'Using cached content - fresh fetch failed';
-                    }
-                } else {
-                    document.getElementById('center-panel').innerHTML = `
-                        <div class="document-content">
-                            <h2>Error loading document</h2>
-                            <p style="color: #dc3545;">Could not load fresh content and no cached content available: ${e.message}</p>
-                        </div>
-                    `;
-                    
-                    // Update cache info in header
-                    const cacheInfoElement = document.getElementById('cache-info');
-                    if (cacheInfoElement) {
-                        cacheInfoElement.textContent = `📄 Error`;
-                        cacheInfoElement.style.color = '#dc3545';
-                        cacheInfoElement.title = 'Failed to load content';
-                    }
+                // Update cache info in header
+                const cacheInfoElement = document.getElementById('cache-info');
+                if (cacheInfoElement) {
+                    cacheInfoElement.textContent = `📄 Error`;
+                    cacheInfoElement.style.color = '#dc3545';
+                    cacheInfoElement.title = 'Failed to load content';
                 }
             }
         }
@@ -1160,12 +1117,25 @@
             console.log('=== Parsing footnotes from content ===');
             console.log('Content length:', content.length);
             
+            // FIRST: Clean up any corrupted JavaScript template literals that may have been saved to the file
+            console.log('Cleaning up corrupted template literals...');
+            content = content.replace(/\[\^\$\{[^}]+\}\]/g, ''); // Remove [^${...}] patterns
+            content = content.replace(/\$\{[^}]+\}/g, ''); // Remove ${...} patterns
+            content = content.replace(/\[\^n\]/g, ''); // Remove [^n] patterns  
+            content = content.replace(/\[\^\\\\\]/g, ''); // Remove [^\\] patterns
+            
             // Extract footnote definitions [^n]: content
             const definitionRegex = /^\[(\^[^\]]+)\]:\s*(.+?)(?=\n\[|\n\n|\n$|$)/gms;
             let match;
             const matches = [];
             
             while ((match = definitionRegex.exec(content)) !== null) {
+                // Skip corrupted entries that contain template literals
+                if (match[1].includes('${') || match[2].includes('${')) {
+                    console.log('Skipping corrupted footnote:', match[0]);
+                    continue;
+                }
+                
                 matches.push({
                     fullMatch: match[0],
                     ref: match[1],
@@ -1233,6 +1203,8 @@
         // Convert markdown to HTML with footnote handling
         function markdownToHtml(markdown) {
             console.log('=== Converting markdown to HTML ===');
+            console.log('Input markdown length:', markdown.length);
+            console.log('First 200 chars of markdown:', markdown.substring(0, 200));
             console.log('currentComments at rendering time:', currentComments);
             
             let html = markdown;
@@ -1255,9 +1227,20 @@
             html = html.replace(/^- (.+)$/gim, '<li>$1</li>');
             html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>');
             
-            // Footnote references [^n]
+            // Footnote references [^n] - but skip corrupted ones
             html = html.replace(/\[(\^[^\]]+)\]/g, (match, ref) => {
+                // Skip corrupted template literal references
+                if (ref.includes('${') || ref.includes('n') || ref.includes('\\')) {
+                    console.log('Skipping corrupted footnote reference:', match);
+                    return '';
+                }
+                
                 const number = parseInt(ref.replace('^', ''));
+                if (isNaN(number)) {
+                    console.log('Skipping non-numeric footnote reference:', match);
+                    return '';
+                }
+                
                 const footnote = currentComments.find(f => f.number === number);
                 
                 console.log('Processing footnote reference:', { ref, number, footnote });
@@ -1285,6 +1268,8 @@
             html = html.replace(/<p>(<li>)/g, '<ul>$1');
             html = html.replace(/(<\/li>)<\/p>/g, '$1</ul>');
             
+            console.log('Final HTML length:', html.length);
+            console.log('First 300 chars of HTML:', html.substring(0, 300));
             console.log('=== End markdown to HTML conversion ===');
             return html;
         }
