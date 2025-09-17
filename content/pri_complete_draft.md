@@ -23,7 +23,7 @@ Pattern-matching involves:
 
 # The Immediacy of Recognition
 
-Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
+Genuine recognition often operates differently.[^15] When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
 
 This immediacy suggests something [^9]qualitatively different from algorithmic matching. Consider the phenomenological difference between:
 
@@ -295,3 +295,5 @@ notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
 [^13]: question:this is a question without line break:florin.cojocariu@s.unibuc.ro:1758053319186
 
 [^14]: clarification:A new comment Wednesday 8:46:florin.cojocariu@s.unibuc.ro:1758087975032
+
+[^15]: question:Is this one kept after the last word of the selection?:florin.cojocariu@s.unibuc.ro:1758088587970
