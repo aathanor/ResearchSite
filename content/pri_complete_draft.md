@@ -35,7 +35,7 @@ The first involves conscious search and explicit comparison. The second appears 
 
 # Recognition as Readiness-Availability
 
-What do we actually mean when we say we "recognize" something? Phenomenological analysis suggests that recognition involves the immediate availability of appropriate attitudes and reactions for a given situation.
+[^14]What do we actually mean when we say we "recognize" something? Phenomenological analysis suggests that recognition involves the immediate availability of appropriate attitudes and reactions for a given situation.
 
 When I recognize a cat, what becomes immediately available includes:
 
@@ -294,3 +294,5 @@ notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
 [^10]: clarification:Now, here is a comment without a line break.:florin.cojocariu@s.unibuc.ro:1758052575981
 
 [^13]: question:this is a question without line break:florin.cojocariu@s.unibuc.ro:1758053319186
+
+[^14]: clarification:A new comment Wednesday 8:46:florin.cojocariu@s.unibuc.ro:1758087975032
