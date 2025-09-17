@@ -313,6 +313,9 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
   insertionIndex = content.indexOf(cleanSelectedText);
   if (insertionIndex !== -1) {
     console.log('Found exact selected text at:', insertionIndex);
+    // FIXED: Insert footnote reference AFTER the selected text, not before
+    insertionIndex = insertionIndex + cleanSelectedText.length;
+    console.log('Will insert footnote reference after selection at:', insertionIndex);
   }
   
   // Strategy 2: Use before and after context to find the location
@@ -321,8 +324,8 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
     const pattern = cleanBeforeContext + cleanSelectedText + cleanAfterContext;
     const patternIndex = content.indexOf(pattern);
     if (patternIndex !== -1) {
-      insertionIndex = patternIndex + cleanBeforeContext.length;
-      console.log('Found using full context at:', insertionIndex);
+      insertionIndex = patternIndex + cleanBeforeContext.length + cleanSelectedText.length;
+      console.log('Found using full context, inserting after selection at:', insertionIndex);
     }
   }
   
@@ -330,8 +333,14 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
   if (insertionIndex === -1 && cleanBeforeContext) {
     const beforeIndex = content.indexOf(cleanBeforeContext);
     if (beforeIndex !== -1) {
-      insertionIndex = beforeIndex + cleanBeforeContext.length;
-      console.log('Found using before context at:', insertionIndex);
+      // Find the selected text after the before context
+      const afterBeforeIndex = beforeIndex + cleanBeforeContext.length;
+      const remainingContent = content.substring(afterBeforeIndex);
+      const selectedInRemaining = remainingContent.indexOf(cleanSelectedText);
+      if (selectedInRemaining !== -1) {
+        insertionIndex = afterBeforeIndex + selectedInRemaining + cleanSelectedText.length;
+        console.log('Found using before context, inserting after selection at:', insertionIndex);
+      }
     }
   }
   
@@ -343,9 +352,19 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
         const partialText = words.slice(0, i).join(' ');
         const partialIndex = content.indexOf(partialText);
         if (partialIndex !== -1) {
-          insertionIndex = partialIndex + partialText.length;
-          console.log('Found using partial text at:', insertionIndex);
-          break;
+          // Try to find the full selected text starting from this partial match
+          const remainingContent = content.substring(partialIndex);
+          const fullMatch = remainingContent.indexOf(cleanSelectedText);
+          if (fullMatch !== -1 && fullMatch < 50) { // Within reasonable distance
+            insertionIndex = partialIndex + fullMatch + cleanSelectedText.length;
+            console.log('Found using partial text, inserting after selection at:', insertionIndex);
+            break;
+          } else {
+            // Fallback: insert after partial match
+            insertionIndex = partialIndex + partialText.length;
+            console.log('Found using partial text fallback at:', insertionIndex);
+            break;
+          }
         }
       }
     }
@@ -368,7 +387,7 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
           if (match) {
             const matchIndex = content.indexOf(match[0]);
             insertionIndex = matchIndex + match[0].length;
-            console.log('Found using word sequence at:', insertionIndex);
+            console.log('Found using word sequence, inserting after match at:', insertionIndex);
             break;
           }
         }
@@ -408,11 +427,11 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
   }
   
   // Insert footnote reference at the found position
-  if (insertionIndex !== -1 && insertionIndex < content.length) {
+  if (insertionIndex !== -1 && insertionIndex <= content.length) {
     const beforeText = content.substring(0, insertionIndex);
     const afterText = content.substring(insertionIndex);
     content = beforeText + footnoteRef + afterText;
-    console.log('Inserted footnote reference at position:', insertionIndex);
+    console.log('Successfully inserted footnote reference AFTER selected text at position:', insertionIndex);
   } else {
     console.error('Could not find valid insertion point, appending at end');
     content = content.trim() + footnoteRef;

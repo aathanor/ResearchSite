@@ -1805,6 +1805,9 @@
                 const result = await response.json();
                 console.log('Comment saved to GitHub successfully:', result);
                 
+                // FIXED: Update cached document content after successful save
+                await updateCachedDocumentContent();
+                
                 // Update UI to show authentication status
                 if (result.userWasAuthenticated) {
                     console.log('✓ Comment saved with authenticated user:', result.authenticatedUser);
@@ -1894,6 +1897,9 @@
                 const result = await response.json();
                 console.log('Comment updated in GitHub successfully:', result);
                 
+                // FIXED: Update cached document content after successful update
+                await updateCachedDocumentContent();
+                
             } catch (error) {
                 console.error('Error updating comment in GitHub:', error);
             }
@@ -1948,6 +1954,9 @@
                 
                 const result = await response.json();
                 console.log('Comment deleted from GitHub successfully:', result);
+                
+                // FIXED: Update cached document content after successful delete
+                await updateCachedDocumentContent();
                 
             } catch (error) {
                 console.error('Error deleting comment from GitHub:', error);
