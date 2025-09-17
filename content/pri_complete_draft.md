@@ -25,7 +25,7 @@ However, conflating all pattern-matching with pattern-recognition may obscure im
 
 Genuine recognition often operates differently.[^15] When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
 
-This immediacy suggests something qualitatively different from algorithmic matching. Consider the phenomenological difference between:
+This immediacy suggests something qualitatively different from algorithmic matching. Consider the phenomenological difference between[^16]:
 
 * Struggling to remember where you know someone from (effortful, temporal)
 * Instantly recognizing your childhood friend (immediate, effortless)
@@ -282,3 +282,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
 
 [^15]: question:Is this one kept after the last word of the selection?:florin.cojocariu@s.unibuc.ro:1758088587970
+
+[^16]: clarification:New comment after lots of code fixes:florin.cojocariu@s.unibuc.ro:1758092663275
