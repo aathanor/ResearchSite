@@ -1,5 +1,5 @@
 ---
-title: "Pattern-Recognition Identity: Dissolving the Pattern/Recognition Distinction"
+title: "Pattern-Recognition Unity: Dissolving the Pattern/Recognition Distinction"
 author: Florin Cojocariu
 date: 06.22.2025
 tags: main_research, support_draft
