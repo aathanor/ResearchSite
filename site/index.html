@@ -674,7 +674,7 @@
     </div>
    
     <!-- Comment Dialog -->
-    <div id="comment-dialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    <div id="comment-dialog" style="display: none; position: absolute; 
          background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; z-index: 3000; 
          box-shadow: 0 8px 32px rgba(0,0,0,0.12); min-width: 400px;">
         <h3 id="comment-dialog-title" style="margin: 0 0 15px 0; color: #212529;">Comment</h3>
@@ -1047,33 +1047,52 @@
             }
         }
 
-        // Load document content from GitHub
+        // Load document content from GitHub (always fresh)
         async function loadDocument(doc) {
             currentDocument = doc;
             
             try {
-                console.log('=== Loading document with encoding debug ===');
+                console.log('=== Loading document with fresh fetch ===');
                 console.log('Loading document:', doc);
                 
-                let text = doc.fullContent || doc.content;
-                if (!text) {
-                    const filename = doc.filename || doc.id || `${doc.id}.md`;
-                    const contentPath = `/content/${filename}`;
-                    console.log('Fetching content from:', contentPath);
-                    
-                    const res = await fetch(contentPath);
-                    if (!res.ok) {
-                        throw new Error(`Failed to fetch content: ${res.status} ${res.statusText}`);
+                // ALWAYS fetch fresh content from GitHub, never use cached content
+                const filename = doc.filename || doc.id || `${doc.id}.md`;
+                const contentPath = `/content/${filename}`;
+                
+                // Add timestamp for aggressive cache busting
+                const cacheBuster = Date.now();
+                const freshContentPath = `${contentPath}?v=${cacheBuster}&nocache=true`;
+                
+                console.log('Fetching FRESH content from:', freshContentPath);
+                
+                const res = await fetch(freshContentPath, {
+                    method: 'GET',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0',
+                        'If-None-Match': '*',
+                        'If-Modified-Since': 'Thu, 01 Jan 1970 00:00:00 GMT'
                     }
-                    
-                    // Debug the response
-                    console.log('Response headers:', [...res.headers.entries()]);
-                    console.log('Content-Type:', res.headers.get('Content-Type'));
-                    
-                    text = await res.text();
-                    console.log('Raw fetched content length:', text.length);
-                    console.log('First 200 chars of raw content:', JSON.stringify(text.substring(0, 200)));
+                });
+                
+                if (!res.ok) {
+                    throw new Error(`Failed to fetch fresh content: ${res.status} ${res.statusText}`);
                 }
+                
+                // Debug the response
+                console.log('Fresh fetch response headers:', [...res.headers.entries()]);
+                console.log('Content-Type:', res.headers.get('Content-Type'));
+                console.log('Cache-Control:', res.headers.get('Cache-Control'));
+                
+                let text = await res.text();
+                console.log('Fresh content loaded, length:', text.length);
+                console.log('First 200 chars of fresh content:', JSON.stringify(text.substring(0, 200)));
+                
+                // Update the document object with fresh content
+                currentDocument.content = text;
+                currentDocument.fullContent = text;
+                currentDocument.lastFetched = Date.now();
                 
                 console.log('Content before processing:', JSON.stringify(text.substring(0, 300)));
                 
@@ -1139,16 +1158,67 @@
                 // Add text selection handlers for comments
                 addTextSelectionHandlers();
                 
-                console.log('=== End document loading ===');
+                // Update cache info in header
+                const cacheInfoElement = document.getElementById('cache-info');
+                if (cacheInfoElement) {
+                    cacheInfoElement.textContent = `📄 Fresh: ${new Date().toLocaleTimeString()}`;
+                    cacheInfoElement.style.color = '#28a745';
+                    cacheInfoElement.title = 'Content freshly loaded from GitHub';
+                }
+                
+                console.log('=== End document loading (fresh fetch successful) ===');
                 
             } catch (e) {
-                console.error('Error loading document:', e);
-                document.getElementById('center-panel').innerHTML = `
-                    <div class="document-content">
-                        <h2>Error loading document</h2>
-                        <p style="color: #dc3545;">${e.message}</p>
-                    </div>
-                `;
+                console.error('Error loading fresh document content:', e);
+                console.log('Attempting fallback to cached content...');
+                
+                // Fallback to cached content if available
+                let fallbackText = doc.fullContent || doc.content;
+                if (fallbackText) {
+                    console.log('Using fallback cached content, length:', fallbackText.length);
+                    
+                    const { content, footnotes } = parseMarkdownWithFootnotes(fallbackText);
+                    currentComments = footnotes;
+                    nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
+                    
+                    const htmlContent = markdownToHtml(content);
+                    
+                    document.getElementById('center-panel').innerHTML = `
+                        <article class="document-content" id="document-content">
+                            ${htmlContent}
+                            <div style="background: #fff3cd; padding: 10px; margin: 20px 0; border-radius: 4px; border: 1px solid #ffc107;">
+                                ⚠️ Using cached content - fresh content could not be loaded: ${e.message}
+                            </div>
+                        </article>
+                    `;
+                    
+                    displayComments();
+                    addFootnoteClickHandlers();
+                    addTextSelectionHandlers();
+                    
+                    // Update cache info in header
+                    const cacheInfoElement = document.getElementById('cache-info');
+                    if (cacheInfoElement) {
+                        cacheInfoElement.textContent = `📄 Cached (fetch failed)`;
+                        cacheInfoElement.style.color = '#ffc107';
+                        cacheInfoElement.title = 'Using cached content - fresh fetch failed';
+                    }
+                } else {
+                    document.getElementById('center-panel').innerHTML = `
+                        <div class="document-content">
+                            <h2>Error loading document</h2>
+                            <p style="color: #dc3545;">Could not load fresh content and no cached content available: ${e.message}</p>
+                        </div>
+                    `;
+                    
+                    // Update cache info in header
+                    const cacheInfoElement = document.getElementById('cache-info');
+                    if (cacheInfoElement) {
+                        cacheInfoElement.textContent = `📄 Error`;
+                        cacheInfoElement.style.color = '#dc3545';
+                        cacheInfoElement.title = 'Failed to load content';
+                    }
+                }
             }
         }
 
@@ -1186,7 +1256,55 @@
             console.log('=== End Authentication Debug ===');
         };
 
-        // Debug function for encoding issues
+        // Debug function for cache issues
+        window.debugCache = function() {
+            console.log('=== Cache Debug ===');
+            console.log('Current document:', currentDocument);
+            console.log('Document last fetched:', currentDocument?.lastFetched ? new Date(currentDocument.lastFetched) : 'Never');
+            console.log('Current comments:', currentComments);
+            
+            if (currentDocument) {
+                const content = currentDocument.fullContent || currentDocument.content || '';
+                console.log('Cached content length:', content.length);
+                console.log('Cached content preview:', JSON.stringify(content.substring(0, 300)));
+                
+                // Check for recent comments
+                const recentComments = content.match(/\[\^[\d]+\]:\s*[^:]+:[^:]+:[^:]+:\d+/g);
+                console.log('Footnote comments found in cached content:', recentComments?.length || 0);
+                if (recentComments) {
+                    console.log('Recent comments:', recentComments.slice(-3));
+                }
+            }
+            
+            console.log('Browser cache status check...');
+            if ('caches' in window) {
+                caches.keys().then(cacheNames => {
+                    console.log('Available caches:', cacheNames);
+                    if (currentDocument) {
+                        const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
+                        cacheNames.forEach(async cacheName => {
+                            const cache = await caches.open(cacheName);
+                            const cachedResponse = await cache.match(`/content/${filename}`);
+                            console.log(`Cache ${cacheName} has /content/${filename}:`, !!cachedResponse);
+                        });
+                    }
+                });
+            }
+            
+            console.log('To force refresh current document: forceRefreshDocument()');
+            console.log('=== End Cache Debug ===');
+        };
+
+        // Force refresh current document
+        window.forceRefreshDocument = function() {
+            if (!currentDocument) {
+                console.log('No document to refresh');
+                return;
+            }
+            
+            console.log('Force refreshing current document...');
+            loadDocument(currentDocument);
+        };
         window.debugEncoding = function() {
             console.log('=== Encoding Debug ===');
             
@@ -2036,6 +2154,44 @@
             }
             
             textarea.value = existingText;
+            
+            // Position dialog 150px above selected text
+            if (currentCommentRange && !isEdit) {
+                try {
+                    const rect = currentCommentRange.getBoundingClientRect();
+                    const dialogWidth = 400; // From CSS min-width
+                    const dialogHeight = 200; // Approximate height
+                    
+                    // Position 150px above selection
+                    let top = rect.top + window.scrollY - 150;
+                    let left = rect.left + window.scrollX + (rect.width / 2) - (dialogWidth / 2);
+                    
+                    // Bounds checking
+                    if (top < 10) top = 10; // Don't go above viewport
+                    if (left < 10) left = 10; // Don't go off left edge
+                    if (left + dialogWidth > window.innerWidth - 10) {
+                        left = window.innerWidth - dialogWidth - 10; // Don't go off right edge
+                    }
+                    
+                    dialog.style.top = top + 'px';
+                    dialog.style.left = left + 'px';
+                    dialog.style.transform = 'none'; // Remove centering transform
+                    
+                    console.log('Positioned dialog at:', { top, left });
+                } catch (error) {
+                    console.warn('Could not position dialog relative to selection, using center:', error);
+                    // Fallback to center positioning
+                    dialog.style.top = '50%';
+                    dialog.style.left = '50%';
+                    dialog.style.transform = 'translate(-50%, -50%)';
+                }
+            } else {
+                // For edits or when no selection, center on screen
+                dialog.style.top = '50%';
+                dialog.style.left = '50%';
+                dialog.style.transform = 'translate(-50%, -50%)';
+            }
+            
             dialog.style.display = 'block';
             
             // Store edit info on dialog element
@@ -2059,6 +2215,11 @@
             const dialog = document.getElementById('comment-dialog');
             dialog.style.display = 'none';
             document.getElementById('comment-dialog-text').value = '';
+            
+            // Reset positioning
+            dialog.style.top = '';
+            dialog.style.left = '';
+            dialog.style.transform = '';
             
             // Clear state
             currentCommentType = '';
