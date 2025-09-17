@@ -25,7 +25,7 @@ However, conflating all pattern-matching with pattern-recognition may obscure im
 
 Genuine recognition often operates differently.[^15] When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
 
-This immediacy suggests something [^9]qualitatively different from algorithmic matching. Consider the phenomenological difference between:
+This immediacy suggests something qualitatively different from algorithmic matching. Consider the phenomenological difference between:
 
 * Struggling to remember where you know someone from (effortful, temporal)
 * Instantly recognizing your childhood friend (immediate, effortless)
@@ -51,7 +51,7 @@ _Theoretical proposal_: Recognition is not the identification of a visual patter
 
 This would explain the experiential immediacy: there is no process of matching followed by retrieval of appropriate responses. The constellation of readiness would be what recognition is, not what recognition produces. There's no temporal sequence of "visual input → memory search → recognition achieved." Instead, the entire constellation becomes simultaneously "close to hand," and that constellation-activation IS the recognition event.
 
-## [^9]Understanding as Recognition
+## Understanding as Recognition
 
 This analysis extends beyond simple object recognition to complex cognition. When you finally "get" a difficult philosophical text, that moment of understanding isn't different from recognizing a cat's face—it's the same instantaneous constellation-activation, just with more complex patterns:
 
@@ -280,20 +280,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^4]: There is abundant neurosciences literature documenting these claims, with Libet et al. (1983), Sato et al. (2024) and Pulvermüller & Fadiga (2010) being some of the most well known. The neurological evidence for PRI is a connected research field but it must be said our approach is and needs to stay philosophical: PRI has important consequences in the Philosophy of Language, Reference Theory and the way we understand LLMs and AI in general.
 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
-
-: approved:Approved:anonymous:1758049907366
-
-: clarification:what?:anonymous:1758049941789
-
-: question:Why?:anonymous:1758050003922
-
-[^9]: clarification:Understanding as Recognition
-notes are not saved?:florin.cojocariu@s.unibuc.ro:1758050649676
-
-: clarification:Now, here is a comment without a line break.:florin.cojocariu@s.unibuc.ro:1758052575981
-
-: question:this is a question without line break:florin.cojocariu@s.unibuc.ro:1758053319186
-
-: clarification:A new comment Wednesday 8:46:florin.cojocariu@s.unibuc.ro:1758087975032
 
 [^15]: question:Is this one kept after the last word of the selection?:florin.cojocariu@s.unibuc.ro:1758088587970
