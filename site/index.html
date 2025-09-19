@@ -615,24 +615,24 @@
     <div class="header">
         <h1>Pattern Constellations Research</h1>
         <div class="header-actions">
-            <span id="user-info" class="header-info">👤 Loading...</span>
-            <span id="cache-info" class="header-info">🔄 Ready</span>
-            <button class="btn-overview" onclick="showOverview()">📊 Project Overview</button>
+            <span id="user-info" class="header-info">Loading...</span>
+            <span id="cache-info" class="header-info">Ready</span>
+            <button class="btn-overview" onclick="showOverview()">Project Overview</button>
         </div>
     </div>
    
     <!-- Comment Menu - Pop-up after text selection -->
     <div class="comment-menu" id="comment-menu">
         <div class="comment-option" data-type="question" onclick="handleCommentOption('question')">
-            <span class="comment-option-icon">❓</span>
+            <span class="comment-option-icon">?</span>
             <span class="comment-option-text">Ask question</span>
         </div>
         <div class="comment-option" data-type="clarification" onclick="handleCommentOption('clarification')">
-            <span class="comment-option-icon">⚠️</span>
+            <span class="comment-option-icon">!</span>
             <span class="comment-option-text">Needs clarification</span>
         </div>
         <div class="comment-option" data-type="approved" onclick="handleCommentOption('approved')">
-            <span class="comment-option-icon">✅</span>
+            <span class="comment-option-icon">✓</span>
             <span class="comment-option-text">Approved / Keep</span>
         </div>
     </div>
@@ -697,12 +697,12 @@
     <!-- Overview Modal -->
     <div class="overview-modal" id="overview-modal">
         <div class="overview-content">
-            <span class="overview-close" onclick="hideOverview()">×</span>
+            <span class="overview-close" onclick="hideOverview()">&times;</span>
             <h2>Project Overview - Pattern Recognition Identity</h2>
            
             <div class="overview-graph">
                 <div class="overview-section">
-                    <h3>🎯 Core Theory</h3>
+                    <h3>Core Theory</h3>
                     <div class="overview-items">
                         <div class="overview-item developing">PRI Main Thesis</div>
                         <div class="overview-item developing">Pattern-Recognition Unity</div>
@@ -711,7 +711,7 @@
                 </div>
                
                 <div class="overview-section">
-                    <h3>💡 Problem Dissolutions</h3>
+                    <h3>Problem Dissolutions</h3>
                     <div class="overview-items">
                         <div class="overview-item stable">Hard Problem</div>
                         <div class="overview-item developing">Symbol Grounding</div>
@@ -721,7 +721,7 @@
                 </div>
                
                 <div class="overview-section">
-                    <h3>📊 Empirical Evidence</h3>
+                    <h3>Empirical Evidence</h3>
                     <div class="overview-items">
                         <div class="overview-item developing">Semantic Embeddings</div>
                         <div class="overview-item developing">Rod-Cap Structure</div>
@@ -730,7 +730,7 @@
                 </div>
                
                 <div class="overview-section">
-                    <h3>🔗 Connections</h3>
+                    <h3>Connections</h3>
                     <div class="overview-items">
                         <div class="overview-item stable">Eastern Philosophy</div>
                         <div class="overview-item developing">Transformer Architecture</div>
@@ -826,11 +826,11 @@
             const userInfoElement = document.getElementById('user-info');
             if (userInfoElement) {
                 if (userEmail === 'anonymous') {
-                    userInfoElement.textContent = '👤 Anonymous';
+                    userInfoElement.textContent = 'Anonymous';
                     userInfoElement.style.color = '#dc3545';
                     userInfoElement.title = 'Authentication failed - comments will be saved as anonymous';
                 } else {
-                    userInfoElement.textContent = `👤 ${userEmail}`;
+                    userInfoElement.textContent = userEmail;
                     userInfoElement.style.color = '#28a745';
                     userInfoElement.title = 'Authenticated user';
                 }
@@ -920,7 +920,7 @@
                         
                         item.innerHTML = `
                             <div>${title}</div>
-                            <span style="font-size: 11px; color: #6c757d;">● ${status}</span>
+                            <span style="font-size: 11px; color: #6c757d;">• ${status}</span>
                         `;
                         
                         item.addEventListener('click', (e) => {
@@ -971,7 +971,7 @@
                 console.log('GitHub content loaded, length:', text.length);
                 
                 // Check for and fix encoding issues
-                if (text.includes('ÃƒÆ'') || text.includes('ÃƒÂ¢Ã¢â€šÂ¬')) {
+                if (text.indexOf('\u00C3') !== -1 || text.indexOf('\u2019') !== -1) {
                     console.log('Fixing encoding issues...');
                     text = fixEncodingIssues(text);
                 }
@@ -994,7 +994,7 @@
                         footnotesSection += `
                             <p id="footnote-${footnote.number}">
                                 <strong>${footnote.number}.</strong> ${footnote.text} 
-                                <a href="#" class="footnote-back" data-footnote-number="${footnote.number}" title="Return to text">↩</a>
+                                <a href="#" class="footnote-back" data-footnote-number="${footnote.number}" title="Return to text">&larr;</a>
                             </p>`;
                     });
                 }
@@ -1059,7 +1059,7 @@
                 if (response.ok) {
                     const result = await response.json();
                     if (result.success && result.content) {
-                        console.log('✅ Successfully fetched from GitHub via get-content API');
+                        console.log('Successfully fetched from GitHub via get-content API');
                         console.log('Content length:', result.content.length);
                         return result.content;
                     } else {
@@ -1080,12 +1080,12 @@
 
         // Fix encoding issues
         function fixEncodingIssues(text) {
-            // Common encoding issue fixes
-            text = text.replace(/ÃƒÆ'Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬/g, '—'); // em dash
-            text = text.replace(/ÃƒÆ'Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦"/g, '"'); // smart quotes
-            text = text.replace(/ÃƒÆ'Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€š/g, '"'); // smart quotes
-            text = text.replace(/ÃƒÆ'Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢/g, "'"); // smart apostrophe
-            text = text.replace(/ÃƒÆ'Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½/g, ""); // replacement character
+            // Common encoding issue fixes using hex escape sequences
+            text = text.replace(/\u00C3/g, '');
+            text = text.replace(/\u2014/g, '-'); 
+            text = text.replace(/\u201C/g, '"');
+            text = text.replace(/\u201D/g, '"');
+            text = text.replace(/\u2019/g, "'");
             return text;
         }
 
@@ -1185,7 +1185,7 @@
                     const author = parts[2].trim();
                     const timestamp = parseInt(parts[3].trim());
                     
-                    console.log('✅ Parsed as comment footnote:', { type, text, author, timestamp });
+                    console.log('Parsed as comment footnote:', { type, text, author, timestamp });
                     
                     footnoteDefinitions[ref] = {
                         ref: ref,
@@ -1198,7 +1198,7 @@
                     };
                 } else {
                     // This is a regular footnote
-                    console.log('✅ Parsed as regular footnote');
+                    console.log('Parsed as regular footnote');
                     
                     footnoteDefinitions[ref] = {
                         ref: ref,
@@ -1328,9 +1328,9 @@
                 commentItem.id = `comment-${comment.number}`;
                 
                 const typeDisplay = {
-                    'question': '❓ Question',
-                    'clarification': '⚠️ Clarification',
-                    'approved': '✅ Approved'
+                    'question': 'Question',
+                    'clarification': 'Clarification', 
+                    'approved': 'Approved'
                 };
                 
                 commentItem.innerHTML = `
@@ -1340,7 +1340,7 @@
                     </div>
                     <div class="comment-content">${comment.text}</div>
                     <div class="comment-meta">
-                        <span>By ${comment.author} • ${new Date(comment.timestamp).toLocaleDateString()}</span>
+                        <span>By ${comment.author} - ${new Date(comment.timestamp).toLocaleDateString()}</span>
                         <div class="comment-actions">
                             <button class="comment-action" onclick="editComment(${comment.number})">Edit</button>
                             <button class="comment-action" onclick="deleteComment(${comment.number})">Delete</button>
@@ -1658,7 +1658,7 @@
                     // Insert the footnote reference between the split nodes
                     textNode.parentNode.insertBefore(footnoteRef, afterText);
                     
-                    console.log('✅ Successfully inserted footnote reference in text node');
+                    console.log('Successfully inserted footnote reference in text node');
                     
                 } else {
                     // We're ending in an element node - insert as child
@@ -1672,7 +1672,7 @@
                         range.endContainer.appendChild(footnoteRef);
                     }
                     
-                    console.log('✅ Successfully inserted footnote reference in element node');
+                    console.log('Successfully inserted footnote reference in element node');
                 }
                 
             } catch (error) {
@@ -1683,7 +1683,7 @@
                 try {
                     range.collapse(false); // Move to end of selection
                     range.insertNode(footnoteRef);
-                    console.log('✅ Fallback insertion successful');
+                    console.log('Fallback insertion successful');
                 } catch (fallbackError) {
                     console.error('Even fallback insertion failed:', fallbackError);
                     alert('Failed to insert footnote reference. The comment was still saved to GitHub.');
