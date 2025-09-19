@@ -608,16 +608,6 @@
             color: #6c757d;
             font-style: italic;
         }
-        
-        /* Encoding fix utilities */
-        .encoding-fix {
-            background: #fff3cd;
-            padding: 10px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border: 1px solid #ffc107;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
@@ -827,47 +817,7 @@
                 }
             } catch (error) {
                 console.warn('Primary user fetch failed:', error.message);
-                
-                // Try alternative endpoints
-                const alternativeEndpoints = [
-                    '/api/auth/user',
-                    '/auth/user', 
-                    '/user',
-                    '/.auth/me'  // Common for Azure/Cloudflare zero trust
-                ];
-                
-                for (const endpoint of alternativeEndpoints) {
-                    try {
-                        console.log(`Trying alternative endpoint: ${endpoint}...`);
-                        const res2 = await fetch(endpoint);
-                        
-                        if (res2.ok) {
-                            const data = await res2.json();
-                            console.log(`Data from ${endpoint}:`, data);
-                            
-                            // Try different possible fields
-                            userEmail = data.email || 
-                                       data.user?.email || 
-                                       data.userEmail ||
-                                       data.preferred_username ||
-                                       data.upn ||
-                                       data.name ||
-                                       (Array.isArray(data) && data[0]?.user_id) ||
-                                       'anonymous';
-                            
-                            if (userEmail !== 'anonymous') {
-                                console.log(`✓ Found user email from ${endpoint}:`, userEmail);
-                                break;
-                            }
-                        }
-                    } catch (err) {
-                        console.warn(`${endpoint} failed:`, err.message);
-                    }
-                }
-                
-                if (userEmail === 'anonymous') {
-                    console.warn('All authentication endpoints failed, defaulting to anonymous');
-                }
+                userEmail = 'anonymous';
             }
             
             console.log('Final userEmail:', userEmail);
@@ -1000,7 +950,7 @@
             }
         }
 
-        // Load document content - ALWAYS from GitHub, no cache
+        // Load document content - no cache, always from GitHub
         async function loadDocument(doc) {
             currentDocument = doc;
             
@@ -1011,7 +961,7 @@
                 const filename = doc.filename || doc.id || `${doc.id}.md`;
                 console.log('Fetching fresh content from GitHub for:', filename);
                 
-                // SIMPLIFIED: Always fetch from GitHub, no cache fallback
+                // Always fetch from GitHub, no cache
                 let text = await fetchContentDirectlyFromGitHub(filename);
                 
                 if (!text) {
@@ -1094,6 +1044,62 @@
             }
         }
 
+        // Fetch content directly from existing GitHub API endpoint (no cache)
+        async function fetchContentDirectlyFromGitHub(filename) {
+            try {
+                console.log('Fetching from existing GitHub API for:', filename);
+                
+                // Your existing API endpoint
+                const endpoint = `/api/github/content/${filename}`;
+                
+                console.log('Trying endpoint:', endpoint);
+                
+                const response = await fetch(endpoint, {
+                    headers: {
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+                
+                if (response.ok) {
+                    const contentType = response.headers.get('Content-Type');
+                    console.log('Response content-type:', contentType);
+                    
+                    // Try as plain text first, then JSON if needed
+                    let content;
+                    try {
+                        if (contentType && contentType.includes('application/json')) {
+                            const result = await response.json();
+                            // Handle GitHub API JSON response
+                            content = result.encoding === 'base64' 
+                                ? atob(result.content.replace(/\n/g, ''))
+                                : result.content;
+                        } else {
+                            // Handle plain text response
+                            content = await response.text();
+                        }
+                    } catch (parseError) {
+                        console.log('JSON parse failed, trying as plain text');
+                        content = await response.text();
+                    }
+                    
+                    if (content && isMarkdownContent(content)) {
+                        console.log('✅ Successfully fetched from API endpoint');
+                        return content;
+                    } else {
+                        console.log('API returned non-markdown content');
+                        return null;
+                    }
+                } else {
+                    console.log('API endpoint failed:', response.status);
+                    return null;
+                }
+                
+            } catch (error) {
+                console.error('Error fetching from API:', error);
+                return null;
+            }
+        }
+
         // Fix encoding issues
         function fixEncodingIssues(text) {
             // Common encoding issue fixes
@@ -1103,6 +1109,52 @@
             text = text.replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢/g, "'"); // smart apostrophe
             text = text.replace(/ÃƒÂ¯Ã‚Â¿Ã‚Â½/g, ""); // replacement character
             return text;
+        }
+
+        // Helper function to validate that content is markdown, not HTML
+        function isMarkdownContent(content) {
+            // Quick checks to determine if content is markdown vs HTML
+            const trimmedContent = content.trim();
+            
+            // If it starts with HTML doctype or html tags, it's HTML
+            if (trimmedContent.startsWith('<!DOCTYPE html') || 
+                trimmedContent.startsWith('<html') || 
+                trimmedContent.startsWith('<HTML')) {
+                return false;
+            }
+            
+            // If it has a lot of HTML tags relative to content length, it's probably HTML
+            const htmlTagRegex = /<[^>]+>/g;
+            const htmlTags = trimmedContent.match(htmlTagRegex);
+            const htmlTagRatio = htmlTags ? htmlTags.length / (trimmedContent.length / 100) : 0;
+            
+            if (htmlTagRatio > 5) { // More than 5 HTML tags per 100 characters indicates HTML
+                return false;
+            }
+            
+            // If it contains typical HTML structure elements, it's HTML
+            if (trimmedContent.includes('<head>') || 
+                trimmedContent.includes('<body>') || 
+                trimmedContent.includes('<script>')) {
+                return false;
+            }
+            
+            // If it starts with markdown frontmatter or contains markdown elements, it's markdown
+            if (trimmedContent.startsWith('---') || 
+                /^#+\s/.test(trimmedContent) ||  // Headers
+                /^\* /.test(trimmedContent) ||   // Bullet lists
+                /^\d+\. /.test(trimmedContent) || // Numbered lists
+                trimmedContent.includes('[^') || // Footnote references
+                trimmedContent.includes('](')) {  // Links
+                return true;
+            }
+            
+            // If it's just plain text without much HTML, consider it markdown
+            if (htmlTagRatio < 1) {
+                return true;
+            }
+            
+            return false;
         }
 
         // Parse markdown and extract footnotes
@@ -1570,6 +1622,11 @@
                 // Refresh display
                 displayComments();
                 addFootnoteClickHandlers();
+                
+                // FIXED: Force document reload to show changes immediately
+                setTimeout(() => {
+                    loadDocument(currentDocument);
+                }, 500);
             } else {
                 // Remove the comment from array if save failed
                 currentComments = currentComments.filter(c => c.number !== newComment.number);
@@ -1588,7 +1645,7 @@
             console.log('Comment add process completed');
         }
 
-        // FIXED: Insert footnote reference at specific range with better positioning
+        // Insert footnote reference at specific range with better positioning
         function insertFootnoteAtRange(range, number, type) {
             console.log('=== insertFootnoteAtRange FIXED version ===');
             console.log('Range details:', {
@@ -1658,7 +1715,7 @@
             console.log('=== End insertFootnoteAtRange ===');
         }
 
-        // FIXED: Save comment to GitHub with rebuild prevention options
+        // Save comment to GitHub via API
         async function saveCommentToGitHub(comment) {
             try {
                 const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
@@ -1674,11 +1731,7 @@
                         footnoteRef: `[^${comment.number}]`,
                         selectedText: comment.selectedText,
                         type: 'footnote',
-                        action: 'add',
-                        // NEW: Add flags to prevent rebuild
-                        preventRebuild: true,
-                        skipDeploy: true,
-                        commentOnly: true
+                        action: 'add'
                     })
                 });
                 
@@ -1692,23 +1745,6 @@
                 const result = await response.json();
                 console.log('Comment saved to GitHub successfully:', result);
                 
-                // CRITICAL: Always try to read updated content immediately 
-                // This works because GitHub API is updated instantly, even if static site hasn't rebuilt
-                if (!window.disableAutoRefresh) {
-                    console.log('Attempting immediate refresh from GitHub API...');
-                    await updateCachedDocumentContentAndRerender();
-                } else {
-                    console.log('Auto-refresh disabled - comment saved to GitHub but UI not refreshed');
-                    
-                    // Update cache info to show save was successful but no refresh
-                    const cacheInfoElement = document.getElementById('cache-info');
-                    if (cacheInfoElement) {
-                        cacheInfoElement.textContent = `📄 Saved: ${new Date().toLocaleTimeString()}`;
-                        cacheInfoElement.style.color = '#28a745';
-                        cacheInfoElement.title = 'Comment saved to GitHub (auto-refresh disabled)';
-                    }
-                }
-                
                 return true; // Indicate save success
                 
             } catch (error) {
@@ -1716,356 +1752,6 @@
                 console.log('API endpoint not available - comment will be lost on refresh.');
                 return false; // Indicate save failure
             }
-        }
-
-        // FIXED: Update cached document content by reading directly from GitHub API
-        async function updateCachedDocumentContentAndRerender() {
-            if (!currentDocument) return;
-            
-            try {
-                console.log('=== Reading updated content directly from GitHub API ===');
-                
-                const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
-                
-                // Read directly from GitHub API to bypass Cloudflare rebuild
-                const updatedContent = await fetchContentDirectlyFromGitHub(filename);
-                
-                if (updatedContent) {
-                    console.log('✓ Fresh content fetched from GitHub API, length:', updatedContent.length);
-                    
-                    // Update the cached document content
-                    currentDocument.content = updatedContent;
-                    currentDocument.fullContent = updatedContent;
-                    
-                    // CRITICAL: Re-parse and re-render the document
-                    console.log('Re-parsing and re-rendering document...');
-                    
-                    // Re-parse footnotes from the updated content
-                    const { content, footnotes } = parseMarkdownWithFootnotes(updatedContent);
-                    currentComments = footnotes;
-                    nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
-                    
-                    // Re-convert to HTML
-                    const htmlContent = markdownToHtml(content);
-                    
-                    // Re-create footnotes section
-                    const regularFootnotes = footnotes.filter(f => !f.isComment);
-                    let footnotesSection = '';
-                    
-                    if (regularFootnotes.length > 0) {
-                        footnotesSection = '<hr style="margin: 2rem 0; border: none; border-top: 1px solid #dee2e6;"><h3>Footnotes</h3>';
-                        regularFootnotes.forEach(footnote => {
-                            footnotesSection += `
-                                <p id="footnote-${footnote.number}">
-                                    <strong>${footnote.number}.</strong> ${footnote.text} 
-                                    <a href="#" class="footnote-back" data-footnote-number="${footnote.number}" title="Return to text">↩</a>
-                                </p>`;
-                        });
-                    }
-                    
-                    // Re-render the document content
-                    document.getElementById('center-panel').innerHTML = `
-                        <article class="document-content" id="document-content">
-                            ${htmlContent}
-                            ${footnotesSection}
-                        </article>
-                    `;
-                    
-                    // Re-add all event handlers
-                    displayComments();
-                    addFootnoteClickHandlers();
-                    addTextSelectionHandlers();
-                    
-                    // Update cache info
-                    const cacheInfoElement = document.getElementById('cache-info');
-                    if (cacheInfoElement) {
-                        cacheInfoElement.textContent = `📄 GitHub: ${new Date().toLocaleTimeString()}`;
-                        cacheInfoElement.style.color = '#28a745';
-                        cacheInfoElement.title = 'Content refreshed directly from GitHub API (no rebuild)';
-                    }
-                    
-                    console.log('✓ Document fully refreshed from GitHub API');
-                } else {
-                    console.error('❌ Failed to fetch content from GitHub API');
-                    console.log('Falling back to original refresh method...');
-                    
-                    // Fallback to the original method as last resort
-                    await updateCachedDocumentContentAndRerender_Fallback();
-                }
-            } catch (error) {
-                console.error('Error in GitHub API refresh:', error);
-                console.log('Falling back to original refresh method...');
-                
-                // Fallback to the original method
-                await updateCachedDocumentContentAndRerender_Fallback();
-            }
-            
-            console.log('=== End GitHub API refresh ===');
-        }
-        
-        // Fetch content directly from GitHub API, bypassing static site rebuilds
-        async function fetchContentDirectlyFromGitHub(filename) {
-            try {
-                console.log('Fetching directly from GitHub API for:', filename);
-                
-                // FIXED: Use your actual repo details by default
-                const GITHUB_OWNER = 'aathanor';
-                const GITHUB_REPO = 'ResearchSite';
-                
-                // Try GitHub raw URLs first (fastest and most reliable)
-                const githubRawUrls = [
-                    `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/content/${filename}`,
-                    `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/master/content/${filename}`,
-                ];
-                
-                console.log('Trying GitHub raw URLs first...');
-                
-                for (const rawUrl of githubRawUrls) {
-                    try {
-                        console.log('Trying GitHub raw URL:', rawUrl);
-                        
-                        const response = await fetch(rawUrl, {
-                            headers: {
-                                'Cache-Control': 'no-cache'
-                            }
-                        });
-                        
-                        if (response.ok) {
-                            const content = await response.text();
-                            if (isMarkdownContent(content)) {
-                                console.log('✅ Successfully fetched from GitHub raw:', rawUrl);
-                                return content;
-                            }
-                        } else {
-                            console.log('GitHub raw URL failed with status:', response.status);
-                        }
-                    } catch (rawError) {
-                        console.log('GitHub raw URL error:', rawUrl, rawError.message);
-                    }
-                }
-                
-                // Try custom API endpoints as fallback
-                const githubEndpoints = [
-                    `/api/github/content/${filename}`,  
-                    `/api/content/${filename}`,         
-                ];
-                
-                console.log('Trying custom API endpoints...');
-                
-                for (const endpoint of githubEndpoints) {
-                    try {
-                        console.log('Trying GitHub API endpoint:', endpoint);
-                        
-                        const response = await fetch(endpoint, {
-                            headers: {
-                                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                                'Accept': 'application/json, text/plain'
-                            }
-                        });
-                        
-                        if (response.ok) {
-                            const result = await response.json();
-                            
-                            // Handle different response formats
-                            let content = null;
-                            if (typeof result === 'string') {
-                                content = result;
-                            } else if (result.content) {
-                                // GitHub API returns base64 encoded content
-                                content = result.encoding === 'base64' 
-                                    ? atob(result.content.replace(/\n/g, ''))
-                                    : result.content;
-                            } else if (result.data && result.data.content) {
-                                content = result.data.encoding === 'base64'
-                                    ? atob(result.data.content.replace(/\n/g, ''))
-                                    : result.data.content;
-                            }
-                            
-                            if (content && isMarkdownContent(content)) {
-                                console.log('✅ Successfully fetched from GitHub API:', endpoint);
-                                return content;
-                            }
-                        }
-                    } catch (endpointError) {
-                        console.log('GitHub API endpoint failed:', endpoint, endpointError.message);
-                    }
-                }
-                
-                return null;
-                
-            } catch (error) {
-                console.error('Error fetching from GitHub API:', error);
-                return null;
-            }
-        }
-        
-        // Fallback to original method (kept for compatibility)
-        async function updateCachedDocumentContentAndRerender_Fallback() {
-            if (!currentDocument) return;
-            
-            try {
-                console.log('=== Using fallback refresh method ===');
-                
-                const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
-                const cacheBuster = Date.now();
-                
-                // Try multiple possible content paths
-                const contentPaths = [
-                    `/content/${filename}?v=${cacheBuster}`,
-                    `/content/${filename}`,
-                    `/${filename}?v=${cacheBuster}`,
-                    `/${filename}`
-                ];
-                
-                console.log('Attempting to fetch updated content from static site...');
-                
-                let updatedContent = null;
-                let successfulPath = null;
-                
-                // Try each path until we find one that returns markdown content
-                for (const contentPath of contentPaths) {
-                    try {
-                        console.log('Trying path:', contentPath);
-                        
-                        const res = await fetch(contentPath, {
-                            headers: {
-                                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                                'Pragma': 'no-cache',
-                                'Expires': '0',
-                                'Accept': 'text/plain, text/markdown, */*'
-                            }
-                        });
-                        
-                        if (res.ok) {
-                            const content = await res.text();
-                            
-                            // CRITICAL: Validate that we got markdown content, not HTML
-                            if (isMarkdownContent(content)) {
-                                updatedContent = content;
-                                successfulPath = contentPath;
-                                console.log('✓ Found valid markdown content at:', contentPath);
-                                break;
-                            } else {
-                                console.warn('Path returned HTML/non-markdown content:', contentPath);
-                            }
-                        } else {
-                            console.log('Path returned status:', res.status);
-                        }
-                    } catch (pathError) {
-                        console.log('Path failed:', contentPath, pathError.message);
-                    }
-                }
-                
-                if (updatedContent && successfulPath) {
-                    console.log('✓ Fresh content fetched from static site:', successfulPath);
-                    
-                    // Update the cached document content
-                    currentDocument.content = updatedContent;
-                    currentDocument.fullContent = updatedContent;
-                    
-                    // Continue with rendering...
-                    const { content, footnotes } = parseMarkdownWithFootnotes(updatedContent);
-                    currentComments = footnotes;
-                    nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
-                    
-                    const htmlContent = markdownToHtml(content);
-                    
-                    const regularFootnotes = footnotes.filter(f => !f.isComment);
-                    let footnotesSection = '';
-                    
-                    if (regularFootnotes.length > 0) {
-                        footnotesSection = '<hr style="margin: 2rem 0; border: none; border-top: 1px solid #dee2e6;"><h3>Footnotes</h3>';
-                        regularFootnotes.forEach(footnote => {
-                            footnotesSection += `
-                                <p id="footnote-${footnote.number}">
-                                    <strong>${footnote.number}.</strong> ${footnote.text} 
-                                    <a href="#" class="footnote-back" data-footnote-number="${footnote.number}" title="Return to text">↩</a>
-                                </p>`;
-                        });
-                    }
-                    
-                    document.getElementById('center-panel').innerHTML = `
-                        <article class="document-content" id="document-content">
-                            ${htmlContent}
-                            ${footnotesSection}
-                        </article>
-                    `;
-                    
-                    displayComments();
-                    addFootnoteClickHandlers();
-                    addTextSelectionHandlers();
-                    
-                    const cacheInfoElement = document.getElementById('cache-info');
-                    if (cacheInfoElement) {
-                        cacheInfoElement.textContent = `📄 Static: ${new Date().toLocaleTimeString()}`;
-                        cacheInfoElement.style.color = '#ffc107';
-                        cacheInfoElement.title = `Refreshed from static site (may be outdated until rebuild)`;
-                    }
-                } else {
-                    console.error('❌ All refresh methods failed');
-                    
-                    const cacheInfoElement = document.getElementById('cache-info');
-                    if (cacheInfoElement) {
-                        cacheInfoElement.textContent = `📄 Refresh failed`;
-                        cacheInfoElement.style.color = '#dc3545';
-                        cacheInfoElement.title = 'Could not refresh - comment saved to GitHub but may not be visible until rebuild';
-                    }
-                }
-            } catch (error) {
-                console.error('Error in fallback refresh:', error);
-            }
-        }
-        
-        // Helper function to validate that content is markdown, not HTML
-        function isMarkdownContent(content) {
-            // Quick checks to determine if content is markdown vs HTML
-            const trimmedContent = content.trim();
-            
-            // If it starts with HTML doctype or html tags, it's HTML
-            if (trimmedContent.startsWith('<!DOCTYPE html') || 
-                trimmedContent.startsWith('<html') || 
-                trimmedContent.startsWith('<HTML')) {
-                console.log('Content is HTML (DOCTYPE or html tag detected)');
-                return false;
-            }
-            
-            // If it has a lot of HTML tags relative to content length, it's probably HTML
-            const htmlTagRegex = /<[^>]+>/g;
-            const htmlTags = trimmedContent.match(htmlTagRegex);
-            const htmlTagRatio = htmlTags ? htmlTags.length / (trimmedContent.length / 100) : 0;
-            
-            if (htmlTagRatio > 5) { // More than 5 HTML tags per 100 characters indicates HTML
-                console.log('Content appears to be HTML (high HTML tag ratio:', htmlTagRatio, ')');
-                return false;
-            }
-            
-            // If it contains typical HTML structure elements, it's HTML
-            if (trimmedContent.includes('<head>') || 
-                trimmedContent.includes('<body>') || 
-                trimmedContent.includes('<script>')) {
-                console.log('Content is HTML (HTML structure detected)');
-                return false;
-            }
-            
-            // If it starts with markdown frontmatter or contains markdown elements, it's markdown
-            if (trimmedContent.startsWith('---') || 
-                /^#+\s/.test(trimmedContent) ||  // Headers
-                /^\* /.test(trimmedContent) ||   // Bullet lists
-                /^\d+\. /.test(trimmedContent) || // Numbered lists
-                trimmedContent.includes('[^') || // Footnote references
-                trimmedContent.includes('](')) {  // Links
-                console.log('Content appears to be markdown (markdown syntax detected)');
-                return true;
-            }
-            
-            // If it's just plain text without much HTML, consider it markdown
-            if (htmlTagRatio < 1) {
-                console.log('Content appears to be plain text/markdown (low HTML tag ratio)');
-                return true;
-            }
-            
-            console.log('Content type unclear, defaulting to not markdown');
-            return false;
         }
 
         // Edit comment
@@ -2104,6 +1790,9 @@
             // Refresh display only if update was successful
             if (updateSuccess !== false) {
                 displayComments();
+                setTimeout(() => {
+                    loadDocument(currentDocument);
+                }, 500);
             } else {
                 // Revert changes if update failed
                 comment.text = oldComment.text;
@@ -2141,9 +1830,6 @@
                 const result = await response.json();
                 console.log('Comment updated in GitHub successfully:', result);
                 
-                // Update cached document content after successful update
-                await updateCachedDocumentContentAndRerender();
-                
                 return true;
                 
             } catch (error) {
@@ -2174,6 +1860,11 @@
                 
                 // Refresh display
                 displayComments();
+                
+                // Force document reload to show changes
+                setTimeout(() => {
+                    loadDocument(currentDocument);
+                }, 500);
             }
         }
 
@@ -2204,9 +1895,6 @@
                 
                 const result = await response.json();
                 console.log('Comment deleted from GitHub successfully:', result);
-                
-                // Update cached document content after successful delete
-                await updateCachedDocumentContentAndRerender();
                 
                 return true;
                 
@@ -2364,417 +2052,6 @@
                 menu.classList.remove('show');
             }
         });
-
-        // Debug functions (accessible from browser console)
-        window.debugAuth = function() {
-            console.log('=== Authentication Debug ===');
-            console.log('Current userEmail:', userEmail);
-            console.log('Document cookies:', document.cookie);
-            console.log('=== Testing endpoints ===');
-            
-            const endpoints = ['/api/user', '/api/auth/user', '/auth/user', '/user', '/.auth/me'];
-            
-            endpoints.forEach(async (endpoint) => {
-                try {
-                    const res = await fetch(endpoint);
-                    console.log(`${endpoint}: Status ${res.status}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        console.log(`${endpoint} data:`, data);
-                    } else {
-                        const text = await res.text();
-                        console.log(`${endpoint} error text:`, text);
-                    }
-                } catch (err) {
-                    console.log(`${endpoint}: ${err.message}`);
-                }
-            });
-            
-            console.log('=== End Authentication Debug ===');
-        };
-
-        window.debugFootnotes = function() {
-            console.log('=== Footnote Debug ===');
-            console.log('Current document:', currentDocument);
-            console.log('Current comments:', currentComments);
-            console.log('Next comment number:', nextCommentNumber);
-            console.log('Current user email:', userEmail);
-            
-            if (currentDocument) {
-                const content = currentDocument.fullContent || currentDocument.content || '';
-                console.log('Raw document content length:', content.length);
-                
-                console.log('\nFootnote definitions found:');
-                const definitionRegex = /^\[(\^[^\]]+)\]:\s*(.+)$/gm;
-                let match;
-                while ((match = definitionRegex.exec(content)) !== null) {
-                    console.log('- ', match[0]);
-                }
-            }
-            
-            console.log('======================');
-        };
-
-        window.forceRefreshDocument = function() {
-            if (!currentDocument) {
-                console.log('No document to refresh');
-                return;
-            }
-            
-            console.log('Force refreshing current document...');
-            loadDocument(currentDocument);
-        };
-
-        // Debug function to test content fetching paths including GitHub API
-        window.debugContentPaths = async function() {
-            if (!currentDocument) {
-                console.log('No document loaded');
-                return;
-            }
-            
-            const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
-            
-            console.log('=== Testing All Content Sources ===');
-            console.log('Looking for file:', filename);
-            
-            // Test GitHub API endpoints first
-            const githubEndpoints = [
-                `/api/github/content/${filename}`,
-                `/api/content/${filename}`,
-            ];
-            
-            console.log('\n🔹 Testing GitHub API endpoints:');
-            for (const endpoint of githubEndpoints) {
-                try {
-                    console.log('\n--- Testing GitHub API:', endpoint, '---');
-                    const res = await fetch(endpoint);
-                    console.log('Status:', res.status);
-                    console.log('Content-Type:', res.headers.get('Content-Type'));
-                    
-                    if (res.ok) {
-                        const result = await res.json();
-                        console.log('Response type:', typeof result);
-                        console.log('Response keys:', Object.keys(result));
-                        
-                        if (result.content) {
-                            const isBase64 = result.encoding === 'base64';
-                            console.log('Content encoding:', result.encoding);
-                            console.log('Is base64:', isBase64);
-                            
-                            const content = isBase64 
-                                ? atob(result.content.replace(/\n/g, ''))
-                                : result.content;
-                            
-                            const isMarkdown = isMarkdownContent(content);
-                            console.log('Is Markdown:', isMarkdown);
-                            console.log('Content length:', content.length);
-                            console.log('First 100 chars:', JSON.stringify(content.substring(0, 100)));
-                            
-                            if (isMarkdown) {
-                                console.log('✅ VALID GitHub API endpoint:', endpoint);
-                            }
-                        }
-                    } else {
-                        console.log('❌ Failed to fetch from GitHub API');
-                    }
-                } catch (error) {
-                    console.log('❌ Error:', error.message);
-                }
-            }
-            
-            // Test static site paths
-            const cacheBuster = Date.now();
-            const contentPaths = [
-                `/content/${filename}?v=${cacheBuster}`,
-                `/content/${filename}`,
-                `/${filename}?v=${cacheBuster}`,
-                `/${filename}`,
-                `/data/${filename}`,
-                `/docs/${filename}`
-            ];
-            
-            console.log('\n🔹 Testing static site paths:');
-            for (const path of contentPaths) {
-                try {
-                    console.log('\n--- Testing static:', path, '---');
-                    const res = await fetch(path, {
-                        headers: { 'Cache-Control': 'no-cache' }
-                    });
-                    console.log('Status:', res.status);
-                    console.log('Content-Type:', res.headers.get('Content-Type'));
-                    
-                    if (res.ok) {
-                        const content = await res.text();
-                        const isMarkdown = isMarkdownContent(content);
-                        console.log('Is Markdown:', isMarkdown);
-                        console.log('Content length:', content.length);
-                        console.log('First 100 chars:', JSON.stringify(content.substring(0, 100)));
-                        
-                        if (isMarkdown) {
-                            console.log('✅ VALID static path:', path);
-                        } else {
-                            console.log('❌ HTML/Invalid content at:', path);
-                        }
-                    } else {
-                        console.log('❌ Failed to fetch');
-                    }
-                } catch (error) {
-                    console.log('❌ Error:', error.message);
-                }
-            }
-            
-            console.log('\n=== GitHub API Setup Instructions ===');
-            console.log('To avoid Cloudflare rebuilds, set up one of these API endpoints:');
-            console.log('1. /api/github/content/{filename} - Returns GitHub API response');
-            console.log('2. /api/content/{filename} - Returns raw content from GitHub');
-            console.log('');
-            console.log('Example Cloudflare Worker or API route:');
-            console.log(`
-// /api/github/content/[filename].js
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    const filename = url.pathname.split('/').pop();
-    
-    const githubUrl = \`https://api.github.com/repos/\${env.GITHUB_OWNER}/\${env.GITHUB_REPO}/contents/content/\${filename}\`;
-    
-    const response = await fetch(githubUrl, {
-      headers: {
-        'Authorization': \`Bearer \${env.GITHUB_TOKEN}\`,
-        'User-Agent': 'Research-Comments'
-      }
-    });
-    
-    return response;
-  }
-}
-            `);
-            
-            console.log('\n=== End Testing ===');
-        };
-
-        // Function to configure GitHub repository details
-        window.configureGitHub = function(owner, repo, token = null) {
-            window.GITHUB_CONFIG = {
-                owner: owner,
-                repo: repo,
-                token: token // Optional for public repos
-            };
-            
-            console.log('GitHub configuration set:');
-            console.log('Owner:', owner);
-            console.log('Repo:', repo);
-            console.log('Token:', token ? 'PROVIDED' : 'NOT PROVIDED');
-            
-            // Update the fetchContentDirectlyFromGitHub function to use these values
-            console.log('Try making a comment now to test direct GitHub access');
-        };
-
-        // Function to test direct GitHub raw access (requires manual configuration)
-        window.testGitHubRaw = async function(owner, repo, branch = 'main') {
-            if (!currentDocument) {
-                console.log('No document loaded');
-                return;
-            }
-            
-            const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
-            
-            const rawUrls = [
-                `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/content/${filename}`,
-                `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filename}`,
-                `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/docs/${filename}`,
-            ];
-            
-            console.log('=== Testing GitHub Raw URLs ===');
-            console.log(`Owner: ${owner}, Repo: ${repo}, Branch: ${branch}`);
-            
-            for (const url of rawUrls) {
-                try {
-                    console.log('\nTesting:', url);
-                    const response = await fetch(url, {
-                        headers: { 'Cache-Control': 'no-cache' }
-                    });
-                    
-                    console.log('Status:', response.status);
-                    
-                    if (response.ok) {
-                        const content = await response.text();
-                        const isMarkdown = isMarkdownContent(content);
-                        console.log('Is Markdown:', isMarkdown);
-                        console.log('Content length:', content.length);
-                        
-                        if (isMarkdown) {
-                            console.log('✅ SUCCESS! This URL works:', url);
-                            console.log('Add this to fetchContentDirectlyFromGitHub function');
-                        } else {
-                            console.log('❌ Not markdown content');
-                        }
-                    } else {
-                        console.log('❌ Request failed');
-                    }
-                } catch (error) {
-                    console.log('❌ Error:', error.message);
-                }
-            }
-            
-            console.log('\nUsage: testGitHubRaw("your-username", "your-repo", "main")');
-        };
-
-        // Function to immediately disable rebuilds (emergency fix)
-        window.stopRebuilds = function() {
-            console.log('🚨 EMERGENCY: Disabling auto-refresh to prevent rebuilds');
-            window.disableAutoRefresh = true;
-            
-            // Update UI to show rebuilds are stopped
-            const cacheInfoElement = document.getElementById('cache-info');
-            if (cacheInfoElement) {
-                cacheInfoElement.textContent = `📄 Rebuilds STOPPED`;
-                cacheInfoElement.style.color = '#dc3545';
-                cacheInfoElement.title = 'Auto-refresh disabled to prevent Cloudflare rebuilds';
-            }
-            
-            console.log('✅ Rebuilds stopped. Comments will save to GitHub but not appear until page refresh.');
-            console.log('📖 See console for permanent fix instructions.');
-            
-            // Show fix instructions
-            console.log(`
-🔧 PERMANENT SOLUTIONS TO STOP REBUILDS:
-
-=== OPTION 1: Modify save-comment.js Worker (Recommended) ===
-In your save-comment.js Cloudflare Worker, add one of these fixes:
-
-A) Use [skip ci] in commit messages:
-   Change the commit message to:
-   message: \`Add comment to \${actualFilename} [skip ci]\`
-   
-B) Use a comments branch:
-   // Get current main branch SHA
-   const mainRef = await fetch(\`https://api.github.com/repos/\${env.GITHUB_OWNER}/\${env.GITHUB_REPO}/git/refs/heads/main\`);
-   const mainSha = (await mainRef.json()).object.sha;
-   
-   // Create/update comments branch
-   const branchRef = \`refs/heads/comments\`;
-   await fetch(\`https://api.github.com/repos/\${env.GITHUB_OWNER}/\${env.GITHUB_REPO}/git/refs\`, {
-     method: 'POST',
-     body: JSON.stringify({
-       ref: branchRef,
-       sha: mainSha
-     })
-   });
-   
-   // Then commit to comments branch instead of main
-
-=== OPTION 2: Cloudflare Pages Settings ===
-1. Go to Cloudflare Dashboard → Pages → Your Site
-2. Settings → Builds & deployments
-3. Add "Build hook" instead of auto-deploy
-4. Or set "Ignore builds" pattern: **/content/*.md
-
-=== OPTION 3: Separate Comment Storage ===
-Store comments in KV/D1/external database instead of markdown files.
-
-=== OPTION 4: Manual Refresh Only ===
-Keep current setup but users manually refresh to see comments.
-
-Run stopRebuilds() immediately if rebuilds are happening!
-            `);
-        };
-
-        // Enhanced debug function with rebuild detection
-        window.debugRebuilds = function() {
-            console.log('=== REBUILD DEBUGGING ===');
-            console.log('Current auto-refresh status:', window.disableAutoRefresh ? 'DISABLED' : 'ENABLED');
-            
-            // Test if a rebuild might be triggered
-            console.log('\n🔍 Checking current save-comment API...');
-            console.log('When you make a comment, check Network tab for:');
-            console.log('- POST to /api/save-comment');
-            console.log('- Look for "preventRebuild", "skipDeploy" flags in request');
-            
-            console.log('\n📋 To check if rebuild triggered:');
-            console.log('1. Open Cloudflare Pages dashboard');
-            console.log('2. Watch "Recent deployments" section');
-            console.log('3. Make a test comment');
-            console.log('4. See if new deployment appears');
-            
-            console.log('\n⚡ Quick fix: run stopRebuilds() to disable immediately');
-            
-            // Show current request payload that would be sent
-            if (currentDocument) {
-                const sampleComment = {
-                    number: 999,
-                    type: 'question',
-                    text: 'test comment',
-                    author: userEmail,
-                    timestamp: Date.now()
-                };
-                
-                const samplePayload = {
-                    docId: currentDocument.id,
-                    comment: `[^999]: question:test comment:${userEmail}:${Date.now()}`,
-                    footnoteRef: '[^999]',
-                    selectedText: 'sample text',
-                    type: 'footnote',
-                    action: 'add',
-                    preventRebuild: true,
-                    skipDeploy: true,
-                    commentOnly: true
-                };
-                
-                console.log('\n📤 Current request payload would be:');
-                console.log(JSON.stringify(samplePayload, null, 2));
-            }
-            
-            console.log('\n=== END REBUILD DEBUGGING ===');
-        };
-
-        // Test function to make a safe comment without rebuilding
-        window.testCommentNoRebuild = async function() {
-            if (!currentDocument) {
-                console.log('No document loaded');
-                return;
-            }
-            
-            console.log('🧪 Testing comment save without rebuild...');
-            
-            const testComment = {
-                docId: currentDocument.id,
-                comment: `[^9999]: approved:TEST COMMENT - SAFE TO DELETE:${userEmail}:${Date.now()}`,
-                footnoteRef: '[^9999]',
-                selectedText: 'test',
-                type: 'footnote',
-                action: 'add',
-                preventRebuild: true,
-                skipDeploy: true,
-                commentOnly: true,
-                testMode: true
-            };
-            
-            console.log('Sending test comment:', testComment);
-            
-            try {
-                const response = await fetch('/api/save-comment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(testComment)
-                });
-                
-                console.log('Response status:', response.status);
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log('✅ Test comment saved successfully');
-                    console.log('Result:', result);
-                    console.log('🔍 Check Cloudflare Pages for rebuild activity');
-                } else {
-                    const error = await response.text();
-                    console.log('❌ Test comment failed');
-                    console.log('Error:', error);
-                }
-            } catch (error) {
-                console.log('❌ Test comment error:', error);
-            }
-        };
     </script>
 </body>
 </html>
