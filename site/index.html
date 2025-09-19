@@ -798,6 +798,10 @@
 
         function buildDocumentTree() {
             const treeDiv = document.getElementById('document-tree');
+            if (!treeDiv) {
+                console.error('Element #document-tree not found');
+                return;
+            }                 
             treeDiv.innerHTML = '';
 
             if (!globalData || !globalData.tree || Object.keys(globalData.tree).length === 0) {
@@ -918,6 +922,31 @@
             currentLens = btn.textContent.trim();
             buildDocumentTree();
         });
+        });
+
+        // Wrap all initialization in DOMContentLoaded to ensure DOM is ready
+        document.addEventListener('DOMContentLoaded', async () => {
+        console.log('DOM fully loaded');
+        
+        // Set default lens
+        const firstLensBtn = document.querySelector('#lens-selector button');
+        if (firstLensBtn) firstLensBtn.classList.add('active');
+        currentLens = firstLensBtn ? firstLensBtn.textContent.trim() : 'All';
+
+        // Add lens event listeners (safe now)
+        document.querySelectorAll('#lens-selector button').forEach(btn => {
+            btn.addEventListener('click', async () => {
+            document.querySelectorAll('#lens-selector button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentLens = btn.textContent.trim();
+            await loadDocuments(); // Or just buildDocumentTree() if data already loaded
+            });
+        });
+
+        // Call init or loadDocuments
+        await init(); // If init exists and calls buildLeftPanel/loadDocuments
+        // OR directly:
+        // await loadDocuments();
         });
 
         // On load
