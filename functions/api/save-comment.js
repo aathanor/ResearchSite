@@ -473,7 +473,11 @@ function deleteFootnoteComment(content, footnoteDefinition) {
   const match = footnoteDefinition.match(/^\[(\^[^\]]+)\]:/);
   if (!match) {
     console.error('Invalid footnote format for deletion:', footnoteDefinition);
-    return content;
+    // Fallback: treat as orphan definition body and remove matching line
+    const escapedDef = footnoteDefinition.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const orphanPattern = new RegExp(`\\n?\\s*${escapedDef}\\s*`, 'g');
+    content = content.replace(orphanPattern, '');
+    return content;  // Early return since no ref to remove
   }
   
   const ref = match[1];
