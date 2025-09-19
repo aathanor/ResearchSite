@@ -172,7 +172,7 @@ export async function onRequestPost(context) {
     switch (action) {
       case 'add':
         content = addFootnoteComment(content, processedComment, footnoteRef, selectedText, beforeContext, afterContext);
-        commitMessage = `Add comment to ${actualFilename}`;
+        commitMessage = `Add comment to ${actualFilename} [skip ci]`;
         break;
         
       case 'update':
@@ -188,18 +188,18 @@ export async function onRequestPost(context) {
           });
         }
         content = updateFootnoteComment(content, oldComment, processedComment);
-        commitMessage = `Update comment in ${actualFilename}`;
+        commitMessage = `Update comment in ${actualFilename} [skip ci]`;
         break;
         
       case 'delete':
         content = deleteFootnoteComment(content, processedComment);
-        commitMessage = `Delete comment from ${actualFilename}`;
+        commitMessage = `Delete comment from ${actualFilename} [skip ci]`;
         break;
         
       default:
         // Default to add for backward compatibility
         content = addFootnoteComment(content, processedComment, footnoteRef, selectedText, beforeContext, afterContext);
-        commitMessage = `Add comment to ${actualFilename}`;
+        commitMessage = `Add comment to ${actualFilename} [skip ci]`;
         break;
     }
     
