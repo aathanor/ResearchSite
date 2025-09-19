@@ -1045,6 +1045,10 @@
         }
         
         function applyDocumentFilter(broadCategory = null) {
+            console.log('=== DEBUG: applyDocumentFilter called ===');
+            console.log('currentCategoryFilter:', currentCategoryFilter);
+            console.log('broadCategory:', broadCategory);
+            
             const documents = document.querySelectorAll('.document-item');
             const currentLens = document.querySelector('.lens-tab.active')?.dataset.lens || 'all';
             
@@ -1064,16 +1068,25 @@
                 // Then check category filter (now using tags)
                 if (currentCategoryFilter && shouldShow) {
                     const docData = doc.docData;
+                    console.log('=== DEBUG: Checking document ===');
+                    console.log('Document title:', docData?.title);
+                    console.log('Document tags raw:', docData?.tags);
+                    console.log('Document tags type:', typeof docData?.tags);
+                    
                     if (docData && docData.tags) {
                         // Check if document has the specific methodology tag
                         const docTags = Array.isArray(docData.tags) ? docData.tags : [docData.tags];
+                        console.log('docTags processed:', docTags);
+                        
                         const hasTag = docTags.some(tag => {
                             if (!tag) return false;
                             const normalizedTag = tag.toLowerCase().replace(/\s+/g, '-');
                             const normalizedFilter = currentCategoryFilter.toLowerCase();
+                            console.log(`Comparing: "${normalizedTag}" === "${normalizedFilter}" ?`, normalizedTag === normalizedFilter);
                             return normalizedTag === normalizedFilter;
                         });
                         
+                        console.log('hasTag result:', hasTag);
                         shouldShow = shouldShow && hasTag;
                         
                         // If showing and we have a broad category, apply the styling
@@ -1081,11 +1094,13 @@
                             doc.classList.add(`filtered-${broadCategory}`);
                         }
                     } else {
+                        console.log('No tags data found for document');
                         // No tags data - hide when category filtering
                         shouldShow = false;
                     }
                 }
                 
+                console.log('Final shouldShow:', shouldShow);
                 doc.style.display = shouldShow ? 'block' : 'none';
             });
             
@@ -1097,6 +1112,8 @@
                 );
                 category.style.display = visibleDocs.length > 0 ? 'block' : 'none';
             });
+            
+            console.log('=== END DEBUG ===');
         }
 
         // Initialize the application
