@@ -285,8 +285,4 @@ Both types of existence are internal to pattern-recognition events - there's no 
 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
 
-: question:Is this one kept after the last word of the selection?:florin.cojocariu@s.unibuc.ro:1758088587970
-
-: clarification:New comment after lots of code fixes:florin.cojocariu@s.unibuc.ro:1758092663275
-
 [^6]: question:why?:florin.cojocariu@s.unibuc.ro:1758261372965
