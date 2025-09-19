@@ -1702,8 +1702,20 @@
                 const result = await response.json();
                 console.log('Comment saved to GitHub successfully:', result);
                 
-                // FIXED: Force refresh the document content AND re-render
-                await updateCachedDocumentContentAndRerender();
+                // FIXED: Only refresh if not disabled and refresh is safe
+                if (!window.disableAutoRefresh) {
+                    await updateCachedDocumentContentAndRerender();
+                } else {
+                    console.log('Auto-refresh disabled - comment saved to GitHub but UI not refreshed');
+                    
+                    // Update cache info to show save was successful but no refresh
+                    const cacheInfoElement = document.getElementById('cache-info');
+                    if (cacheInfoElement) {
+                        cacheInfoElement.textContent = `📄 Saved: ${new Date().toLocaleTimeString()}`;
+                        cacheInfoElement.style.color = '#28a745';
+                        cacheInfoElement.title = 'Comment saved to GitHub (auto-refresh disabled)';
+                    }
+                }
                 
                 return true; // Indicate save success
                 
@@ -1723,21 +1735,57 @@
                 
                 const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
                 const cacheBuster = Date.now();
-                const freshContentPath = `/content/${filename}?v=${cacheBuster}&force=${Math.random()}`;
                 
-                console.log('Fetching updated content from:', freshContentPath);
+                // Try multiple possible content paths
+                const contentPaths = [
+                    `/content/${filename}?v=${cacheBuster}`,
+                    `/content/${filename}`,
+                    `/${filename}?v=${cacheBuster}`,
+                    `/${filename}`
+                ];
                 
-                const res = await fetch(freshContentPath, {
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
+                console.log('Attempting to fetch updated content from multiple paths...');
+                
+                let updatedContent = null;
+                let successfulPath = null;
+                
+                // Try each path until we find one that returns markdown content
+                for (const contentPath of contentPaths) {
+                    try {
+                        console.log('Trying path:', contentPath);
+                        
+                        const res = await fetch(contentPath, {
+                            headers: {
+                                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                                'Pragma': 'no-cache',
+                                'Expires': '0',
+                                'Accept': 'text/plain, text/markdown, */*'
+                            }
+                        });
+                        
+                        if (res.ok) {
+                            const content = await res.text();
+                            
+                            // CRITICAL: Validate that we got markdown content, not HTML
+                            if (isMarkdownContent(content)) {
+                                updatedContent = content;
+                                successfulPath = contentPath;
+                                console.log('✓ Found valid markdown content at:', contentPath);
+                                break;
+                            } else {
+                                console.warn('Path returned HTML/non-markdown content:', contentPath);
+                                console.log('Content preview:', content.substring(0, 200));
+                            }
+                        } else {
+                            console.log('Path returned status:', res.status);
+                        }
+                    } catch (pathError) {
+                        console.log('Path failed:', contentPath, pathError.message);
                     }
-                });
+                }
                 
-                if (res.ok) {
-                    const updatedContent = await res.text();
-                    console.log('✓ Fresh content fetched, length:', updatedContent.length);
+                if (updatedContent && successfulPath) {
+                    console.log('✓ Fresh content fetched from:', successfulPath, 'length:', updatedContent.length);
                     
                     // Update the cached document content
                     currentDocument.content = updatedContent;
@@ -1787,18 +1835,87 @@
                     if (cacheInfoElement) {
                         cacheInfoElement.textContent = `📄 Refreshed: ${new Date().toLocaleTimeString()}`;
                         cacheInfoElement.style.color = '#28a745';
-                        cacheInfoElement.title = 'Content refreshed after GitHub save';
+                        cacheInfoElement.title = `Content refreshed after GitHub save from ${successfulPath}`;
                     }
                     
                     console.log('✓ Document fully refreshed and re-rendered after GitHub save');
                 } else {
-                    console.error('Failed to fetch fresh content:', res.status);
+                    console.error('❌ Failed to fetch valid markdown content from any path');
+                    console.log('Skipping refresh to avoid breaking the UI');
+                    
+                    // Update cache info to show the issue
+                    const cacheInfoElement = document.getElementById('cache-info');
+                    if (cacheInfoElement) {
+                        cacheInfoElement.textContent = `📄 Refresh failed`;
+                        cacheInfoElement.style.color = '#dc3545';
+                        cacheInfoElement.title = 'Could not refresh content - comment saved to GitHub but UI not updated';
+                    }
                 }
             } catch (error) {
                 console.error('Error in updateCachedDocumentContentAndRerender:', error);
+                
+                // Update cache info to show the error
+                const cacheInfoElement = document.getElementById('cache-info');
+                if (cacheInfoElement) {
+                    cacheInfoElement.textContent = `📄 Error`;
+                    cacheInfoElement.style.color = '#dc3545';
+                    cacheInfoElement.title = 'Refresh error: ' + error.message;
+                }
             }
             
             console.log('=== End force refresh and re-render ===');
+        }
+        
+        // Helper function to validate that content is markdown, not HTML
+        function isMarkdownContent(content) {
+            // Quick checks to determine if content is markdown vs HTML
+            const trimmedContent = content.trim();
+            
+            // If it starts with HTML doctype or html tags, it's HTML
+            if (trimmedContent.startsWith('<!DOCTYPE html') || 
+                trimmedContent.startsWith('<html') || 
+                trimmedContent.startsWith('<HTML')) {
+                console.log('Content is HTML (DOCTYPE or html tag detected)');
+                return false;
+            }
+            
+            // If it has a lot of HTML tags relative to content length, it's probably HTML
+            const htmlTagRegex = /<[^>]+>/g;
+            const htmlTags = trimmedContent.match(htmlTagRegex);
+            const htmlTagRatio = htmlTags ? htmlTags.length / (trimmedContent.length / 100) : 0;
+            
+            if (htmlTagRatio > 5) { // More than 5 HTML tags per 100 characters indicates HTML
+                console.log('Content appears to be HTML (high HTML tag ratio:', htmlTagRatio, ')');
+                return false;
+            }
+            
+            // If it contains typical HTML structure elements, it's HTML
+            if (trimmedContent.includes('<head>') || 
+                trimmedContent.includes('<body>') || 
+                trimmedContent.includes('<script>')) {
+                console.log('Content is HTML (HTML structure detected)');
+                return false;
+            }
+            
+            // If it starts with markdown frontmatter or contains markdown elements, it's markdown
+            if (trimmedContent.startsWith('---') || 
+                /^#+\s/.test(trimmedContent) ||  // Headers
+                /^\* /.test(trimmedContent) ||   // Bullet lists
+                /^\d+\. /.test(trimmedContent) || // Numbered lists
+                trimmedContent.includes('[^') || // Footnote references
+                trimmedContent.includes('](')) {  // Links
+                console.log('Content appears to be markdown (markdown syntax detected)');
+                return true;
+            }
+            
+            // If it's just plain text without much HTML, consider it markdown
+            if (htmlTagRatio < 1) {
+                console.log('Content appears to be plain text/markdown (low HTML tag ratio)');
+                return true;
+            }
+            
+            console.log('Content type unclear, defaulting to not markdown');
+            return false;
         }
 
         // Edit comment
@@ -2156,6 +2273,78 @@
             
             console.log('Force refreshing current document...');
             loadDocument(currentDocument);
+        };
+
+        // Debug function to test content fetching paths
+        window.debugContentPaths = async function() {
+            if (!currentDocument) {
+                console.log('No document loaded');
+                return;
+            }
+            
+            const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
+            const cacheBuster = Date.now();
+            
+            const contentPaths = [
+                `/content/${filename}?v=${cacheBuster}`,
+                `/content/${filename}`,
+                `/${filename}?v=${cacheBuster}`,
+                `/${filename}`,
+                `/data/${filename}`,
+                `/docs/${filename}`
+            ];
+            
+            console.log('=== Testing Content Paths ===');
+            console.log('Looking for file:', filename);
+            
+            for (const path of contentPaths) {
+                try {
+                    console.log('\n--- Testing:', path, '---');
+                    const res = await fetch(path);
+                    console.log('Status:', res.status);
+                    console.log('Content-Type:', res.headers.get('Content-Type'));
+                    
+                    if (res.ok) {
+                        const content = await res.text();
+                        const isMarkdown = isMarkdownContent(content);
+                        console.log('Is Markdown:', isMarkdown);
+                        console.log('Content length:', content.length);
+                        console.log('First 150 chars:', JSON.stringify(content.substring(0, 150)));
+                        
+                        if (isMarkdown) {
+                            console.log('✅ VALID MARKDOWN FOUND AT:', path);
+                        } else {
+                            console.log('❌ HTML/Invalid content at:', path);
+                        }
+                    } else {
+                        console.log('❌ Failed to fetch');
+                    }
+                } catch (error) {
+                    console.log('❌ Error:', error.message);
+                }
+            }
+            
+            console.log('\n=== End Path Testing ===');
+        };
+
+        // Function to disable/enable auto-refresh
+        window.toggleAutoRefresh = function(enable = null) {
+            if (enable === null) {
+                window.disableAutoRefresh = !window.disableAutoRefresh;
+            } else {
+                window.disableAutoRefresh = !enable;
+            }
+            
+            const status = window.disableAutoRefresh ? 'DISABLED' : 'ENABLED';
+            console.log('Auto-refresh is now:', status);
+            
+            // Update cache info to show auto-refresh status
+            const cacheInfoElement = document.getElementById('cache-info');
+            if (cacheInfoElement && window.disableAutoRefresh) {
+                cacheInfoElement.textContent = `📄 Auto-refresh OFF`;
+                cacheInfoElement.style.color = '#ffc107';
+                cacheInfoElement.title = 'Auto-refresh disabled - comments save to GitHub but UI not refreshed';
+            }
         };
     </script>
 </body>
