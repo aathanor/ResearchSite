@@ -974,8 +974,11 @@
         // Build left panel with documents from GitHub
         // Update buildLeftPanel (use tree, filter, null checks; append to #document-tree)
         async function buildLeftPanel() {
+            console.log('buildLeftPanel started');
             const leftPanel = document.querySelector('.left-panel');
+            console.log('leftPanel:', leftPanel); // Debug: check if .left-panel exists
             const treeDiv = document.getElementById('document-tree');
+            console.log('treeDiv:', treeDiv); // Debug: check if #document-tree exists
             if (!treeDiv) {
                 console.error('Element #document-tree not found');
                 return;
@@ -983,26 +986,31 @@
             leftPanel.querySelectorAll('.doc-category, .error-message').forEach(el => el.remove());
             treeDiv.innerHTML = '';
             try {
+                console.log('Fetching docsData...');
                 const docsData = await loadDocuments();
+                console.log('docsData received:', docsData);
                 if (!docsData || !docsData.documents || !docsData.tree) {
                 treeDiv.innerHTML = '<div class="error-message">No documents found - check console for details</div>';
                 return;
                 }
                 const documents = docsData.documents;
                 const tree = docsData.tree;
+                console.log('documents:', documents);
+                console.log('tree:', tree);
                 if (Object.keys(documents).length === 0) {
                 treeDiv.innerHTML = '<div class="error-message">No documents available</div>';
                 return;
                 }
-                // Filter docs by lens
+                console.log('Filtering docs by lens:', currentLens);
                 const filteredDocs = Object.fromEntries(
                 Object.entries(documents).filter(([, doc]) => currentLens === 'All' || (doc.lens || []).some(l => l.toLowerCase() === currentLens.toLowerCase()))
                 );
+                console.log('filteredDocs:', filteredDocs);
                 if (Object.keys(filteredDocs).length === 0) {
                 treeDiv.innerHTML = '<div class="error-message">No documents for selected lens</div>';
                 return;
                 }
-                // Filtered tree
+                console.log('Building filteredTree...');
                 const filteredTree = {};
                 Object.values(tree).forEach(node => {
                 const filteredNodeDocs = node.documents.filter(id => filteredDocs[id]);
@@ -1010,15 +1018,18 @@
                     filteredTree[node.id] = { ...node, documents: filteredNodeDocs };
                 }
                 });
+                console.log('filteredTree:', filteredTree);
                 const roots = Object.values(filteredTree).filter(node => !node.parent || !filteredTree[node.parent]);
+                console.log('roots:', roots);
                 if (roots.length === 0) {
                 treeDiv.innerHTML = '<div class="error-message">No root nodes found</div>';
                 return;
                 }
-                // Build recursive nodes
+                // Build recursive nodes (rest as before)
                 function buildNode(nodeId) {
                 const node = filteredTree[nodeId];
                 if (!node) return null;
+                console.log('Building node:', nodeId);
                 const categoryDiv = document.createElement('div');
                 categoryDiv.className = 'doc-category';
                 const h3 = document.createElement('h3');
@@ -1031,6 +1042,7 @@
                 node.documents.forEach(docId => {
                     const doc = filteredDocs[docId];
                     if (doc) {
+                    console.log('Adding doc:', docId);
                     const item = document.createElement('div');
                     item.className = 'document-item';
                     item.dataset.id = doc.id;
@@ -1056,11 +1068,12 @@
                 const nodeDiv = buildNode(root.id);
                 if (nodeDiv) treeDiv.appendChild(nodeDiv);
                 });
+                console.log('buildLeftPanel completed');
             } catch (error) {
                 console.error('Error building left panel:', error);
                 treeDiv.innerHTML = `<div class="error-message">Error loading documents<br><small style="font-size:10px;">${error.message}</small></div>`;
             }
-        }
+            }
 
         // Load document content - no cache, always from GitHub
         async function loadDocument(doc) {
@@ -2131,9 +2144,6 @@
         function hideOverview() {
             document.getElementById('overview-modal').classList.remove('show');
         }
-
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', init);
         
         // Hide comment menu on click outside
         document.addEventListener('click', (e) => {
