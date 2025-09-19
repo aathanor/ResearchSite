@@ -964,11 +964,13 @@
         function filterByCategory(category) {
             console.log('Filtering by category:', category);
             
-            // Add visual feedback to the clicked item
-            event.target.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                event.target.style.transform = '';
-            }, 150);
+            // Add visual feedback to the clicked item (only if event is available)
+            if (typeof event !== 'undefined' && event.target) {
+                event.target.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    event.target.style.transform = '';
+                }, 150);
+            }
             
             currentCategoryFilter = category;
             
