@@ -1,7 +1,8 @@
 ---
 title: "Methodological precautions: serial vs parallel"
 author: Florin Cojocariu
-category: "- method" 
+categories: "core-theory" 
+tags: ["methodological-precautions"]
 lens: ["philosophy", "cognition"]
 node: "methodology"
 status: "first draft"
