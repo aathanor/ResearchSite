@@ -107,7 +107,7 @@ export async function onRequestGet(context) {
       
       // Extract comments from body
       const comments = [];
-      const commentRegex = /<!-- ([?!✓]) -->/g;
+      const commentRegex = /<!-- ([?!âœ"]) -->/g;
       let match;
       while ((match = commentRegex.exec(bodyContent)) !== null) {
         comments.push({
@@ -123,6 +123,7 @@ export async function onRequestGet(context) {
         fullContent: bodyContent,
         frontmatter,
         lens: frontmatter.lens || [],
+        tags: frontmatter.tags || [],  // ADDED: Extract tags field
         node: frontmatter.node || 'uncategorized',
         parent: frontmatter.parent || null,
         status: frontmatter.status || 'draft',
