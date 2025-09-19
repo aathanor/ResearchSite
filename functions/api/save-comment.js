@@ -483,7 +483,7 @@ function deleteFootnoteComment(content, footnoteDefinition) {
   const ref = match[1];
   
   // Remove footnote reference [^n] from content
-  const refPattern = new RegExp(`\\[${ref.replace(/[\[\]^]/g, '\\$&')}\\]`, 'g');
+  const refPattern = new RegExp(`\\[${ref.replace(/[\[\]^]/g, '\\$&')}\\](?!:)`, 'g');
   content = content.replace(refPattern, '');
   
   // Remove footnote definition from content
