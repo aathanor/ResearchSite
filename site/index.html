@@ -785,18 +785,22 @@
         // Load documents from GitHub/JSON
         // In your site's JavaScript (likely in index.html <script> or js/app.js):
         // Replace the static fetch with dynamic API call
-        async function loadDocuments() {
+        // Update loadDocuments (cache data, skip refetch if loaded)
+        async function loadDocuments(forceReload = false) {
+            if (globalData && !forceReload) {
+                console.log('Using cached data');
+                return globalData;
+            }
             try {
                 const response = await fetch('/api/list-documents');
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 globalData = await response.json();
                 console.log('Loaded data:', globalData);
                 console.log('Raw documents data:', globalData.documents);
-                buildDocumentTree();
+                return globalData;
             } catch (error) {
                 console.error('Failed to load documents:', error);
-                const treeDiv = document.getElementById('document-tree');
-                if (treeDiv) treeDiv.innerHTML = '<p>No documents found - check console for details</p>';
+                return null;
             }
         }
 
@@ -949,19 +953,17 @@
         if (firstLensBtn) firstLensBtn.classList.add('active');
         currentLens = firstLensBtn ? firstLensBtn.textContent.trim() : 'All';
             
-        // Add lens event listeners (safe now)
+        // Lens listeners (rebuild without refetch)
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('#lens-selector button').forEach(btn => {
-                btn.addEventListener('click', async () => {  // Add async if needed for awaits inside
+                btn.addEventListener('click', () => {
                 document.querySelectorAll('#lens-selector button').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentLens = btn.textContent.trim();
-                await loadDocuments();  // Or buildDocumentTree() if data is cached
+                buildLeftPanel(); // Reuses cached data
                 });
             });
-            // Set default active button
-            const firstBtn = document.querySelector('#lens-selector button');
-            if (firstBtn) firstBtn.classList.add('active');
+            document.querySelector('#lens-selector button')?.classList.add('active');
         });
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -975,6 +977,7 @@
         document.querySelector('#lens-selector button:first-child')?.classList.add('active');
         });
         // Build left panel with documents from GitHub
+        // Update buildLeftPanel (use tree, filter, null checks; append to #document-tree)
         async function buildLeftPanel() {
             const leftPanel = document.querySelector('.left-panel');
             const treeDiv = document.getElementById('document-tree');
@@ -983,45 +986,28 @@
                 return;
             }
             leftPanel.querySelectorAll('.doc-category, .error-message').forEach(el => el.remove());
-            treeDiv.innerHTML = ''; // Clear tree specifically
+            treeDiv.innerHTML = '';
             try {
                 const docsData = await loadDocuments();
-                console.log('Raw documents data:', docsData);
                 if (!docsData || !docsData.documents || !docsData.tree) {
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'error-message';
-                errorMsg.textContent = 'No documents found - check console for details';
-                treeDiv.appendChild(errorMsg);
+                treeDiv.innerHTML = '<div class="error-message">No documents found - check console for details</div>';
                 return;
                 }
-                // Handle documents and tree
                 const documents = docsData.documents;
                 const tree = docsData.tree;
-                console.log('Processed documents:', documents);
                 if (Object.keys(documents).length === 0) {
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'error-message';
-                errorMsg.textContent = 'No documents available';
-                treeDiv.appendChild(errorMsg);
+                treeDiv.innerHTML = '<div class="error-message">No documents available</div>';
                 return;
                 }
-                // Filter by currentLens
+                // Filter docs by lens
                 const filteredDocs = Object.fromEntries(
-                Object.entries(documents).filter(([, doc]) => {
-                    let docLens = doc.lens || [];
-                    if (typeof docLens === 'string') docLens = [docLens];
-                    if (!Array.isArray(docLens)) docLens = [];
-                    return currentLens === 'All' || docLens.some(l => l.toLowerCase() === currentLens.toLowerCase());
-                })
+                Object.entries(documents).filter(([, doc]) => currentLens === 'All' || (doc.lens || []).some(l => l.toLowerCase() === currentLens.toLowerCase()))
                 );
                 if (Object.keys(filteredDocs).length === 0) {
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'error-message';
-                errorMsg.textContent = 'No documents for selected lens';
-                treeDiv.appendChild(errorMsg);
+                treeDiv.innerHTML = '<div class="error-message">No documents for selected lens</div>';
                 return;
                 }
-                // Build filtered tree
+                // Filtered tree
                 const filteredTree = {};
                 Object.values(tree).forEach(node => {
                 const filteredNodeDocs = node.documents.filter(id => filteredDocs[id]);
@@ -1029,16 +1015,12 @@
                     filteredTree[node.id] = { ...node, documents: filteredNodeDocs };
                 }
                 });
-                // Find roots
                 const roots = Object.values(filteredTree).filter(node => !node.parent || !filteredTree[node.parent]);
                 if (roots.length === 0) {
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'error-message';
-                errorMsg.textContent = 'No root nodes found';
-                treeDiv.appendChild(errorMsg);
+                treeDiv.innerHTML = '<div class="error-message">No root nodes found</div>';
                 return;
                 }
-                // Recursive build function for nested structure
+                // Build recursive nodes
                 function buildNode(nodeId) {
                 const node = filteredTree[nodeId];
                 if (!node) return null;
@@ -1047,27 +1029,21 @@
                 const h3 = document.createElement('h3');
                 h3.textContent = node.id.replace(/[-_]/g, ' ').toUpperCase();
                 categoryDiv.appendChild(h3);
-                // Add children nodes recursively
                 node.children.forEach(childId => {
                     const childNode = buildNode(childId);
                     if (childNode) categoryDiv.appendChild(childNode);
                 });
-                // Add documents
                 node.documents.forEach(docId => {
                     const doc = filteredDocs[docId];
                     if (doc) {
                     const item = document.createElement('div');
                     item.className = 'document-item';
                     item.dataset.id = doc.id;
-                    const lenses = doc.lens || [];
-                    item.dataset.lenses = Array.isArray(lenses) ? lenses.join(' ') : '';
+                    item.dataset.lenses = (doc.lens || []).join(' ');
                     const title = doc.title || doc.id.replace('.md', '').replace(/[-_]/g, ' ');
                     const status = doc.status || 'draft';
-                    item.innerHTML = `
-                        <div>${title}</div>
-                        <span style="font-size: 11px; color: #6c757d;">• ${status}</span>
-                    `;
-                    item.addEventListener('click', (e) => {
+                    item.innerHTML = `<div>${title}</div><span style="font-size: 11px; color: #6c757d;">• ${status}</span>`;
+                    item.addEventListener('click', e => {
                         e.preventDefault();
                         e.stopPropagation();
                         console.log('Document clicked:', doc);
@@ -1081,17 +1057,13 @@
                 });
                 return categoryDiv;
                 }
-                // Append roots
                 roots.sort((a, b) => a.id.localeCompare(b.id)).forEach(root => {
                 const nodeDiv = buildNode(root.id);
                 if (nodeDiv) treeDiv.appendChild(nodeDiv);
                 });
             } catch (error) {
                 console.error('Error building left panel:', error);
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'error-message';
-                errorMsg.innerHTML = `Error loading documents<br><small style="font-size:10px;">${error.message}</small>`;
-                treeDiv.appendChild(errorMsg);
+                treeDiv.innerHTML = `<div class="error-message">Error loading documents<br><small style="font-size:10px;">${error.message}</small></div>`;
             }
         }
 
