@@ -1033,7 +1033,7 @@
                 }
                 
                 // Check for and fix encoding issues
-                if (text.includes('Ã') || text.includes('â€')) {
+                if (text.includes('Ãƒ') || text.includes('Ã¢â‚¬')) {
                     console.log('Fixing encoding issues...');
                     text = fixEncodingIssues(text);
                 }
@@ -1111,11 +1111,11 @@
         // Fix encoding issues
         function fixEncodingIssues(text) {
             // Common encoding issue fixes
-            text = text.replace(/Ã¢â‚¬â€/g, '—'); // em dash
-            text = text.replace(/Ã¢â‚¬Å"/g, '"'); // smart quotes
-            text = text.replace(/Ã¢â‚¬Â/g, '"'); // smart quotes
-            text = text.replace(/Ã¢â‚¬â„¢/g, "'"); // smart apostrophe
-            text = text.replace(/Ã¯Â¿Â½/g, ""); // replacement character
+            text = text.replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬/g, '—'); // em dash
+            text = text.replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã…"/g, '"'); // smart quotes
+            text = text.replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã‚/g, '"'); // smart quotes
+            text = text.replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢/g, "'"); // smart apostrophe
+            text = text.replace(/ÃƒÂ¯Ã‚Â¿Ã‚Â½/g, ""); // replacement character
             return text;
         }
 
@@ -1231,6 +1231,8 @@
             html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
             html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+            html = html.replace(/_(.*?)_/g, '<em>$1</em>');
             
             // Lists
             html = html.replace(/^\* (.+)$/gim, '<li>$1</li>');
@@ -1565,44 +1567,112 @@
             console.log('Creating comment:', newComment);
             
             // Insert footnote reference at selection in the DOM (visual feedback)
-            insertFootnoteAtRange(range, nextCommentNumber);
+            insertFootnoteAtRange(range, nextCommentNumber, type);
             
             // Add to current comments array
             currentComments.push(newComment);
             currentComments.sort((a, b) => a.number - b.number);
             
             // Save to GitHub with selected text context
-            await saveCommentToGitHub(newComment);
+            const saveSuccess = await saveCommentToGitHub(newComment);
             
-            // Increment counter for next comment
-            nextCommentNumber++;
-            
-            // Refresh display
-            displayComments();
-            addFootnoteClickHandlers();
+            // Only increment and update UI if save was successful
+            if (saveSuccess !== false) {
+                // Increment counter for next comment
+                nextCommentNumber++;
+                
+                // Refresh display
+                displayComments();
+                addFootnoteClickHandlers();
+            } else {
+                // Remove the comment from array if save failed
+                currentComments = currentComments.filter(c => c.number !== newComment.number);
+                
+                // Remove the footnote reference from DOM if save failed
+                const addedRef = document.querySelector(`[data-comment-number="${newComment.number}"]`);
+                if (addedRef) {
+                    addedRef.remove();
+                }
+            }
             
             // Clear selection and range
             window.getSelection().removeAllRanges();
             currentCommentRange = null;
             
-            console.log('Comment added successfully');
+            console.log('Comment add process completed');
         }
 
-        // Insert footnote reference at specific range
-        function insertFootnoteAtRange(range, number) {
-            // Create footnote reference element
-            const footnoteRef = document.createElement('a');
-            footnoteRef.href = `#comment-${number}`;
-            footnoteRef.className = `footnote-ref ${currentCommentType}`;
-            footnoteRef.dataset.commentNumber = number;
-            footnoteRef.textContent = number;
+        // FIXED: Insert footnote reference at specific range with better positioning
+        function insertFootnoteAtRange(range, number, type) {
+            console.log('=== insertFootnoteAtRange FIXED version ===');
+            console.log('Range details:', {
+                startContainer: range.startContainer,
+                endContainer: range.endContainer,
+                startOffset: range.startOffset,
+                endOffset: range.endOffset,
+                toString: range.toString()
+            });
             
-            // Insert at end of selection
-            range.collapse(false); // Move to end of selection
-            range.insertNode(footnoteRef);
+            try {
+                // Create footnote reference element
+                const footnoteRef = document.createElement('a');
+                footnoteRef.href = `#comment-${number}`;
+                footnoteRef.className = `footnote-ref ${type}`;
+                footnoteRef.dataset.commentNumber = number;
+                footnoteRef.textContent = number;
+                
+                // IMPROVED: Handle insertion more reliably
+                
+                // Method 1: Try to insert after the end of selection
+                if (range.endContainer.nodeType === Node.TEXT_NODE) {
+                    // We're ending in a text node - split it and insert between
+                    const textNode = range.endContainer;
+                    const offset = range.endOffset;
+                    
+                    console.log('Inserting in text node at offset:', offset);
+                    
+                    // Split the text node at the end position
+                    const afterText = textNode.splitText(offset);
+                    
+                    // Insert the footnote reference between the split nodes
+                    textNode.parentNode.insertBefore(footnoteRef, afterText);
+                    
+                    console.log('✓ Successfully inserted footnote reference in text node');
+                    
+                } else {
+                    // We're ending in an element node - insert as child
+                    console.log('Inserting in element node');
+                    
+                    if (range.endOffset < range.endContainer.childNodes.length) {
+                        // Insert before the child at endOffset
+                        range.endContainer.insertBefore(footnoteRef, range.endContainer.childNodes[range.endOffset]);
+                    } else {
+                        // Append as last child
+                        range.endContainer.appendChild(footnoteRef);
+                    }
+                    
+                    console.log('✓ Successfully inserted footnote reference in element node');
+                }
+                
+            } catch (error) {
+                console.error('Error in insertFootnoteAtRange:', error);
+                console.log('Fallback: trying simple range insertion...');
+                
+                // Fallback method
+                try {
+                    range.collapse(false); // Move to end of selection
+                    range.insertNode(footnoteRef);
+                    console.log('✓ Fallback insertion successful');
+                } catch (fallbackError) {
+                    console.error('Even fallback insertion failed:', fallbackError);
+                    alert('Failed to insert footnote reference. The comment was still saved to GitHub.');
+                }
+            }
+            
+            console.log('=== End insertFootnoteAtRange ===');
         }
 
-        // Save comment to GitHub via API
+        // FIXED: Save comment to GitHub and handle reload properly
         async function saveCommentToGitHub(comment) {
             try {
                 const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
@@ -1626,19 +1696,109 @@
                     const errorData = await response.text();
                     console.error('Failed to save comment to GitHub:', response.status, errorData);
                     alert('Failed to save comment to GitHub. It will be lost when you refresh.');
-                    return;
+                    return false; // Indicate save failure
                 }
                 
                 const result = await response.json();
                 console.log('Comment saved to GitHub successfully:', result);
                 
-                // Update cached document content after successful save
-                await updateCachedDocumentContent();
+                // FIXED: Force refresh the document content AND re-render
+                await updateCachedDocumentContentAndRerender();
+                
+                return true; // Indicate save success
                 
             } catch (error) {
                 console.error('Error saving comment to GitHub:', error);
                 console.log('API endpoint not available - comment will be lost on refresh.');
+                return false; // Indicate save failure
             }
+        }
+
+        // FIXED: Update cached document content AND re-render the document
+        async function updateCachedDocumentContentAndRerender() {
+            if (!currentDocument) return;
+            
+            try {
+                console.log('=== Force refreshing and re-rendering after GitHub save ===');
+                
+                const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
+                const cacheBuster = Date.now();
+                const freshContentPath = `/content/${filename}?v=${cacheBuster}&force=${Math.random()}`;
+                
+                console.log('Fetching updated content from:', freshContentPath);
+                
+                const res = await fetch(freshContentPath, {
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
+                
+                if (res.ok) {
+                    const updatedContent = await res.text();
+                    console.log('✓ Fresh content fetched, length:', updatedContent.length);
+                    
+                    // Update the cached document content
+                    currentDocument.content = updatedContent;
+                    currentDocument.fullContent = updatedContent;
+                    
+                    // CRITICAL: Re-parse and re-render the document
+                    console.log('Re-parsing and re-rendering document...');
+                    
+                    // Re-parse footnotes from the updated content
+                    const { content, footnotes } = parseMarkdownWithFootnotes(updatedContent);
+                    currentComments = footnotes;
+                    nextCommentNumber = Math.max(...footnotes.map(f => f.number), 0) + 1;
+                    
+                    // Re-convert to HTML
+                    const htmlContent = markdownToHtml(content);
+                    
+                    // Re-create footnotes section
+                    const regularFootnotes = footnotes.filter(f => !f.isComment);
+                    let footnotesSection = '';
+                    
+                    if (regularFootnotes.length > 0) {
+                        footnotesSection = '<hr style="margin: 2rem 0; border: none; border-top: 1px solid #dee2e6;"><h3>Footnotes</h3>';
+                        regularFootnotes.forEach(footnote => {
+                            footnotesSection += `
+                                <p id="footnote-${footnote.number}">
+                                    <strong>${footnote.number}.</strong> ${footnote.text} 
+                                    <a href="#" class="footnote-back" data-footnote-number="${footnote.number}" title="Return to text">↩</a>
+                                </p>`;
+                        });
+                    }
+                    
+                    // Re-render the document content
+                    document.getElementById('center-panel').innerHTML = `
+                        <article class="document-content" id="document-content">
+                            ${htmlContent}
+                            ${footnotesSection}
+                        </article>
+                    `;
+                    
+                    // Re-add all event handlers
+                    displayComments();
+                    addFootnoteClickHandlers();
+                    addTextSelectionHandlers();
+                    
+                    // Update cache info
+                    const cacheInfoElement = document.getElementById('cache-info');
+                    if (cacheInfoElement) {
+                        cacheInfoElement.textContent = `📄 Refreshed: ${new Date().toLocaleTimeString()}`;
+                        cacheInfoElement.style.color = '#28a745';
+                        cacheInfoElement.title = 'Content refreshed after GitHub save';
+                    }
+                    
+                    console.log('✓ Document fully refreshed and re-rendered after GitHub save');
+                } else {
+                    console.error('Failed to fetch fresh content:', res.status);
+                }
+            } catch (error) {
+                console.error('Error in updateCachedDocumentContentAndRerender:', error);
+            }
+            
+            console.log('=== End force refresh and re-render ===');
         }
 
         // Edit comment
@@ -1672,10 +1832,16 @@
             }
             
             // Save to GitHub
-            await updateCommentInGitHub(oldComment, comment);
+            const updateSuccess = await updateCommentInGitHub(oldComment, comment);
             
-            // Refresh display
-            displayComments();
+            // Refresh display only if update was successful
+            if (updateSuccess !== false) {
+                displayComments();
+            } else {
+                // Revert changes if update failed
+                comment.text = oldComment.text;
+                comment.timestamp = oldComment.timestamp;
+            }
         }
 
         // Update comment in GitHub
@@ -1701,17 +1867,21 @@
                 if (!response.ok) {
                     const errorData = await response.text();
                     console.error('Failed to update comment in GitHub:', response.status, errorData);
-                    return;
+                    alert('Failed to update comment in GitHub.');
+                    return false;
                 }
                 
                 const result = await response.json();
                 console.log('Comment updated in GitHub successfully:', result);
                 
                 // Update cached document content after successful update
-                await updateCachedDocumentContent();
+                await updateCachedDocumentContentAndRerender();
+                
+                return true;
                 
             } catch (error) {
                 console.error('Error updating comment in GitHub:', error);
+                return false;
             }
         }
 
@@ -1722,20 +1892,22 @@
             const comment = currentComments.find(c => c.number === commentNumber);
             if (!comment) return;
             
-            // Remove from array
-            currentComments = currentComments.filter(c => c.number !== commentNumber);
+            // Save to GitHub first
+            const deleteSuccess = await deleteCommentFromGitHub(comment);
             
-            // Remove footnote reference from document
-            const ref = document.querySelector(`[data-comment-number="${commentNumber}"]`);
-            if (ref) {
-                ref.remove();
+            if (deleteSuccess !== false) {
+                // Remove from array only if GitHub delete was successful
+                currentComments = currentComments.filter(c => c.number !== commentNumber);
+                
+                // Remove footnote reference from document
+                const ref = document.querySelector(`[data-comment-number="${commentNumber}"]`);
+                if (ref) {
+                    ref.remove();
+                }
+                
+                // Refresh display
+                displayComments();
             }
-            
-            // Save to GitHub
-            await deleteCommentFromGitHub(comment);
-            
-            // Refresh display
-            displayComments();
         }
 
         // Delete comment from GitHub
@@ -1759,47 +1931,21 @@
                 if (!response.ok) {
                     const errorData = await response.text();
                     console.error('Failed to delete comment from GitHub:', response.status, errorData);
-                    return;
+                    alert('Failed to delete comment from GitHub.');
+                    return false;
                 }
                 
                 const result = await response.json();
                 console.log('Comment deleted from GitHub successfully:', result);
                 
                 // Update cached document content after successful delete
-                await updateCachedDocumentContent();
+                await updateCachedDocumentContentAndRerender();
+                
+                return true;
                 
             } catch (error) {
                 console.error('Error deleting comment from GitHub:', error);
-            }
-        }
-
-        // Update cached document content after GitHub changes
-        async function updateCachedDocumentContent() {
-            if (!currentDocument) return;
-            
-            try {
-                console.log('=== Force refreshing after GitHub save ===');
-                
-                const filename = currentDocument.filename || currentDocument.id || `${currentDocument.id}.md`;
-                const cacheBuster = Date.now();
-                const freshContentPath = `/content/${filename}?v=${cacheBuster}&force=${Math.random()}`;
-                
-                const res = await fetch(freshContentPath, {
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    }
-                });
-                
-                if (res.ok) {
-                    const updatedContent = await res.text();
-                    currentDocument.content = updatedContent;
-                    currentDocument.fullContent = updatedContent;
-                    console.log('✓ Content forcefully refreshed after save');
-                }
-            } catch (error) {
-                console.error('Error force refreshing:', error);
+                return false;
             }
         }
         
