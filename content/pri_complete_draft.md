@@ -7,7 +7,7 @@ node: "pri-core"
 status: "developing"
 date: 06.22.2025
 tags: main_research, support_draft
----
+---[^7]
 
 # The Pattern-Matching Confusion
 
@@ -286,3 +286,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
 
 [^6]: question:why?:florin.cojocariu@s.unibuc.ro:1758261372965
+
+[^7]: clarification:some clarification needed:florin.cojocariu@s.unibuc.ro:1758273471843
