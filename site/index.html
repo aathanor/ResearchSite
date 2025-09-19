@@ -780,22 +780,31 @@
         }
 
         // Load documents from GitHub/JSON
+        // In your site's JavaScript (likely in index.html <script> or js/app.js):
+        // Replace the static fetch with dynamic API call
         async function loadDocuments() {
-            try {
-                console.log('Attempting to fetch documents from //api/list-documents...');
-                const res = await fetch('//api/list-documents');
-                if (!res.ok) {
-                    console.error('Fetch failed with status:', res.status, res.statusText);
-                    throw new Error(`Documents fetch failed: ${res.status} ${res.statusText}`);
-                }
-                const docs = await res.json();
-                console.log('Documents loaded:', docs);
-                return docs;
-            } catch (err) {
-                console.error('Error loading documents:', err);
-                return [];
+        try {
+            const response = await fetch('/api/list-documents');
+            if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
             }
+            const data = await response.json();
+            if (data.error) {
+            throw new Error(data.error);
+            }
+            console.log('Loaded data:', data); // Debug: check documents and tree
+            // Existing code to build sidebar/tree from data.documents and data.tree
+            // e.g., buildTree(data.tree);
+            // If empty, update UI to show "No documents" - but with files, should populate
+        } catch (error) {
+            console.error('Failed to load documents:', error);
+            // Update sidebar to show error, e.g.:
+            document.getElementById('document-tree').innerHTML = '<p>Error loading documents: ' + error.message + '</p>';
         }
+        }
+
+        // Call loadDocuments() on page load
+        document.addEventListener('DOMContentLoaded', loadDocuments);
 
         // Fetch user email
         async function fetchUserEmail() {
