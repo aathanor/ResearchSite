@@ -1672,7 +1672,7 @@
             console.log('=== End insertFootnoteAtRange ===');
         }
 
-        // FIXED: Save comment to GitHub and handle reload properly
+        // FIXED: Save comment to GitHub with rebuild prevention options
         async function saveCommentToGitHub(comment) {
             try {
                 const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
@@ -1688,7 +1688,11 @@
                         footnoteRef: `[^${comment.number}]`,
                         selectedText: comment.selectedText,
                         type: 'footnote',
-                        action: 'add'
+                        action: 'add',
+                        // NEW: Add flags to prevent rebuild
+                        preventRebuild: true,
+                        skipDeploy: true,
+                        commentOnly: true
                     })
                 });
                 
@@ -1702,8 +1706,10 @@
                 const result = await response.json();
                 console.log('Comment saved to GitHub successfully:', result);
                 
-                // FIXED: Only refresh if not disabled and refresh is safe
+                // CRITICAL: Always try to read updated content immediately 
+                // This works because GitHub API is updated instantly, even if static site hasn't rebuilt
                 if (!window.disableAutoRefresh) {
+                    console.log('Attempting immediate refresh from GitHub API...');
                     await updateCachedDocumentContentAndRerender();
                 } else {
                     console.log('Auto-refresh disabled - comment saved to GitHub but UI not refreshed');
@@ -1816,13 +1822,50 @@
             try {
                 console.log('Fetching directly from GitHub API for:', filename);
                 
-                // Try multiple possible GitHub API endpoints
-                const githubEndpoints = [
-                    `/api/github/content/${filename}`,  // Custom API endpoint you might have
-                    `/api/content/${filename}`,         // Alternative custom endpoint
+                // FIXED: Use your actual repo details by default
+                const GITHUB_OWNER = 'aathanor';
+                const GITHUB_REPO = 'ResearchSite';
+                
+                // Try GitHub raw URLs first (fastest and most reliable)
+                const githubRawUrls = [
+                    `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/content/${filename}`,
+                    `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/master/content/${filename}`,
                 ];
                 
-                // Try custom API endpoints first (fastest)
+                console.log('Trying GitHub raw URLs first...');
+                
+                for (const rawUrl of githubRawUrls) {
+                    try {
+                        console.log('Trying GitHub raw URL:', rawUrl);
+                        
+                        const response = await fetch(rawUrl, {
+                            headers: {
+                                'Cache-Control': 'no-cache'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            const content = await response.text();
+                            if (isMarkdownContent(content)) {
+                                console.log('✅ Successfully fetched from GitHub raw:', rawUrl);
+                                return content;
+                            }
+                        } else {
+                            console.log('GitHub raw URL failed with status:', response.status);
+                        }
+                    } catch (rawError) {
+                        console.log('GitHub raw URL error:', rawUrl, rawError.message);
+                    }
+                }
+                
+                // Try custom API endpoints as fallback
+                const githubEndpoints = [
+                    `/api/github/content/${filename}`,  
+                    `/api/content/${filename}`,         
+                ];
+                
+                console.log('Trying custom API endpoints...');
+                
                 for (const endpoint of githubEndpoints) {
                     try {
                         console.log('Trying GitHub API endpoint:', endpoint);
@@ -1859,59 +1902,6 @@
                         }
                     } catch (endpointError) {
                         console.log('GitHub API endpoint failed:', endpoint, endpointError.message);
-                    }
-                }
-                
-                // If no custom endpoints work, try direct GitHub raw content
-                console.log('Custom endpoints failed, trying direct GitHub raw content...');
-                
-                // Use configured GitHub details if available
-                const config = window.GITHUB_CONFIG;
-                const possibleGitHubRawUrls = [];
-                
-                if (config && config.owner && config.repo) {
-                    console.log('Using configured GitHub repo:', `${config.owner}/${config.repo}`);
-                    possibleGitHubRawUrls.push(
-                        `https://raw.githubusercontent.com/${config.owner}/${config.repo}/main/content/${filename}`,
-                        `https://raw.githubusercontent.com/${config.owner}/${config.repo}/master/content/${filename}`,
-                        `https://raw.githubusercontent.com/${config.owner}/${config.repo}/main/${filename}`,
-                        `https://raw.githubusercontent.com/${config.owner}/${config.repo}/master/${filename}`
-                    );
-                } else {
-                    console.log('No GitHub configuration found. Run: configureGitHub("your-username", "your-repo")');
-                    // Add some common patterns as fallback
-                    possibleGitHubRawUrls.push(
-                        `https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/content/${filename}`,
-                        `https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/master/content/${filename}`,
-                        // You should replace these with your actual repo details
-                    );
-                }
-                
-                for (const rawUrl of possibleGitHubRawUrls) {
-                    try {
-                        console.log('Trying GitHub raw URL:', rawUrl);
-                        
-                        // Skip placeholder URLs
-                        if (rawUrl.includes('YOUR_USERNAME') || rawUrl.includes('YOUR_REPO')) {
-                            console.log('Skipping placeholder URL');
-                            continue;
-                        }
-                        
-                        const response = await fetch(rawUrl, {
-                            headers: {
-                                'Cache-Control': 'no-cache'
-                            }
-                        });
-                        
-                        if (response.ok) {
-                            const content = await response.text();
-                            if (isMarkdownContent(content)) {
-                                console.log('✅ Successfully fetched from GitHub raw:', rawUrl);
-                                return content;
-                            }
-                        }
-                    } catch (rawError) {
-                        console.log('GitHub raw URL failed:', rawUrl, rawError.message);
                     }
                 }
                 
@@ -2644,23 +2634,159 @@ export default {
             console.log('\nUsage: testGitHubRaw("your-username", "your-repo", "main")');
         };
 
-        // Function to disable/enable auto-refresh
-        window.toggleAutoRefresh = function(enable = null) {
-            if (enable === null) {
-                window.disableAutoRefresh = !window.disableAutoRefresh;
-            } else {
-                window.disableAutoRefresh = !enable;
+        // Function to immediately disable rebuilds (emergency fix)
+        window.stopRebuilds = function() {
+            console.log('🚨 EMERGENCY: Disabling auto-refresh to prevent rebuilds');
+            window.disableAutoRefresh = true;
+            
+            // Update UI to show rebuilds are stopped
+            const cacheInfoElement = document.getElementById('cache-info');
+            if (cacheInfoElement) {
+                cacheInfoElement.textContent = `📄 Rebuilds STOPPED`;
+                cacheInfoElement.style.color = '#dc3545';
+                cacheInfoElement.title = 'Auto-refresh disabled to prevent Cloudflare rebuilds';
             }
             
-            const status = window.disableAutoRefresh ? 'DISABLED' : 'ENABLED';
-            console.log('Auto-refresh is now:', status);
+            console.log('✅ Rebuilds stopped. Comments will save to GitHub but not appear until page refresh.');
+            console.log('📖 See console for permanent fix instructions.');
             
-            // Update cache info to show auto-refresh status
-            const cacheInfoElement = document.getElementById('cache-info');
-            if (cacheInfoElement && window.disableAutoRefresh) {
-                cacheInfoElement.textContent = `📄 Auto-refresh OFF`;
-                cacheInfoElement.style.color = '#ffc107';
-                cacheInfoElement.title = 'Auto-refresh disabled - comments save to GitHub but UI not refreshed';
+            // Show fix instructions
+            console.log(`
+🔧 PERMANENT SOLUTIONS TO STOP REBUILDS:
+
+=== OPTION 1: Modify save-comment.js Worker (Recommended) ===
+In your save-comment.js Cloudflare Worker, add one of these fixes:
+
+A) Use [skip ci] in commit messages:
+   Change the commit message to:
+   message: \`Add comment to \${actualFilename} [skip ci]\`
+   
+B) Use a comments branch:
+   // Get current main branch SHA
+   const mainRef = await fetch(\`https://api.github.com/repos/\${env.GITHUB_OWNER}/\${env.GITHUB_REPO}/git/refs/heads/main\`);
+   const mainSha = (await mainRef.json()).object.sha;
+   
+   // Create/update comments branch
+   const branchRef = \`refs/heads/comments\`;
+   await fetch(\`https://api.github.com/repos/\${env.GITHUB_OWNER}/\${env.GITHUB_REPO}/git/refs\`, {
+     method: 'POST',
+     body: JSON.stringify({
+       ref: branchRef,
+       sha: mainSha
+     })
+   });
+   
+   // Then commit to comments branch instead of main
+
+=== OPTION 2: Cloudflare Pages Settings ===
+1. Go to Cloudflare Dashboard → Pages → Your Site
+2. Settings → Builds & deployments
+3. Add "Build hook" instead of auto-deploy
+4. Or set "Ignore builds" pattern: **/content/*.md
+
+=== OPTION 3: Separate Comment Storage ===
+Store comments in KV/D1/external database instead of markdown files.
+
+=== OPTION 4: Manual Refresh Only ===
+Keep current setup but users manually refresh to see comments.
+
+Run stopRebuilds() immediately if rebuilds are happening!
+            `);
+        };
+
+        // Enhanced debug function with rebuild detection
+        window.debugRebuilds = function() {
+            console.log('=== REBUILD DEBUGGING ===');
+            console.log('Current auto-refresh status:', window.disableAutoRefresh ? 'DISABLED' : 'ENABLED');
+            
+            // Test if a rebuild might be triggered
+            console.log('\n🔍 Checking current save-comment API...');
+            console.log('When you make a comment, check Network tab for:');
+            console.log('- POST to /api/save-comment');
+            console.log('- Look for "preventRebuild", "skipDeploy" flags in request');
+            
+            console.log('\n📋 To check if rebuild triggered:');
+            console.log('1. Open Cloudflare Pages dashboard');
+            console.log('2. Watch "Recent deployments" section');
+            console.log('3. Make a test comment');
+            console.log('4. See if new deployment appears');
+            
+            console.log('\n⚡ Quick fix: run stopRebuilds() to disable immediately');
+            
+            // Show current request payload that would be sent
+            if (currentDocument) {
+                const sampleComment = {
+                    number: 999,
+                    type: 'question',
+                    text: 'test comment',
+                    author: userEmail,
+                    timestamp: Date.now()
+                };
+                
+                const samplePayload = {
+                    docId: currentDocument.id,
+                    comment: `[^999]: question:test comment:${userEmail}:${Date.now()}`,
+                    footnoteRef: '[^999]',
+                    selectedText: 'sample text',
+                    type: 'footnote',
+                    action: 'add',
+                    preventRebuild: true,
+                    skipDeploy: true,
+                    commentOnly: true
+                };
+                
+                console.log('\n📤 Current request payload would be:');
+                console.log(JSON.stringify(samplePayload, null, 2));
+            }
+            
+            console.log('\n=== END REBUILD DEBUGGING ===');
+        };
+
+        // Test function to make a safe comment without rebuilding
+        window.testCommentNoRebuild = async function() {
+            if (!currentDocument) {
+                console.log('No document loaded');
+                return;
+            }
+            
+            console.log('🧪 Testing comment save without rebuild...');
+            
+            const testComment = {
+                docId: currentDocument.id,
+                comment: `[^9999]: approved:TEST COMMENT - SAFE TO DELETE:${userEmail}:${Date.now()}`,
+                footnoteRef: '[^9999]',
+                selectedText: 'test',
+                type: 'footnote',
+                action: 'add',
+                preventRebuild: true,
+                skipDeploy: true,
+                commentOnly: true,
+                testMode: true
+            };
+            
+            console.log('Sending test comment:', testComment);
+            
+            try {
+                const response = await fetch('/api/save-comment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testComment)
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('✅ Test comment saved successfully');
+                    console.log('Result:', result);
+                    console.log('🔍 Check Cloudflare Pages for rebuild activity');
+                } else {
+                    const error = await response.text();
+                    console.log('❌ Test comment failed');
+                    console.log('Error:', error);
+                }
+            } catch (error) {
+                console.log('❌ Test comment error:', error);
             }
         };
     </script>
