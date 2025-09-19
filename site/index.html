@@ -616,7 +616,7 @@
         <h1>Pattern Constellations Research</h1>
         <div class="header-actions">
             <span id="user-info" class="header-info">👤 Loading...</span>
-            <span id="cache-info" class="header-info">📄 Ready</span>
+            <span id="cache-info" class="header-info">🔄 Ready</span>
             <button class="btn-overview" onclick="showOverview()">📊 Project Overview</button>
         </div>
     </div>
@@ -971,7 +971,7 @@
                 console.log('GitHub content loaded, length:', text.length);
                 
                 // Check for and fix encoding issues
-                if (text.includes('Ãƒ') || text.includes('Ã¢â‚¬')) {
+                if (text.includes('ÃƒÆ'') || text.includes('ÃƒÂ¢Ã¢â€šÂ¬')) {
                     console.log('Fixing encoding issues...');
                     text = fixEncodingIssues(text);
                 }
@@ -1044,58 +1044,36 @@
             }
         }
 
-        // Fetch content directly from existing GitHub API endpoint (no cache)
+        // Fetch content directly from GitHub using new get-content endpoint
         async function fetchContentDirectlyFromGitHub(filename) {
             try {
-                console.log('Fetching from existing GitHub API for:', filename);
+                console.log('Fetching from GitHub via get-content API for:', filename);
                 
-                // Your existing API endpoint
-                const endpoint = `/api/github/content/${filename}`;
-                
-                console.log('Trying endpoint:', endpoint);
-                
-                const response = await fetch(endpoint, {
+                const response = await fetch(`/api/get-content?filename=${encodeURIComponent(filename)}`, {
+                    method: 'GET',
                     headers: {
                         'Cache-Control': 'no-cache'
                     }
                 });
                 
                 if (response.ok) {
-                    const contentType = response.headers.get('Content-Type');
-                    console.log('Response content-type:', contentType);
-                    
-                    // Try as plain text first, then JSON if needed
-                    let content;
-                    try {
-                        if (contentType && contentType.includes('application/json')) {
-                            const result = await response.json();
-                            // Handle GitHub API JSON response
-                            content = result.encoding === 'base64' 
-                                ? atob(result.content.replace(/\n/g, ''))
-                                : result.content;
-                        } else {
-                            // Handle plain text response
-                            content = await response.text();
-                        }
-                    } catch (parseError) {
-                        console.log('JSON parse failed, trying as plain text');
-                        content = await response.text();
-                    }
-                    
-                    if (content && isMarkdownContent(content)) {
-                        console.log('✅ Successfully fetched from API endpoint');
-                        return content;
+                    const result = await response.json();
+                    if (result.success && result.content) {
+                        console.log('✅ Successfully fetched from GitHub via get-content API');
+                        console.log('Content length:', result.content.length);
+                        return result.content;
                     } else {
-                        console.log('API returned non-markdown content');
+                        console.error('API returned success=false or no content:', result);
                         return null;
                     }
                 } else {
-                    console.log('API endpoint failed:', response.status);
+                    const errorData = await response.text();
+                    console.error('Get-content API failed:', response.status, errorData);
                     return null;
                 }
                 
             } catch (error) {
-                console.error('Error fetching from API:', error);
+                console.error('Error fetching from get-content API:', error);
                 return null;
             }
         }
@@ -1103,11 +1081,11 @@
         // Fix encoding issues
         function fixEncodingIssues(text) {
             // Common encoding issue fixes
-            text = text.replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬/g, '—'); // em dash
-            text = text.replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã…"/g, '"'); // smart quotes
-            text = text.replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã‚/g, '"'); // smart quotes
-            text = text.replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢/g, "'"); // smart apostrophe
-            text = text.replace(/ÃƒÂ¯Ã‚Â¿Ã‚Â½/g, ""); // replacement character
+            text = text.replace(/ÃƒÆ'Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬/g, '—'); // em dash
+            text = text.replace(/ÃƒÆ'Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦"/g, '"'); // smart quotes
+            text = text.replace(/ÃƒÆ'Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€š/g, '"'); // smart quotes
+            text = text.replace(/ÃƒÆ'Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢/g, "'"); // smart apostrophe
+            text = text.replace(/ÃƒÆ'Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½/g, ""); // replacement character
             return text;
         }
 
@@ -1207,7 +1185,7 @@
                     const author = parts[2].trim();
                     const timestamp = parseInt(parts[3].trim());
                     
-                    console.log('✓ Parsed as comment footnote:', { type, text, author, timestamp });
+                    console.log('✅ Parsed as comment footnote:', { type, text, author, timestamp });
                     
                     footnoteDefinitions[ref] = {
                         ref: ref,
@@ -1220,7 +1198,7 @@
                     };
                 } else {
                     // This is a regular footnote
-                    console.log('✓ Parsed as regular footnote');
+                    console.log('✅ Parsed as regular footnote');
                     
                     footnoteDefinitions[ref] = {
                         ref: ref,
@@ -1680,7 +1658,7 @@
                     // Insert the footnote reference between the split nodes
                     textNode.parentNode.insertBefore(footnoteRef, afterText);
                     
-                    console.log('✓ Successfully inserted footnote reference in text node');
+                    console.log('✅ Successfully inserted footnote reference in text node');
                     
                 } else {
                     // We're ending in an element node - insert as child
@@ -1694,7 +1672,7 @@
                         range.endContainer.appendChild(footnoteRef);
                     }
                     
-                    console.log('✓ Successfully inserted footnote reference in element node');
+                    console.log('✅ Successfully inserted footnote reference in element node');
                 }
                 
             } catch (error) {
@@ -1705,7 +1683,7 @@
                 try {
                     range.collapse(false); // Move to end of selection
                     range.insertNode(footnoteRef);
-                    console.log('✓ Fallback insertion successful');
+                    console.log('✅ Fallback insertion successful');
                 } catch (fallbackError) {
                     console.error('Even fallback insertion failed:', fallbackError);
                     alert('Failed to insert footnote reference. The comment was still saved to GitHub.');
