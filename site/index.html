@@ -782,8 +782,8 @@
         // Load documents from GitHub/JSON
         async function loadDocuments() {
             try {
-                console.log('Attempting to fetch documents from /data/documents.json...');
-                const res = await fetch('/data/documents.json');
+                console.log('Attempting to fetch documents from //api/list-documents...');
+                const res = await fetch('//api/list-documents');
                 if (!res.ok) {
                     console.error('Fetch failed with status:', res.status, res.statusText);
                     throw new Error(`Documents fetch failed: ${res.status} ${res.statusText}`);
