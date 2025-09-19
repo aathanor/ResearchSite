@@ -1,7 +1,7 @@
 ---
 title: "Pattern-Recognition Unity: Dissolving the Pattern/Recognition Distinction"
 author: Florin Cojocariu
-tags:["pattern-constellations", "pattern-recognition-unity"]
+tags: ["pattern-constellations", "pattern-recognition-unity"]
 lens: ["philosophy", "cognition"]
 status: "developing"
 date: 06.22.2025
