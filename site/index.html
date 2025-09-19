@@ -81,6 +81,7 @@
             border-right: 1px solid #dee2e6;
             overflow-y: auto;
             padding: 15px;
+            
         }
        
         .lens-tabs {
@@ -782,6 +783,13 @@
             }
         }
 
+        const leftPanel = document.querySelector('.left-panel');
+        let treeDiv = document.getElementById('document-tree');
+        if (!treeDiv) {
+            treeDiv = document.createElement('div');
+            treeDiv.id = 'document-tree';
+            leftPanel.appendChild(treeDiv);
+        }
         // Load documents from GitHub/JSON
         // In your site's JavaScript (likely in index.html <script> or js/app.js):
         // Replace the static fetch with dynamic API call
