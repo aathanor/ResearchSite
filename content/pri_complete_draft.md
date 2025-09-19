@@ -21,7 +21,7 @@ Pattern-matching involves:
 * Decision algorithms
 * Temporal duration
 
-Many computer software algorithms exemplify pattern-matching strategies. Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines. Expert systems search through rule databases to find matching conditions.[^1]
+Many computer software algorithms exemplify pattern-matching strategies.[^6] Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines. Expert systems search through rule databases to find matching conditions.[^1]
 
 However, conflating all pattern-matching with pattern-recognition may obscure important distinctions about the nature of cognition.
 
@@ -288,3 +288,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 : question:Is this one kept after the last word of the selection?:florin.cojocariu@s.unibuc.ro:1758088587970
 
 : clarification:New comment after lots of code fixes:florin.cojocariu@s.unibuc.ro:1758092663275
+
+[^6]: question:why?:florin.cojocariu@s.unibuc.ro:1758261372965
