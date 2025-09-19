@@ -1387,11 +1387,36 @@
                 // Group documents by their broad category tags
                 const documentsByCategory = {};
                 
+                // Mapping from specific tags to broad categories
+                const tagToCategoryMap = {
+                    'methodological-precautions': 'core-theory',
+                    'pattern-constellations': 'core-theory',
+                    'pattern-recognition-unity': 'core-theory',
+                    'learning-vs-inference': 'core-theory',
+                    'hopfield-networks': 'core-theory',
+                    'animal-cognition': 'core-theory',
+                    'language-patterns': 'core-theory',
+                    
+                    'reference-problem': 'problem-dissolutions',
+                    'hard-problem': 'problem-dissolutions',
+                    'symbol-grounding': 'problem-dissolutions',
+                    'composition-problem': 'problem-dissolutions',
+                    
+                    'semantic-embeddings': 'empirical-evidence',
+                    'llms-linguistic-animals': 'empirical-evidence',
+                    'neuroscience-evidence': 'empirical-evidence',
+                    'vision-animal-model': 'empirical-evidence',
+                    
+                    'eastern-philosophy': 'connections',
+                    'analytical-phenomenology': 'connections',
+                    'transformer-architecture': 'connections'
+                };
+                
                 Object.entries(filteredDocs).forEach(([docId, doc]) => {
                     const docTags = doc.tags || [];
                     let assignedCategory = null;
                     
-                    // Find the broad category tag (check in order of priority)
+                    // First, look for explicit broad category tags
                     for (const categoryTag of ['core-theory', 'problem-dissolutions', 'empirical-evidence', 'connections', 'methodology']) {
                         if (docTags.includes(categoryTag)) {
                             assignedCategory = categoryTag;
@@ -1399,13 +1424,25 @@
                         }
                     }
                     
-                    // Only add if it has a recognized category (skip uncategorized documents)
-                    if (assignedCategory) {
-                        if (!documentsByCategory[assignedCategory]) {
-                            documentsByCategory[assignedCategory] = [];
+                    // If no broad category found, infer from specific methodology tags
+                    if (!assignedCategory) {
+                        for (const tag of docTags) {
+                            if (tagToCategoryMap[tag]) {
+                                assignedCategory = tagToCategoryMap[tag];
+                                break;
+                            }
                         }
-                        documentsByCategory[assignedCategory].push(doc);
                     }
+                    
+                    // If still no category, default to methodology (instead of excluding)
+                    if (!assignedCategory) {
+                        assignedCategory = 'methodology';
+                    }
+                    
+                    if (!documentsByCategory[assignedCategory]) {
+                        documentsByCategory[assignedCategory] = [];
+                    }
+                    documentsByCategory[assignedCategory].push(doc);
                 });
 
                 console.log('Documents grouped by category:', documentsByCategory);
