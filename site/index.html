@@ -751,6 +751,9 @@
         let currentCommentRange = null;
         let currentCommentType = '';
 
+        let globalData = null;
+        let currentLens = 'All';
+
         // Initialize the application
         async function init() {
             if (isInitialized) return;
@@ -793,7 +796,7 @@
             } catch (error) {
                 console.error('Failed to load documents:', error);
                 const treeDiv = document.getElementById('document-tree');
-                if (treeDiv) treeDiv.innerHTML = `<p>No documents found - check console for details</p>`;
+                if (treeDiv) treeDiv.innerHTML = '<p>No documents found - check console for details</p>';
             }
         }
 
@@ -809,11 +812,13 @@
                 return;
             }
 
+            // Normalize lens to array for filter
             const filteredDocs = Object.fromEntries(
                 Object.entries(globalData.documents).filter(([, doc]) => {
-                let docLens = doc.lens || [];
-                if (!Array.isArray(docLens)) docLens = [docLens];
-                return currentLens === 'All' || docLens.some(l => l.toLowerCase() === currentLens.toLowerCase());
+                    let docLens = doc.lens || [];
+                    if (typeof docLens === 'string') docLens = [docLens];
+                    if (!Array.isArray(docLens)) docLens = [];
+                    return currentLens === 'All' || docLens.some(l => l.toLowerCase() === currentLens.toLowerCase());
                 })
             );
 
@@ -822,14 +827,23 @@
                 return;
             }
 
+            // Build filtered tree (recursive inclusion if has docs or children with docs)
             const filteredTree = {};
-            Object.values(globalData.tree).forEach(node => {
+            const addNode = (nodeId) => {
+                if (filteredTree[nodeId]) return;
+                const node = globalData.tree[nodeId];
+                if (!node) return;
                 const filteredNodeDocs = node.documents.filter(id => filteredDocs[id]);
-                if (filteredNodeDocs.length > 0 || node.children.some(childId => filteredTree[childId])) {
-                filteredTree[node.id] = { ...node, documents: filteredNodeDocs };
+                let hasContent = filteredNodeDocs.length > 0;
+                node.children.forEach(childId => addNode(childId));
+                hasContent = hasContent || node.children.some(childId => filteredTree[childId]);
+                if (hasContent) {
+                filteredTree[nodeId] = { ...node, documents: filteredNodeDocs };
                 }
-            });
+            };
+            Object.keys(globalData.tree).forEach(addNode); // Build from all to include dependencies
 
+            // Find roots
             const roots = Object.values(filteredTree).filter(node => !node.parent || !filteredTree[node.parent]);
 
             if (roots.length === 0) {
@@ -837,6 +851,7 @@
                 return;
             }
 
+            // Build UL recursively
             function buildUl(nodeId) {
                 const node = filteredTree[nodeId];
                 if (!node) return null;
@@ -851,14 +866,19 @@
                 });
                 node.documents.forEach(docId => {
                 const doc = filteredDocs[docId];
-                const docLi = document.createElement('li');
-                docLi.className = 'document-item';
-                const a = document.createElement('a');
-                a.href = `#${doc.id.replace('.md', '').replace(/\s/g, '-')}`;
-                a.textContent = doc.title;
-                a.onclick = e => { e.preventDefault(); loadDocumentContent(doc.id); };
-                docLi.appendChild(a);
-                ul.appendChild(docLi);
+                if (doc) {
+                    const docLi = document.createElement('li');
+                    docLi.className = 'document-item';
+                    const a = document.createElement('a');
+                    a.href = `#${doc.id.replace('.md', '')}`;
+                    a.textContent = doc.title || doc.id.replace('.md', '').replace(/[-_]/g, ' ');
+                    a.addEventListener('click', e => {
+                    e.preventDefault();
+                    loadDocumentContent(doc.id);
+                    });
+                    docLi.appendChild(a);
+                    ul.appendChild(docLi);
+                }
                 });
                 return ul;
             }
@@ -957,111 +977,121 @@
         // Build left panel with documents from GitHub
         async function buildLeftPanel() {
             const leftPanel = document.querySelector('.left-panel');
+            const treeDiv = document.getElementById('document-tree');
+            if (!treeDiv) {
+                console.error('Element #document-tree not found');
+                return;
+            }
             leftPanel.querySelectorAll('.doc-category, .error-message').forEach(el => el.remove());
-
+            treeDiv.innerHTML = ''; // Clear tree specifically
             try {
                 const docsData = await loadDocuments();
                 console.log('Raw documents data:', docsData);
-                
-                if (!docsData || (!docsData.documents && !Array.isArray(docsData))) {
-                    const errorMsg = document.createElement('div');
-                    errorMsg.className = 'error-message';
-                    errorMsg.textContent = 'No documents found - check console for details';
-                    leftPanel.appendChild(errorMsg);
-                    return;
+                if (!docsData || !docsData.documents || !docsData.tree) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+                errorMsg.textContent = 'No documents found - check console for details';
+                treeDiv.appendChild(errorMsg);
+                return;
                 }
-                
-                // Handle different possible document structures
-                let processedDocs = [];
-                if (docsData.documents) {
-                    processedDocs = Object.values(docsData.documents);
-                } else if (Array.isArray(docsData)) {
-                    processedDocs = docsData;
-                } else {
-                    processedDocs = Object.values(docsData);
+                // Handle documents and tree
+                const documents = docsData.documents;
+                const tree = docsData.tree;
+                console.log('Processed documents:', documents);
+                if (Object.keys(documents).length === 0) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+                errorMsg.textContent = 'No documents available';
+                treeDiv.appendChild(errorMsg);
+                return;
                 }
-                
-                console.log('Processed documents:', processedDocs);
-                
-                if (processedDocs.length === 0) {
-                    const errorMsg = document.createElement('div');
-                    errorMsg.className = 'error-message';
-                    errorMsg.textContent = 'No documents available';
-                    leftPanel.appendChild(errorMsg);
-                    return;
+                // Filter by currentLens
+                const filteredDocs = Object.fromEntries(
+                Object.entries(documents).filter(([, doc]) => {
+                    let docLens = doc.lens || [];
+                    if (typeof docLens === 'string') docLens = [docLens];
+                    if (!Array.isArray(docLens)) docLens = [];
+                    return currentLens === 'All' || docLens.some(l => l.toLowerCase() === currentLens.toLowerCase());
+                })
+                );
+                if (Object.keys(filteredDocs).length === 0) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+                errorMsg.textContent = 'No documents for selected lens';
+                treeDiv.appendChild(errorMsg);
+                return;
                 }
-
-                // Group documents by category
-                const categories = {};
-                processedDocs.forEach(doc => {
-                    const cat = doc.frontmatter?.category || 
-                              doc.category || 
-                              doc.meta?.category ||
-                              'uncategorized';
-                    if (!categories[cat]) categories[cat] = [];
-                    categories[cat].push(doc);
+                // Build filtered tree
+                const filteredTree = {};
+                Object.values(tree).forEach(node => {
+                const filteredNodeDocs = node.documents.filter(id => filteredDocs[id]);
+                if (filteredNodeDocs.length > 0 || node.children.some(childId => filteredTree[childId])) {
+                    filteredTree[node.id] = { ...node, documents: filteredNodeDocs };
+                }
                 });
-                
-                console.log('Categories:', categories);
-
-                // Build UI for each category
-                Object.keys(categories).sort().forEach(cat => {
-                    const categoryDiv = document.createElement('div');
-                    categoryDiv.className = 'doc-category';
-                    
-                    const h3 = document.createElement('h3');
-                    h3.textContent = cat.toUpperCase();
-                    categoryDiv.appendChild(h3);
-                    
-                    categories[cat].forEach(doc => {
-                        const item = document.createElement('div');
-                        item.className = 'document-item';
-                        item.dataset.id = doc.id;
-                        
-                        const lenses = doc.frontmatter?.lens || doc.lens || doc.lenses || doc.tags || [];
-                        item.dataset.lenses = Array.isArray(lenses) ? lenses.join(' ') : '';
-                        
-                        const title = doc.frontmatter?.title || 
-                                    doc.title || 
-                                    doc.name ||
-                                    doc.filename ||
-                                    doc.id ||
-                                    'Untitled';
-                        
-                        const status = doc.frontmatter?.status ||
-                                     doc.status || 
-                                     doc.meta?.status ||
-                                     'draft';
-                        
-                        item.innerHTML = `
-                            <div>${title}</div>
-                            <span style="font-size: 11px; color: #6c757d;">• ${status}</span>
-                        `;
-                        
-                        item.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            
-                            console.log('Document clicked:', doc);
-                            document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
-                            item.classList.add('active');
-                            
-                            item.docData = doc;
-                            loadDocument(doc);
-                        });
-                        
-                        categoryDiv.appendChild(item);
+                // Find roots
+                const roots = Object.values(filteredTree).filter(node => !node.parent || !filteredTree[node.parent]);
+                if (roots.length === 0) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+                errorMsg.textContent = 'No root nodes found';
+                treeDiv.appendChild(errorMsg);
+                return;
+                }
+                // Recursive build function for nested structure
+                function buildNode(nodeId) {
+                const node = filteredTree[nodeId];
+                if (!node) return null;
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'doc-category';
+                const h3 = document.createElement('h3');
+                h3.textContent = node.id.replace(/[-_]/g, ' ').toUpperCase();
+                categoryDiv.appendChild(h3);
+                // Add children nodes recursively
+                node.children.forEach(childId => {
+                    const childNode = buildNode(childId);
+                    if (childNode) categoryDiv.appendChild(childNode);
+                });
+                // Add documents
+                node.documents.forEach(docId => {
+                    const doc = filteredDocs[docId];
+                    if (doc) {
+                    const item = document.createElement('div');
+                    item.className = 'document-item';
+                    item.dataset.id = doc.id;
+                    const lenses = doc.lens || [];
+                    item.dataset.lenses = Array.isArray(lenses) ? lenses.join(' ') : '';
+                    const title = doc.title || doc.id.replace('.md', '').replace(/[-_]/g, ' ');
+                    const status = doc.status || 'draft';
+                    item.innerHTML = `
+                        <div>${title}</div>
+                        <span style="font-size: 11px; color: #6c757d;">• ${status}</span>
+                    `;
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Document clicked:', doc);
+                        document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        item.docData = doc;
+                        loadDocument(doc);
                     });
-                    
-                    leftPanel.appendChild(categoryDiv);
+                    categoryDiv.appendChild(item);
+                    }
                 });
-                
+                return categoryDiv;
+                }
+                // Append roots
+                roots.sort((a, b) => a.id.localeCompare(b.id)).forEach(root => {
+                const nodeDiv = buildNode(root.id);
+                if (nodeDiv) treeDiv.appendChild(nodeDiv);
+                });
             } catch (error) {
                 console.error('Error building left panel:', error);
                 const errorMsg = document.createElement('div');
                 errorMsg.className = 'error-message';
                 errorMsg.innerHTML = `Error loading documents<br><small style="font-size:10px;">${error.message}</small>`;
-                leftPanel.appendChild(errorMsg);
+                treeDiv.appendChild(errorMsg);
             }
         }
 
