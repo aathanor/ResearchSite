@@ -783,25 +783,87 @@
         // In your site's JavaScript (likely in index.html <script> or js/app.js):
         // Replace the static fetch with dynamic API call
         async function loadDocuments() {
-        try {
-            const response = await fetch('/api/list-documents');
-            if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+            try {
+                const response = await fetch('/api/list-documents');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                globalData = await response.json();
+                console.log('Loaded data:', globalData);
+                console.log('Raw documents data:', globalData.documents); // Fix: use globalData.documents
+                buildDocumentTree();
+            } catch (error) {
+                console.error('Failed to load documents:', error);
+                document.getElementById('document-tree').innerHTML = `<p>No documents found - check console for details</p>`;
             }
-            const data = await response.json();
-            if (data.error) {
-            throw new Error(data.error);
+        }
+
+        function buildDocumentTree() {
+            const treeDiv = document.getElementById('document-tree');
+            treeDiv.innerHTML = '';
+
+            if (!globalData || !globalData.tree || Object.keys(globalData.tree).length === 0) {
+                treeDiv.innerHTML = '<p>No documents available</p>';
+                return;
             }
-            console.log('Loaded data:', data); // Debug: check documents and tree
-            // Existing code to build sidebar/tree from data.documents and data.tree
-            // e.g., buildTree(data.tree);
-            // If empty, update UI to show "No documents" - but with files, should populate
-        } catch (error) {
-            console.error('Failed to load documents:', error);
-            // Update sidebar to show error, e.g.:
-            document.getElementById('document-tree').innerHTML = '<p>Error loading documents: ' + error.message + '</p>';
-        }
-        }
+
+            const filteredDocs = Object.fromEntries(
+                Object.entries(globalData.documents).filter(([, doc]) => {
+                let docLens = doc.lens || [];
+                if (!Array.isArray(docLens)) docLens = [docLens];
+                return currentLens === 'All' || docLens.some(l => l.toLowerCase() === currentLens.toLowerCase());
+                })
+            );
+
+            if (Object.keys(filteredDocs).length === 0) {
+                treeDiv.innerHTML = '<p>No documents for selected lens</p>';
+                return;
+            }
+
+            const filteredTree = {};
+            Object.values(globalData.tree).forEach(node => {
+                const filteredNodeDocs = node.documents.filter(id => filteredDocs[id]);
+                if (filteredNodeDocs.length > 0 || node.children.some(childId => filteredTree[childId])) {
+                filteredTree[node.id] = { ...node, documents: filteredNodeDocs };
+                }
+            });
+
+            const roots = Object.values(filteredTree).filter(node => !node.parent || !filteredTree[node.parent]);
+
+            if (roots.length === 0) {
+                treeDiv.innerHTML = '<p>No root nodes found</p>';
+                return;
+            }
+
+            function buildUl(nodeId) {
+                const node = filteredTree[nodeId];
+                if (!node) return null;
+                const ul = document.createElement('ul');
+                const nodeLi = document.createElement('li');
+                nodeLi.className = 'node-title';
+                nodeLi.textContent = node.id.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                ul.appendChild(nodeLi);
+                node.children.forEach(childId => {
+                const childUl = buildUl(childId);
+                if (childUl) ul.appendChild(childUl);
+                });
+                node.documents.forEach(docId => {
+                const doc = filteredDocs[docId];
+                const docLi = document.createElement('li');
+                docLi.className = 'document-item';
+                const a = document.createElement('a');
+                a.href = `#${doc.id.replace('.md', '').replace(/\s/g, '-')}`;
+                a.textContent = doc.title;
+                a.onclick = e => { e.preventDefault(); loadDocumentContent(doc.id); };
+                docLi.appendChild(a);
+                ul.appendChild(docLi);
+                });
+                return ul;
+            }
+
+            roots.sort((a, b) => a.id.localeCompare(b.id)).forEach(root => {
+                const ul = buildUl(root.id);
+                if (ul) treeDiv.appendChild(ul);
+            });
+            }
 
         // Call loadDocuments() on page load
         document.addEventListener('DOMContentLoaded', loadDocuments);
@@ -848,6 +910,21 @@
             console.log('=== End user email fetch ===');
         }
 
+        // Add/ensure lens event listeners
+        document.querySelectorAll('#lens-selector button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#lens-selector button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentLens = btn.textContent.trim();
+            buildDocumentTree();
+        });
+        });
+
+        // On load
+        document.addEventListener('DOMContentLoaded', () => {
+        loadDocuments();
+        document.querySelector('#lens-selector button:first-child')?.classList.add('active');
+        });
         // Build left panel with documents from GitHub
         async function buildLeftPanel() {
             const leftPanel = document.querySelector('.left-panel');
