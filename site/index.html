@@ -923,16 +923,12 @@
             buildDocumentTree();
         });
         });
-
-        // Wrap all initialization in DOMContentLoaded to ensure DOM is ready
-        document.addEventListener('DOMContentLoaded', async () => {
-        console.log('DOM fully loaded');
         
         // Set default lens
         const firstLensBtn = document.querySelector('#lens-selector button');
         if (firstLensBtn) firstLensBtn.classList.add('active');
         currentLens = firstLensBtn ? firstLensBtn.textContent.trim() : 'All';
-
+            
         // Add lens event listeners (safe now)
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('#lens-selector button').forEach(btn => {
