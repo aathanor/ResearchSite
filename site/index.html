@@ -788,11 +788,12 @@
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 globalData = await response.json();
                 console.log('Loaded data:', globalData);
-                console.log('Raw documents data:', globalData.documents); // Fix: use globalData.documents
+                console.log('Raw documents data:', globalData.documents);
                 buildDocumentTree();
             } catch (error) {
                 console.error('Failed to load documents:', error);
-                document.getElementById('document-tree').innerHTML = `<p>No documents found - check console for details</p>`;
+                const treeDiv = document.getElementById('document-tree');
+                if (treeDiv) treeDiv.innerHTML = `<p>No documents found - check console for details</p>`;
             }
         }
 
@@ -801,9 +802,8 @@
             if (!treeDiv) {
                 console.error('Element #document-tree not found');
                 return;
-            }                 
+            }
             treeDiv.innerHTML = '';
-
             if (!globalData || !globalData.tree || Object.keys(globalData.tree).length === 0) {
                 treeDiv.innerHTML = '<p>No documents available</p>';
                 return;
@@ -934,24 +934,28 @@
         currentLens = firstLensBtn ? firstLensBtn.textContent.trim() : 'All';
 
         // Add lens event listeners (safe now)
-        document.querySelectorAll('#lens-selector button').forEach(btn => {
-            btn.addEventListener('click', async () => {
-            document.querySelectorAll('#lens-selector button').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentLens = btn.textContent.trim();
-            await loadDocuments(); // Or just buildDocumentTree() if data already loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('#lens-selector button').forEach(btn => {
+                btn.addEventListener('click', async () => {  // Add async if needed for awaits inside
+                document.querySelectorAll('#lens-selector button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentLens = btn.textContent.trim();
+                await loadDocuments();  // Or buildDocumentTree() if data is cached
+                });
             });
+            // Set default active button
+            const firstBtn = document.querySelector('#lens-selector button');
+            if (firstBtn) firstBtn.classList.add('active');
         });
 
-        // Call init or loadDocuments
-        await init(); // If init exists and calls buildLeftPanel/loadDocuments
-        // OR directly:
-        // await loadDocuments();
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('DOM fully loaded');
+            await init();  // This calls buildLeftPanel -> loadDocuments -> buildDocumentTree after elements exist
         });
 
         // On load
         document.addEventListener('DOMContentLoaded', () => {
-        loadDocuments();
+        loadDocuments(); 
         document.querySelector('#lens-selector button:first-child')?.classList.add('active');
         });
         // Build left panel with documents from GitHub
