@@ -17,7 +17,7 @@ This document focuses on two problems:
 
 # The Pattern-Matching Confusion
 
-Much of what passes[^10] for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
+Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
 
 Pattern-matching involves:
 
@@ -295,6 +295,6 @@ Both types of existence are internal to pattern-recognition events - there's no 
 
 : question:Genuine recognition:florin.cojocariu@s.unibuc.ro:1758291192076
 
-[^10]: clarification:Much of what passes:florin.cojocariu@s.unibuc.ro:1758292329266
+: clarification:Much of what passes:florin.cojocariu@s.unibuc.ro:1758292329266
 
 [^11]: question:?:florin.cojocariu@s.unibuc.ro:1758295361535
