@@ -8,7 +8,7 @@ status: "developing"
 date: 06.22.2025
 tags: main_research, support_draft
 ---
-# Abstract
+# Abstract[^6]
 
 This document focuses on two problems:
 * the confusion between pattern-matching (serial, analyical) and pattern-recognition (parallel, gestalt)
@@ -298,3 +298,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 : clarification:Much of what passes:florin.cojocariu@s.unibuc.ro:1758292329266
 
 : question:?:florin.cojocariu@s.unibuc.ro:1758295361535
+
+[^6]: clarification:Maybe a more detailed abstract?:florin.cojocariu@s.unibuc.ro:1758295548409
