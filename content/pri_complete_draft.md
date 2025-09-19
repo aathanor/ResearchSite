@@ -17,7 +17,7 @@ This document focuses on two problems:
 
 # The Pattern-Matching Confusion
 
-Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
+Much of what passes for "pattern recognition" in cognitive science[^7] and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
 
 Pattern-matching involves:
 
@@ -294,3 +294,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
 
 [^6]: clarification:Maybe a more detailed abstract?:florin.cojocariu@s.unibuc.ro:1758295548409
+
+[^7]: question:science?:florin.cojocariu@s.unibuc.ro:1758300219078
