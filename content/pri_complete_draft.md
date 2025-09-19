@@ -27,7 +27,7 @@ Pattern-matching involves:
 * Decision algorithms
 * Temporal duration
 
-Many computer software algorithms exemplify pattern-matching strategies.[^6] Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines. Expert systems search through rule databases to find matching conditions.[^1]
+Many computer software algorithms exemplify pattern-matching strategies. Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines. Expert systems search through rule databases to find matching conditions.[^1]
 
 However, conflating all pattern-matching with pattern-recognition may obscure important distinctions about the nature of cognition.
 
@@ -292,9 +292,3 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^4]: There is abundant neurosciences literature documenting these claims, with Libet et al. (1983), Sato et al. (2024) and Pulvermüller & Fadiga (2010) being some of the most well known. The neurological evidence for PRI is a connected research field but it must be said our approach is and needs to stay philosophical: PRI has important consequences in the Philosophy of Language, Reference Theory and the way we understand LLMs and AI in general.
 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
-
-[^6]: question:why?:florin.cojocariu@s.unibuc.ro:1758261372965
-
-[^7]: clarification:some clarification needed:florin.cojocariu@s.unibuc.ro:1758273471843
-
-[^8]: clarification:A second clarification:florin.cojocariu@s.unibuc.ro:1758273619744
