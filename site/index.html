@@ -966,11 +966,6 @@
             document.querySelector('#lens-selector button')?.classList.add('active');
         });
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('DOM fully loaded');
-            await init();  // This calls buildLeftPanel -> loadDocuments -> buildDocumentTree after elements exist
-        });
-
         // On load
         document.addEventListener('DOMContentLoaded', () => {
         loadDocuments(); 
@@ -2146,6 +2141,11 @@
             if (!menu.contains(e.target)) {
                 menu.classList.remove('show');
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('DOM fully loaded');
+            await init();  // This calls buildLeftPanel -> loadDocuments -> buildDocumentTree after elements exist
         });
     </script>
 </body>
