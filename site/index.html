@@ -468,67 +468,204 @@
        
         .overview-content {
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             width: 90%;
-            height: 80%;
+            max-width: 1000px;
+            height: 85%;
             padding: 30px;
             position: relative;
             overflow: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
        
         .overview-close {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 24px;
+            top: 20px;
+            right: 25px;
+            font-size: 28px;
             cursor: pointer;
             color: #6c757d;
+            transition: color 0.2s;
+        }
+        
+        .overview-close:hover {
+            color: #343a40;
         }
        
         .overview-graph {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            margin-top: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .overview-content {
+                width: 95%;
+                height: 90%;
+                padding: 20px;
+            }
+            
+            .overview-graph {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .overview-close {
+                top: 15px;
+                right: 20px;
+                font-size: 24px;
+            }
         }
        
         .overview-section {
-            border-left: 3px solid #0066cc;
-            padding-left: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.7);
+            border: 2px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .overview-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
        
-        .overview-section h3 {
-            color: #0066cc;
-            margin-bottom: 10px;
+        /* Core Theory - Deep Blue */
+        .overview-section.core-theory {
+            border-color: #2E5BBA;
+            background: linear-gradient(135deg, rgba(46, 91, 186, 0.08), rgba(46, 91, 186, 0.03));
+        }
+        
+        .overview-section.core-theory h3 {
+            color: #2E5BBA;
+        }
+        
+        .overview-section.core-theory .overview-item {
+            background: rgba(46, 91, 186, 0.1);
+            border-color: #2E5BBA;
+            color: #1E3A5F;
+        }
+        
+        /* Problem Dissolutions - Warm Orange */
+        .overview-section.problem-dissolutions {
+            border-color: #E67E22;
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.08), rgba(230, 126, 34, 0.03));
+        }
+        
+        .overview-section.problem-dissolutions h3 {
+            color: #E67E22;
+        }
+        
+        .overview-section.problem-dissolutions .overview-item {
+            background: rgba(230, 126, 34, 0.1);
+            border-color: #E67E22;
+            color: #A0522D;
+        }
+        
+        /* Empirical Evidence - Forest Green */
+        .overview-section.empirical-evidence {
+            border-color: #27AE60;
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.08), rgba(39, 174, 96, 0.03));
+        }
+        
+        .overview-section.empirical-evidence h3 {
+            color: #27AE60;
+        }
+        
+        .overview-section.empirical-evidence .overview-item {
+            background: rgba(39, 174, 96, 0.1);
+            border-color: #27AE60;
+            color: #1E6344;
+        }
+        
+        /* Connections - Rich Purple */
+        .overview-section.connections {
+            border-color: #8E44AD;
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.08), rgba(142, 68, 173, 0.03));
+        }
+        
+        .overview-section.connections h3 {
+            color: #8E44AD;
+        }
+        
+        .overview-section.connections .overview-item {
+            background: rgba(142, 68, 173, 0.1);
+            border-color: #8E44AD;
+            color: #5B2C6F;
         }
        
         .overview-items {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
+            margin-top: 15px;
         }
        
         .overview-item {
-            padding: 8px 15px;
-            background: #f8f9fa;
-            border-radius: 4px;
+            padding: 10px 16px;
+            border-radius: 6px;
             font-size: 13px;
-            border: 1px solid #dee2e6;
+            font-weight: 500;
+            border: 1px solid;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
         }
-       
-        .overview-item.stable {
-            background: #d4edda;
-            border-color: #28a745;
+        
+        .overview-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            opacity: 0.9;
         }
-       
-        .overview-item.developing {
-            background: #cce5ff;
-            border-color: #0066cc;
+        
+        .overview-item:active {
+            transform: translateY(0);
         }
-       
-        .overview-item.draft {
-            background: #fff3cd;
-            border-color: #ffc107;
+        
+        /* Filter indicator in left panel */
+        .filter-indicator {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #1976d2;
+        }
+        
+        .filter-indicator.show {
+            display: flex;
+        }
+        
+        .filter-clear {
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .filter-clear:hover {
+            background: #1976d2;
         }
         
         /* Comment Menu - Pop-up after text selection */
@@ -671,6 +808,13 @@
                 <button class="lens-tab" data-lens="cognition">Cognition</button>
                 <button class="lens-tab" data-lens="cs-math">CS/Math</button>
             </div>
+            
+            <!-- Filter indicator -->
+            <div class="filter-indicator" id="filter-indicator">
+                <span id="filter-text">Filtered by: </span>
+                <button class="filter-clear" onclick="clearCategoryFilter()">Clear Filter</button>
+            </div>
+            
             <!-- Categories will be added dynamically -->
         </div>
        
@@ -699,43 +843,49 @@
     <div class="overview-modal" id="overview-modal">
         <div class="overview-content">
             <span class="overview-close" onclick="hideOverview()">&times;</span>
-            <h2>Project Overview - Pattern Recognition Identity</h2>
+            <h2 style="margin-bottom: 10px; color: #2c3e50; font-size: 28px;">Project Overview</h2>
+            <p style="color: #6c757d; margin-bottom: 25px; font-size: 16px;">Pattern Recognition Identity Research - Click any item to filter documents</p>
            
             <div class="overview-graph">
-                <div class="overview-section">
+                <div class="overview-section core-theory">
                     <h3>Core Theory</h3>
                     <div class="overview-items">
-                        <div class="overview-item developing">PRI Main Thesis</div>
-                        <div class="overview-item developing">Pattern-Recognition Unity</div>
-                        <div class="overview-item draft">Consciousness as Reflexive PR</div>
+                        <div class="overview-item" onclick="filterByCategory('methodological-precautions')">Methodological Precautions</div>
+                        <div class="overview-item" onclick="filterByCategory('pattern-constellations')">Pattern Constellations</div>
+                        <div class="overview-item" onclick="filterByCategory('pattern-recognition-unity')">Pattern-Recognition Unity</div>
+                        <div class="overview-item" onclick="filterByCategory('learning-vs-inference')">Learning vs Inference</div>
+                        <div class="overview-item" onclick="filterByCategory('hopfield-networks')">Hopfield Networks with Hebbian Learning</div>
+                        <div class="overview-item" onclick="filterByCategory('animal-cognition')">Animal Cognition</div>
+                        <div class="overview-item" onclick="filterByCategory('language-patterns')">Language Pattern Constellations</div>
                     </div>
                 </div>
                
-                <div class="overview-section">
+                <div class="overview-section problem-dissolutions">
                     <h3>Problem Dissolutions</h3>
                     <div class="overview-items">
-                        <div class="overview-item stable">Hard Problem</div>
-                        <div class="overview-item developing">Symbol Grounding</div>
-                        <div class="overview-item draft">Quantum Measurement</div>
-                        <div class="overview-item draft">Causation Problem</div>
+                        <div class="overview-item" onclick="filterByCategory('reference-problem')">Reference Problem</div>
+                        <div class="overview-item" onclick="filterByCategory('hard-problem')">Hard Problem</div>
+                        <div class="overview-item" onclick="filterByCategory('symbol-grounding')">Symbol Grounding</div>
+                        <div class="overview-item" onclick="filterByCategory('composition-problem')">Composition Problem</div>
                     </div>
                 </div>
                
-                <div class="overview-section">
+                <div class="overview-section empirical-evidence">
                     <h3>Empirical Evidence</h3>
                     <div class="overview-items">
-                        <div class="overview-item developing">Semantic Embeddings</div>
-                        <div class="overview-item developing">Rod-Cap Structure</div>
-                        <div class="overview-item draft">LLM Analysis</div>
+                        <div class="overview-item" onclick="filterByCategory('semantic-embeddings')">Semantic Embeddings & Rod-Cap Structure</div>
+                        <div class="overview-item" onclick="filterByCategory('llms-linguistic-animals')">LLMs as Linguistic Animals</div>
+                        <div class="overview-item" onclick="filterByCategory('neuroscience-evidence')">Neurosciences Evidence</div>
+                        <div class="overview-item" onclick="filterByCategory('vision-animal-model')">Vision Animal Model</div>
                     </div>
                 </div>
                
-                <div class="overview-section">
+                <div class="overview-section connections">
                     <h3>Connections</h3>
                     <div class="overview-items">
-                        <div class="overview-item stable">Eastern Philosophy</div>
-                        <div class="overview-item developing">Transformer Architecture</div>
-                        <div class="overview-item draft">Hopfield Networks</div>
+                        <div class="overview-item" onclick="filterByCategory('eastern-philosophy')">Eastern Philosophy</div>
+                        <div class="overview-item" onclick="filterByCategory('analytical-phenomenology')">Analytical Phenomenology</div>
+                        <div class="overview-item" onclick="filterByCategory('transformer-architecture')">Transformer Architecture</div>
                     </div>
                 </div>
             </div>
@@ -755,6 +905,106 @@
         let globalData = null;
         let currentLens = 'All';
 
+        // Category filtering functions
+        let currentCategoryFilter = null;
+        
+        function filterByCategory(category) {
+            console.log('Filtering by category:', category);
+            
+            // Add visual feedback to the clicked item
+            event.target.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                event.target.style.transform = '';
+            }, 150);
+            
+            currentCategoryFilter = category;
+            
+            // Hide overview modal with slight delay for visual feedback
+            setTimeout(() => {
+                hideOverview();
+            }, 200);
+            
+            // Show filter indicator
+            const filterIndicator = document.getElementById('filter-indicator');
+            const filterText = document.getElementById('filter-text');
+            
+            // Convert category to display name
+            const displayName = category.replace(/-/g, ' ')
+                .replace(/\b\w/g, c => c.toUpperCase());
+            
+            filterText.textContent = `Filtered by: ${displayName}`;
+            filterIndicator.classList.add('show');
+            
+            // Filter documents in the left panel
+            setTimeout(() => {
+                applyDocumentFilter();
+            }, 300);
+        }
+        
+        function clearCategoryFilter() {
+            console.log('Clearing category filter');
+            currentCategoryFilter = null;
+            
+            // Hide filter indicator
+            const filterIndicator = document.getElementById('filter-indicator');
+            filterIndicator.classList.remove('show');
+            
+            // Show all documents again
+            applyDocumentFilter();
+        }
+        
+        function applyDocumentFilter() {
+            const documents = document.querySelectorAll('.document-item');
+            const currentLens = document.querySelector('.lens-tab.active')?.dataset.lens || 'all';
+            
+            documents.forEach(doc => {
+                let shouldShow = true;
+                
+                // First check lens filter
+                if (currentLens !== 'all') {
+                    const docLenses = doc.dataset.lenses ? doc.dataset.lenses.split(' ') : [];
+                    shouldShow = shouldShow && docLenses.includes(currentLens);
+                }
+                
+                // Then check category filter
+                if (currentCategoryFilter && shouldShow) {
+                    const docData = doc.docData;
+                    if (docData && docData.frontmatter) {
+                        // Check various possible category field names
+                        const categories = docData.frontmatter.categories || 
+                                         docData.frontmatter.category || 
+                                         docData.frontmatter.tags || 
+                                         docData.frontmatter.tag || 
+                                         [];
+                        
+                        const categoryArray = Array.isArray(categories) ? categories : [categories];
+                        const hasCategory = categoryArray.some(cat => {
+                            if (!cat) return false;
+                            const normalizedCat = cat.toLowerCase().replace(/\s+/g, '-');
+                            const normalizedFilter = currentCategoryFilter.toLowerCase();
+                            return normalizedCat === normalizedFilter;
+                        });
+                        
+                        shouldShow = shouldShow && hasCategory;
+                    } else {
+                        // No frontmatter data - hide when category filtering
+                        shouldShow = false;
+                    }
+                }
+                
+                doc.style.display = shouldShow ? 'block' : 'none';
+            });
+            
+            // Update document category visibility
+            const categories = document.querySelectorAll('.doc-category');
+            categories.forEach(category => {
+                const visibleDocs = Array.from(category.querySelectorAll('.document-item')).filter(doc => 
+                    doc.style.display !== 'none'
+                );
+                category.style.display = visibleDocs.length > 0 ? 'block' : 'none';
+            });
+        }
+
         // Initialize the application
         async function init() {
             if (isInitialized) return;
@@ -770,11 +1020,8 @@
                         document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
                         tab.classList.add('active');
                         
-                        const lens = tab.dataset.lens;
-                        document.querySelectorAll('.document-item').forEach(doc => {
-                            const docLenses = doc.dataset.lenses ? doc.dataset.lenses.split(' ') : [];
-                            doc.style.display = (lens === 'all' || docLenses.includes(lens)) ? 'block' : 'none';
-                        });
+                        // Apply both lens and category filters
+                        applyDocumentFilter();
                     });
                 });
                 
