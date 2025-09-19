@@ -8,16 +8,16 @@ status: "developing"
 date: 06.22.2025
 tags: main_research, support_draft
 ---
-# Abstract
+# Abstract[^6]
 
 This document focuses on two problems:
-* the confusion[^11] between pattern-matching (serial, analyical) and pattern-recognition (parallel, gestalt)
+* the confusion between pattern-matching (serial, analyical) and pattern-recognition (parallel, gestalt)
 * the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature.
 * it introducess the concept of _Pattern Constellations_ as a way to understand recognition as the immediate availability of a constellation of patterns that include sensory, motor, emotional, and linguistic aspects.
 
 # The Pattern-Matching Confusion
 
-Much of what passes[^10] for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
+Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
 
 Pattern-matching involves:
 
@@ -33,7 +33,7 @@ However, conflating all pattern-matching with pattern-recognition may obscure im
 
 # The Immediacy of Recognition
 
-Genuine recognition[^9] often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
+Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
 
 This immediacy suggests something qualitatively different from algorithmic matching. Consider the phenomenological difference between:
 
@@ -293,8 +293,10 @@ Both types of existence are internal to pattern-recognition events - there's no 
 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
 
-[^9]: question:Genuine recognition:florin.cojocariu@s.unibuc.ro:1758291192076
+: question:Genuine recognition:florin.cojocariu@s.unibuc.ro:1758291192076
 
-[^10]: clarification:Much of what passes:florin.cojocariu@s.unibuc.ro:1758292329266
+: clarification:Much of what passes:florin.cojocariu@s.unibuc.ro:1758292329266
 
-[^11]: question:?:florin.cojocariu@s.unibuc.ro:1758295361535
+: question:?:florin.cojocariu@s.unibuc.ro:1758295361535
+
+[^6]: clarification:Maybe a more detailed abstract?:florin.cojocariu@s.unibuc.ro:1758295548409
