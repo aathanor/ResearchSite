@@ -664,8 +664,61 @@
             transition: background 0.2s;
         }
         
-        .filter-clear:hover {
-            background: #1976d2;
+        /* Category-specific document backgrounds when filtered */
+        .document-item.filtered-core-theory {
+            background: linear-gradient(135deg, rgba(46, 91, 186, 0.08), rgba(46, 91, 186, 0.03));
+            border-color: #2E5BBA;
+        }
+        
+        .document-item.filtered-problem-dissolutions {
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.08), rgba(230, 126, 34, 0.03));
+            border-color: #E67E22;
+        }
+        
+        .document-item.filtered-empirical-evidence {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.08), rgba(39, 174, 96, 0.03));
+            border-color: #27AE60;
+        }
+        
+        .document-item.filtered-connections {
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.08), rgba(142, 68, 173, 0.03));
+            border-color: #8E44AD;
+        }
+        
+        .document-item.filtered-methodology {
+            background: linear-gradient(135deg, rgba(46, 91, 186, 0.08), rgba(46, 91, 186, 0.03));
+            border-color: #2E5BBA;
+        }
+        
+        /* Update filter indicator colors based on category */
+        .filter-indicator.core-theory {
+            background: rgba(46, 91, 186, 0.1);
+            border-color: #2E5BBA;
+            color: #1E3A5F;
+        }
+        
+        .filter-indicator.problem-dissolutions {
+            background: rgba(230, 126, 34, 0.1);
+            border-color: #E67E22;
+            color: #A0522D;
+        }
+        
+        .filter-indicator.empirical-evidence {
+            background: rgba(39, 174, 96, 0.1);
+            border-color: #27AE60;
+            color: #1E6344;
+        }
+        
+        .filter-indicator.connections {
+            background: rgba(142, 68, 173, 0.1);
+            border-color: #8E44AD;
+            color: #5B2C6F;
+        }
+        
+        .filter-indicator.methodology {
+            background: rgba(46, 91, 186, 0.1);
+            border-color: #2E5BBA;
+            color: #1E3A5F;
         }
         
         /* Comment Menu - Pop-up after text selection */
@@ -919,25 +972,56 @@
             
             currentCategoryFilter = category;
             
+            // Determine which broad category this specific tag belongs to
+            const tagToCategoryMap = {
+                'methodological-precautions': 'core-theory',
+                'pattern-constellations': 'core-theory',
+                'pattern-recognition-unity': 'core-theory',
+                'learning-vs-inference': 'core-theory',
+                'hopfield-networks': 'core-theory',
+                'animal-cognition': 'core-theory',
+                'language-patterns': 'core-theory',
+                
+                'reference-problem': 'problem-dissolutions',
+                'hard-problem': 'problem-dissolutions',
+                'symbol-grounding': 'problem-dissolutions',
+                'composition-problem': 'problem-dissolutions',
+                
+                'semantic-embeddings': 'empirical-evidence',
+                'llms-linguistic-animals': 'empirical-evidence',
+                'neuroscience-evidence': 'empirical-evidence',
+                'vision-animal-model': 'empirical-evidence',
+                
+                'eastern-philosophy': 'connections',
+                'analytical-phenomenology': 'connections',
+                'transformer-architecture': 'connections'
+            };
+            
+            const broadCategory = tagToCategoryMap[category] || 'methodology';
+            
             // Hide overview modal with slight delay for visual feedback
             setTimeout(() => {
                 hideOverview();
             }, 200);
             
-            // Show filter indicator
+            // Show filter indicator with category-specific styling
             const filterIndicator = document.getElementById('filter-indicator');
             const filterText = document.getElementById('filter-text');
+            
+            // Remove existing category classes
+            filterIndicator.className = 'filter-indicator show';
+            // Add the broad category class for styling
+            filterIndicator.classList.add(broadCategory);
             
             // Convert category to display name
             const displayName = category.replace(/-/g, ' ')
                 .replace(/\b\w/g, c => c.toUpperCase());
             
             filterText.textContent = `Filtered by: ${displayName}`;
-            filterIndicator.classList.add('show');
             
             // Filter documents in the left panel
             setTimeout(() => {
-                applyDocumentFilter();
+                applyDocumentFilter(broadCategory);
             }, 300);
         }
         
@@ -945,20 +1029,31 @@
             console.log('Clearing category filter');
             currentCategoryFilter = null;
             
-            // Hide filter indicator
+            // Remove category-specific styling from all documents
+            const documents = document.querySelectorAll('.document-item');
+            documents.forEach(doc => {
+                doc.classList.remove('filtered-core-theory', 'filtered-problem-dissolutions', 
+                                   'filtered-empirical-evidence', 'filtered-connections', 'filtered-methodology');
+            });
+            
+            // Hide filter indicator and remove category styling
             const filterIndicator = document.getElementById('filter-indicator');
-            filterIndicator.classList.remove('show');
+            filterIndicator.className = 'filter-indicator'; // Remove 'show' and any category classes
             
             // Show all documents again
             applyDocumentFilter();
         }
         
-        function applyDocumentFilter() {
+        function applyDocumentFilter(broadCategory = null) {
             const documents = document.querySelectorAll('.document-item');
             const currentLens = document.querySelector('.lens-tab.active')?.dataset.lens || 'all';
             
             documents.forEach(doc => {
                 let shouldShow = true;
+                
+                // Remove any existing filter classes
+                doc.classList.remove('filtered-core-theory', 'filtered-problem-dissolutions', 
+                                   'filtered-empirical-evidence', 'filtered-connections', 'filtered-methodology');
                 
                 // First check lens filter
                 if (currentLens !== 'all') {
@@ -966,28 +1061,27 @@
                     shouldShow = shouldShow && docLenses.includes(currentLens);
                 }
                 
-                // Then check category filter
+                // Then check category filter (now using tags)
                 if (currentCategoryFilter && shouldShow) {
                     const docData = doc.docData;
-                    if (docData && docData.frontmatter) {
-                        // Check various possible category field names
-                        const categories = docData.frontmatter.categories || 
-                                         docData.frontmatter.category || 
-                                         docData.frontmatter.tags || 
-                                         docData.frontmatter.tag || 
-                                         [];
-                        
-                        const categoryArray = Array.isArray(categories) ? categories : [categories];
-                        const hasCategory = categoryArray.some(cat => {
-                            if (!cat) return false;
-                            const normalizedCat = cat.toLowerCase().replace(/\s+/g, '-');
+                    if (docData && docData.tags) {
+                        // Check if document has the specific methodology tag
+                        const docTags = Array.isArray(docData.tags) ? docData.tags : [docData.tags];
+                        const hasTag = docTags.some(tag => {
+                            if (!tag) return false;
+                            const normalizedTag = tag.toLowerCase().replace(/\s+/g, '-');
                             const normalizedFilter = currentCategoryFilter.toLowerCase();
-                            return normalizedCat === normalizedFilter;
+                            return normalizedTag === normalizedFilter;
                         });
                         
-                        shouldShow = shouldShow && hasCategory;
+                        shouldShow = shouldShow && hasTag;
+                        
+                        // If showing and we have a broad category, apply the styling
+                        if (shouldShow && broadCategory) {
+                            doc.classList.add(`filtered-${broadCategory}`);
+                        }
                     } else {
-                        // No frontmatter data - hide when category filtering
+                        // No tags data - hide when category filtering
                         shouldShow = false;
                     }
                 }
@@ -1037,10 +1131,7 @@
             treeDiv.id = 'document-tree';
             leftPanel.appendChild(treeDiv);
         }
-        // Load documents from GitHub/JSON
-        // In your site's JavaScript (likely in index.html <script> or js/app.js):
-        // Replace the static fetch with dynamic API call
-        // Update loadDocuments (cache data, skip refetch if loaded)
+        // Load documents from GitHub/JSON - simplified for tags-based approach
         async function loadDocuments(forceReload = false) {
             if (globalData && !forceReload) {
                 console.log('Using cached data');
@@ -1226,109 +1317,154 @@
         loadDocuments(); 
         document.querySelector('#lens-selector button:first-child')?.classList.add('active');
         });
-        // Build left panel with documents from GitHub
-        // Update buildLeftPanel (use tree, filter, null checks; append to #document-tree)
+        // Build left panel with documents from GitHub - using tags-based organization
         async function buildLeftPanel() {
-            console.log('buildLeftPanel started');
+            console.log('buildLeftPanel started - tags-based approach');
             const leftPanel = document.querySelector('.left-panel');
-            console.log('leftPanel:', leftPanel); // Debug: check if .left-panel exists
             const treeDiv = document.getElementById('document-tree');
-            console.log('treeDiv:', treeDiv); // Debug: check if #document-tree exists
             if (!treeDiv) {
                 console.error('Element #document-tree not found');
                 return;
             }
             leftPanel.querySelectorAll('.doc-category, .error-message').forEach(el => el.remove());
             treeDiv.innerHTML = '';
+            
             try {
                 console.log('Fetching docsData...');
                 const docsData = await loadDocuments();
                 console.log('docsData received:', docsData);
-                if (!docsData || !docsData.documents || !docsData.tree) {
-                treeDiv.innerHTML = '<div class="error-message">No documents found - check console for details</div>';
-                return;
+                if (!docsData || !docsData.documents) {
+                    treeDiv.innerHTML = '<div class="error-message">No documents found - check console for details</div>';
+                    return;
                 }
+                
                 const documents = docsData.documents;
-                const tree = docsData.tree;
                 console.log('documents:', documents);
-                console.log('tree:', tree);
                 if (Object.keys(documents).length === 0) {
-                treeDiv.innerHTML = '<div class="error-message">No documents available</div>';
-                return;
+                    treeDiv.innerHTML = '<div class="error-message">No documents available</div>';
+                    return;
                 }
+
+                // Filter docs by lens
                 console.log('Filtering docs by lens:', currentLens);
                 const filteredDocs = Object.fromEntries(
-                Object.entries(documents).filter(([, doc]) => currentLens === 'All' || (doc.lens || []).some(l => l.toLowerCase() === currentLens.toLowerCase()))
+                    Object.entries(documents).filter(([, doc]) => {
+                        if (currentLens === 'All') return true;
+                        const docLens = doc.lens || [];
+                        return docLens.some(l => l.toLowerCase() === currentLens.toLowerCase());
+                    })
                 );
-                console.log('filteredDocs:', filteredDocs);
+                
                 if (Object.keys(filteredDocs).length === 0) {
-                treeDiv.innerHTML = '<div class="error-message">No documents for selected lens</div>';
-                return;
+                    treeDiv.innerHTML = '<div class="error-message">No documents for selected lens</div>';
+                    return;
                 }
-                console.log('Building filteredTree...');
-                const filteredTree = {};
-                Object.values(tree).forEach(node => {
-                const filteredNodeDocs = node.documents.filter(id => filteredDocs[id]);
-                if (filteredNodeDocs.length > 0 || node.children.some(childId => filteredTree[childId])) {
-                    filteredTree[node.id] = { ...node, documents: filteredNodeDocs };
-                }
-                });
-                console.log('filteredTree:', filteredTree);
-                const roots = Object.values(filteredTree).filter(node => !node.parent || !filteredTree[node.parent]);
-                console.log('roots:', roots);
-                if (roots.length === 0) {
-                treeDiv.innerHTML = '<div class="error-message">No root nodes found</div>';
-                return;
-                }
-                // Build recursive nodes (rest as before)
-                function buildNode(nodeId) {
-                const node = filteredTree[nodeId];
-                if (!node) return null;
-                console.log('Building node:', nodeId);
-                const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'doc-category';
-                const h3 = document.createElement('h3');
-                h3.textContent = node.id.replace(/[-_]/g, ' ').toUpperCase();
-                categoryDiv.appendChild(h3);
-                node.children.forEach(childId => {
-                    const childNode = buildNode(childId);
-                    if (childNode) categoryDiv.appendChild(childNode);
-                });
-                node.documents.forEach(docId => {
-                    const doc = filteredDocs[docId];
-                    if (doc) {
-                    console.log('Adding doc:', docId);
-                    const item = document.createElement('div');
-                    item.className = 'document-item';
-                    item.dataset.id = doc.id;
-                    item.dataset.lenses = (doc.lens || []).join(' ');
-                    const title = doc.title || doc.id.replace('.md', '').replace(/[-_]/g, ' ');
-                    const status = doc.status || 'draft';
-                    item.innerHTML = `<div>${title}</div><span style="font-size: 11px; color: #6c757d;">• ${status}</span>`;
-                    item.addEventListener('click', e => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Document clicked:', doc);
-                        document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
-                        item.classList.add('active');
-                        item.docData = doc;
-                        loadDocument(doc);
-                    });
-                    categoryDiv.appendChild(item);
+
+                // Define broad category mappings (removed uncategorized)
+                const categoryDefinitions = {
+                    'core-theory': {
+                        displayName: 'Core Theory',
+                        order: 1
+                    },
+                    'problem-dissolutions': {
+                        displayName: 'Problem Dissolutions',
+                        order: 2
+                    },
+                    'empirical-evidence': {
+                        displayName: 'Empirical Evidence',
+                        order: 3
+                    },
+                    'connections': {
+                        displayName: 'Connections',
+                        order: 4
+                    },
+                    'methodology': {
+                        displayName: 'Methodology',
+                        order: 5
+                    }
+                };
+
+                // Group documents by their broad category tags
+                const documentsByCategory = {};
+                
+                Object.entries(filteredDocs).forEach(([docId, doc]) => {
+                    const docTags = doc.tags || [];
+                    let assignedCategory = null;
+                    
+                    // Find the broad category tag (check in order of priority)
+                    for (const categoryTag of ['core-theory', 'problem-dissolutions', 'empirical-evidence', 'connections', 'methodology']) {
+                        if (docTags.includes(categoryTag)) {
+                            assignedCategory = categoryTag;
+                            break;
+                        }
+                    }
+                    
+                    // Only add if it has a recognized category (skip uncategorized documents)
+                    if (assignedCategory) {
+                        if (!documentsByCategory[assignedCategory]) {
+                            documentsByCategory[assignedCategory] = [];
+                        }
+                        documentsByCategory[assignedCategory].push(doc);
                     }
                 });
-                return categoryDiv;
-                }
-                roots.sort((a, b) => a.id.localeCompare(b.id)).forEach(root => {
-                const nodeDiv = buildNode(root.id);
-                if (nodeDiv) treeDiv.appendChild(nodeDiv);
+
+                console.log('Documents grouped by category:', documentsByCategory);
+
+                // Sort categories and build the UI
+                const sortedCategories = Object.keys(documentsByCategory).sort((a, b) => {
+                    const orderA = categoryDefinitions[a]?.order || 99;
+                    const orderB = categoryDefinitions[b]?.order || 99;
+                    return orderA - orderB;
                 });
+
+                sortedCategories.forEach(categoryKey => {
+                    const docs = documentsByCategory[categoryKey];
+                    if (docs.length === 0) return;
+
+                    const categoryDef = categoryDefinitions[categoryKey];
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'doc-category';
+                    
+                    const h3 = document.createElement('h3');
+                    h3.textContent = categoryDef.displayName.toUpperCase();
+                    categoryDiv.appendChild(h3);
+
+                    // Sort documents by title
+                    docs.sort((a, b) => (a.title || a.id).localeCompare(b.title || b.id));
+
+                    docs.forEach(doc => {
+                        console.log('Adding doc:', doc.id);
+                        const item = document.createElement('div');
+                        item.className = 'document-item';
+                        item.dataset.id = doc.id;
+                        item.dataset.lenses = (doc.lens || []).join(' ');
+                        
+                        const title = doc.title || doc.id.replace('.md', '').replace(/[-_]/g, ' ');
+                        const status = doc.status || 'draft';
+                        item.innerHTML = `<div>${title}</div><span style="font-size: 11px; color: #6c757d;">• ${status}</span>`;
+                        
+                        item.addEventListener('click', e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('Document clicked:', doc);
+                            document.querySelectorAll('.document-item').forEach(i => i.classList.remove('active'));
+                            item.classList.add('active');
+                            item.docData = doc;
+                            loadDocument(doc);
+                        });
+                        
+                        categoryDiv.appendChild(item);
+                    });
+
+                    treeDiv.appendChild(categoryDiv);
+                });
+
                 console.log('buildLeftPanel completed');
             } catch (error) {
                 console.error('Error building left panel:', error);
                 treeDiv.innerHTML = `<div class="error-message">Error loading documents<br><small style="font-size:10px;">${error.message}</small></div>`;
             }
-            }
+        }
 
         // Load document content - no cache, always from GitHub
         async function loadDocument(doc) {
