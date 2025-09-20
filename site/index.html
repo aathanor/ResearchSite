@@ -708,8 +708,8 @@
         
         /* Filter indicator in left panel */
         .filter-indicator {
-            background: #e3f2fd;
-            border: 1px solid #2196f3;
+            background: #e9ecef; /* Slightly darker gray than left panel (#f8f9fa) */
+            border: 1px solid #dee2e6;
             border-radius: 6px;
             padding: 10px 15px;
             margin-bottom: 15px;
@@ -717,7 +717,7 @@
             align-items: center;
             justify-content: space-between;
             font-size: 14px;
-            color: #1976d2;
+            color: #495057;
         }
         
         .filter-indicator.show {
@@ -725,7 +725,6 @@
         }
         
         .filter-clear {
-            background: #2196f3;
             color: white;
             border: none;
             border-radius: 4px;
@@ -733,6 +732,72 @@
             font-size: 12px;
             cursor: pointer;
             transition: background 0.2s;
+        }
+        
+        /* Category-specific filter indicator colors */
+        .filter-indicator.core-theory {
+            color: #2E5BBA;
+            border-color: #2E5BBA;
+        }
+        
+        .filter-indicator.core-theory .filter-clear {
+            background: #2E5BBA;
+        }
+        
+        .filter-indicator.core-theory .filter-clear:hover {
+            background: #1E3A5F;
+        }
+        
+        .filter-indicator.problem-dissolutions {
+            color: #E67E22;
+            border-color: #E67E22;
+        }
+        
+        .filter-indicator.problem-dissolutions .filter-clear {
+            background: #E67E22;
+        }
+        
+        .filter-indicator.problem-dissolutions .filter-clear:hover {
+            background: #A0522D;
+        }
+        
+        .filter-indicator.empirical-evidence {
+            color: #27AE60;
+            border-color: #27AE60;
+        }
+        
+        .filter-indicator.empirical-evidence .filter-clear {
+            background: #27AE60;
+        }
+        
+        .filter-indicator.empirical-evidence .filter-clear:hover {
+            background: #1E6344;
+        }
+        
+        .filter-indicator.connections {
+            color: #8E44AD;
+            border-color: #8E44AD;
+        }
+        
+        .filter-indicator.connections .filter-clear {
+            background: #8E44AD;
+        }
+        
+        .filter-indicator.connections .filter-clear:hover {
+            background: #5B2C6F;
+        }
+        
+        .filter-indicator.methodology {
+            color: #2E5BBA;
+            border-color: #2E5BBA;
+        }
+        
+        .filter-indicator.methodology .filter-clear {
+            background: #2E5BBA;
+        }
+        
+        .filter-indicator.methodology .filter-clear:hover {
+            background: #1E3A5F;
         }
         
         /* Category-specific document backgrounds when filtered */
