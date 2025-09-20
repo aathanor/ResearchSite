@@ -38,8 +38,9 @@
         }
        
         .header h1 {
-            font-size: 16px;
+            font-size: 24px; /* Increased from 16px to be bigger than document h1 */
             color: #495057;
+            font-weight: 700;
         }
        
         .header-actions {
@@ -61,6 +62,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            margin-bottom: 15px; /* Space below button when moved to left panel */
         }
        
         .btn-overview:hover {
@@ -167,7 +169,7 @@
         }
 
         .document-content h1 {
-            font-size: 2em;
+            font-size: 2em; /* This is now smaller than the header title (24px vs ~32px) */
             font-weight: 600;
             margin: 2rem 0 1.5rem 0;
             line-height: 1.2;
@@ -623,6 +625,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             user-select: none;
+            position: relative;
         }
         
         .overview-item:hover {
@@ -633,6 +636,74 @@
         
         .overview-item:active {
             transform: translateY(0);
+        }
+
+        /* Disabled state for items with no documents */
+        .overview-item.no-docs {
+            opacity: 0.4;
+            cursor: not-allowed;
+            color: #6c757d !important;
+            background: #f8f9fa !important;
+            border-color: #dee2e6 !important;
+        }
+
+        .overview-item.no-docs:hover {
+            transform: none;
+            box-shadow: none;
+            opacity: 0.4;
+        }
+
+        /* Tooltip for items with no documents */
+        .overview-item.no-docs::after {
+            content: "No docs yet here";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+
+        .overview-item.no-docs:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Tooltip for items with documents - shows document list */
+        .overview-item:not(.no-docs)::before {
+            content: attr(data-doc-list);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: pre-line;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 1000;
+            margin-bottom: 5px;
+            max-width: 300px;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .overview-item:not(.no-docs):hover::before {
+            opacity: 1;
+            visibility: visible;
         }
         
         /* Filter indicator in left panel */
@@ -808,7 +879,6 @@
         <div class="header-actions">
             <span id="user-info" class="header-info">Loading...</span>
             <span id="cache-info" class="header-info">Ready</span>
-            <button class="btn-overview" onclick="showOverview()">Project Overview</button>
         </div>
     </div>
    
@@ -855,6 +925,9 @@
     <div class="main-container">
         <!-- Left Panel - Documents -->
         <div class="left-panel">
+            <!-- Project Overview button moved here -->
+            <button class="btn-overview" onclick="showOverview()">Project Overview</button>
+            
             <div class="lens-tabs">
                 <button class="lens-tab active" data-lens="all">All</button>
                 <button class="lens-tab" data-lens="philosophy">Philosophy</button>
@@ -899,46 +972,46 @@
             <h2 style="margin-bottom: 10px; color: #2c3e50; font-size: 28px;">Project Overview</h2>
             <p style="color: #6c757d; margin-bottom: 25px; font-size: 16px;">Pattern Recognition Identity Research - Click any item to filter documents</p>
            
-            <div class="overview-graph">
+            <div class="overview-graph" id="overview-graph">
                 <div class="overview-section core-theory">
                     <h3>Core Theory</h3>
                     <div class="overview-items">
-                        <div class="overview-item" onclick="filterByCategory('methodological-precautions')">Methodological Precautions</div>
-                        <div class="overview-item" onclick="filterByCategory('pattern-constellations')">Pattern Constellations</div>
-                        <div class="overview-item" onclick="filterByCategory('pattern-recognition-unity')">Pattern-Recognition Unity</div>
-                        <div class="overview-item" onclick="filterByCategory('learning-vs-inference')">Learning vs Inference</div>
-                        <div class="overview-item" onclick="filterByCategory('hopfield-networks')">Hopfield Networks with Hebbian Learning</div>
-                        <div class="overview-item" onclick="filterByCategory('animal-cognition')">Animal Cognition</div>
-                        <div class="overview-item" onclick="filterByCategory('language-patterns')">Language Pattern Constellations</div>
+                        <div class="overview-item" data-category="methodological-precautions" onclick="filterByCategory('methodological-precautions')">Methodological Precautions</div>
+                        <div class="overview-item" data-category="pattern-constellations" onclick="filterByCategory('pattern-constellations')">Pattern Constellations</div>
+                        <div class="overview-item" data-category="pattern-recognition-unity" onclick="filterByCategory('pattern-recognition-unity')">Pattern-Recognition Unity</div>
+                        <div class="overview-item" data-category="learning-vs-inference" onclick="filterByCategory('learning-vs-inference')">Learning vs Inference</div>
+                        <div class="overview-item" data-category="hopfield-networks" onclick="filterByCategory('hopfield-networks')">Hopfield Networks with Hebbian Learning</div>
+                        <div class="overview-item" data-category="animal-cognition" onclick="filterByCategory('animal-cognition')">Animal Cognition</div>
+                        <div class="overview-item" data-category="language-patterns" onclick="filterByCategory('language-patterns')">Language Pattern Constellations</div>
                     </div>
                 </div>
                
                 <div class="overview-section problem-dissolutions">
                     <h3>Problem Dissolutions</h3>
                     <div class="overview-items">
-                        <div class="overview-item" onclick="filterByCategory('reference-problem')">Reference Problem</div>
-                        <div class="overview-item" onclick="filterByCategory('hard-problem')">Hard Problem</div>
-                        <div class="overview-item" onclick="filterByCategory('symbol-grounding')">Symbol Grounding</div>
-                        <div class="overview-item" onclick="filterByCategory('composition-problem')">Composition Problem</div>
+                        <div class="overview-item" data-category="reference-problem" onclick="filterByCategory('reference-problem')">Reference Problem</div>
+                        <div class="overview-item" data-category="hard-problem" onclick="filterByCategory('hard-problem')">Hard Problem</div>
+                        <div class="overview-item" data-category="symbol-grounding" onclick="filterByCategory('symbol-grounding')">Symbol Grounding</div>
+                        <div class="overview-item" data-category="composition-problem" onclick="filterByCategory('composition-problem')">Composition Problem</div>
                     </div>
                 </div>
                
                 <div class="overview-section empirical-evidence">
                     <h3>Empirical Evidence</h3>
                     <div class="overview-items">
-                        <div class="overview-item" onclick="filterByCategory('semantic-embeddings')">Semantic Embeddings & Rod-Cap Structure</div>
-                        <div class="overview-item" onclick="filterByCategory('llms-linguistic-animals')">LLMs as Linguistic Animals</div>
-                        <div class="overview-item" onclick="filterByCategory('neuroscience-evidence')">Neurosciences Evidence</div>
-                        <div class="overview-item" onclick="filterByCategory('vision-animal-model')">Vision Animal Model</div>
+                        <div class="overview-item" data-category="semantic-embeddings" onclick="filterByCategory('semantic-embeddings')">Semantic Embeddings & Rod-Cap Structure</div>
+                        <div class="overview-item" data-category="llms-linguistic-animals" onclick="filterByCategory('llms-linguistic-animals')">LLMs as Linguistic Animals</div>
+                        <div class="overview-item" data-category="neuroscience-evidence" onclick="filterByCategory('neuroscience-evidence')">Neurosciences Evidence</div>
+                        <div class="overview-item" data-category="vision-animal-model" onclick="filterByCategory('vision-animal-model')">Vision Animal Model</div>
                     </div>
                 </div>
                
                 <div class="overview-section connections">
                     <h3>Connections</h3>
                     <div class="overview-items">
-                        <div class="overview-item" onclick="filterByCategory('eastern-philosophy')">Eastern Philosophy</div>
-                        <div class="overview-item" onclick="filterByCategory('analytical-phenomenology')">Analytical Phenomenology</div>
-                        <div class="overview-item" onclick="filterByCategory('transformer-architecture')">Transformer Architecture</div>
+                        <div class="overview-item" data-category="eastern-philosophy" onclick="filterByCategory('eastern-philosophy')">Eastern Philosophy</div>
+                        <div class="overview-item" data-category="analytical-phenomenology" onclick="filterByCategory('analytical-phenomenology')">Analytical Phenomenology</div>
+                        <div class="overview-item" data-category="transformer-architecture" onclick="filterByCategory('transformer-architecture')">Transformer Architecture</div>
                     </div>
                 </div>
             </div>
@@ -966,6 +1039,11 @@
             
             // Add visual feedback to the clicked item (only if event is available)
             if (typeof event !== 'undefined' && event.target) {
+                // Check if item has no docs - if so, don't proceed
+                if (event.target.classList.contains('no-docs')) {
+                    return;
+                }
+                
                 event.target.style.transform = 'scale(0.95)';
                 setTimeout(() => {
                     event.target.style.transform = '';
@@ -1118,6 +1196,57 @@
             console.log('=== END DEBUG ===');
         }
 
+        // Function to update overview items based on document availability
+        function updateOverviewItems() {
+            if (!globalData || !globalData.documents) {
+                console.log('No globalData available for overview update');
+                return;
+            }
+
+            console.log('Updating overview items based on document availability');
+            
+            // Get all overview items
+            const overviewItems = document.querySelectorAll('.overview-item');
+            
+            overviewItems.forEach(item => {
+                const category = item.getAttribute('data-category');
+                if (!category) return;
+                
+                // Find documents that have this specific tag
+                const docsWithTag = Object.values(globalData.documents).filter(doc => {
+                    if (!doc.tags) return false;
+                    const docTags = Array.isArray(doc.tags) ? doc.tags : [doc.tags];
+                    return docTags.some(tag => {
+                        if (!tag) return false;
+                        const normalizedTag = tag.toLowerCase().replace(/\s+/g, '-');
+                        const normalizedCategory = category.toLowerCase();
+                        return normalizedTag === normalizedCategory;
+                    });
+                });
+
+                console.log(`Category ${category}: ${docsWithTag.length} documents`);
+
+                if (docsWithTag.length === 0) {
+                    // No documents - gray out and disable
+                    item.classList.add('no-docs');
+                    item.onclick = null; // Remove click handler
+                } else {
+                    // Has documents - enable and add tooltip with document list
+                    item.classList.remove('no-docs');
+                    
+                    // Create document list for tooltip
+                    const docTitles = docsWithTag.map(doc => `• ${doc.title || doc.id.replace('.md', '')}`);
+                    const docListText = `Documents (${docsWithTag.length}):\n${docTitles.join('\n')}`;
+                    item.setAttribute('data-doc-list', docListText);
+                    
+                    // Restore click handler if it was removed
+                    if (!item.onclick) {
+                        item.onclick = () => filterByCategory(category);
+                    }
+                }
+            });
+        }
+
         // Initialize the application
         async function init() {
             if (isInitialized) return;
@@ -1126,6 +1255,9 @@
             try {
                 await fetchUserEmail();
                 await buildLeftPanel();
+                
+                // Update overview items after documents are loaded
+                updateOverviewItems();
                 
                 // Add lens tab functionality
                 document.querySelectorAll('.lens-tab').forEach(tab => {
@@ -1162,6 +1294,10 @@
                 globalData = await response.json();
                 console.log('Loaded data:', globalData);
                 console.log('Raw documents data:', globalData.documents);
+                
+                // Update overview items when data is loaded
+                setTimeout(updateOverviewItems, 100);
+                
                 return globalData;
             } catch (error) {
                 console.error('Failed to load documents:', error);

@@ -1,0 +1,29 @@
+Core Theory
+
+    methodological-precautions
+    pattern-constellations
+    pattern-recognition-unity
+    learning-vs-inference
+    hopfield-networks
+    animal-cognition
+    language-patterns
+
+Problem Dissolutions
+
+    reference-problem
+    hard-problem
+    symbol-grounding
+    composition-problem
+
+Empirical Evidence
+
+    semantic-embeddings
+    llms-linguistic-animals
+    neuroscience-evidence
+    vision-animal-model
+
+Connections
+
+    eastern-philosophy
+    analytical-phenomenology
+    transformer-architecture
