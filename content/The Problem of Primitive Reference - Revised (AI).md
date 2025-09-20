@@ -45,7 +45,7 @@ By 'atomic' we mean experientially indivisible - not composed of separate patter
 
 PRI requires distinguishing three interconnected but distinct levels of patterns:
 
-**Level 1: Objective potential patterns** - Independent structures in reality (electromagnetic waves, molecular configurations, mathematical relationships <-abstract things to be treated separately ->). These exist regardless of minds.
+**Level 1: Objective potential patterns** - Independent structures in reality (electromagnetic waves, molecular configurations, mathematical relationships <-abstract things to be treated separately[^1] ->). These exist regardless of minds.
 
 **Level 2: Experiential patterns** - Sensorimotor bundles, recognition events, activated predictive models. This is where PRI operates - pattern and recognition are atomic at the experiential level. When you see-duck in the duck-rabbit image, this is a unified Level 2 event.
 
@@ -212,3 +212,5 @@ Can we build pattern-coordination systems that achieve reference without impleme
 ---
 
 *Note: This work emerged through extended dialogue between human and AI systems, itself exemplifying the pattern-coordination dynamics it theorizes. The collaboration suggests new modes of philosophical investigation where pattern-recognition operates across different cognitive architectures.*
+
+[^1]: clarification:abstract things are a different animal:florin.cojocariu@s.unibuc.ro:1758350568746
