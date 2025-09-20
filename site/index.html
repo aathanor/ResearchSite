@@ -62,7 +62,6 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
-            margin-bottom: 15px; /* Space below button when moved to left panel */
         }
        
         .btn-overview:hover {
@@ -927,7 +926,10 @@
         <!-- Left Panel - Documents -->
         <div class="left-panel">
             <!-- Project Overview button moved here -->
-            <button class="btn-overview" onclick="showOverview()">Project Overview</button>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <button class="btn-overview" onclick="showOverview()" style="margin-bottom: 0;">Project Overview</button>
+                <span style="font-size: 12px; color: #6c757d; font-style: italic;">← overview and filter documents by subject</span>
+            </div>
             
             <div class="lens-tabs">
                 <button class="lens-tab active" data-lens="all">All</button>
