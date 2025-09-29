@@ -1,4 +1,76 @@
 export async function onRequestGet(context) {
+
+  // COMPLETELY SAFE VERSION - Use this in ALL files:
+
+function decodeGitHubContent(base64Content) {
+    try {
+        const cleanBase64 = base64Content.replace(/\n/g, '');
+        const binaryString = atob(cleanBase64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        let content = new TextDecoder('utf-8').decode(bytes);
+        content = fixCommonEncodingIssues(content);
+        return content;
+    } catch (error) {
+        console.warn('UTF-8 decoding failed, trying fallback method:', error);
+        try {
+            let content = atob(base64Content.replace(/\n/g, ''));
+            content = fixCommonEncodingIssues(content);
+            return content;
+        } catch (fallbackError) {
+            throw new Error('Could not decode content');
+        }
+    }
+}
+
+function fixCommonEncodingIssues(text) {
+    let fixedText = text;
+    
+    // Em dash fixes using Unicode escape sequences
+    fixedText = fixedText.replace(/\u00e2\u0080\u0094/g, '\u2014'); // â€" -> —
+    fixedText = fixedText.replace(/\u00e2/g, '\u2014'); // â -> —
+    
+    // Quote fixes using Unicode escape sequences  
+    fixedText = fixedText.replace(/\u00e2\u0080\u009c/g, '\u201c'); // â€œ -> "
+    fixedText = fixedText.replace(/\u00e2\u0080\u009d/g, '\u201d'); // â€ -> "
+    fixedText = fixedText.replace(/\u00e2\u0080\u0098/g, '\u2018'); // â€˜ -> '
+    fixedText = fixedText.replace(/\u00e2\u0080\u0099/g, '\u2019'); // â€™ -> '
+    
+    // Ellipsis fix
+    fixedText = fixedText.replace(/\u00e2\u0080\u00a6/g, '\u2026'); // â€¦ -> …
+    
+    // Clean up Â characters
+    fixedText = fixedText.replace(/\u00c2 /g, ' '); // Â  -> space
+    fixedText = fixedText.replace(/\u00c2\*/g, '*'); // Â* -> *
+    fixedText = fixedText.replace(/\*\u00c2/g, '*'); // *Â -> *
+    fixedText = fixedText.replace(/\u00c2_/g, '_'); // Â_ -> _  
+    fixedText = fixedText.replace(/_\u00c2/g, '_'); // _Â -> _
+    fixedText = fixedText.replace(/\u00c2/g, ''); // Remove remaining Â
+    
+    // Space cleanup
+    fixedText = fixedText.replace(/  +/g, ' '); // Multiple spaces -> single space
+    fixedText = fixedText.replace(/ +\n/g, '\n'); // Spaces before newline
+    fixedText = fixedText.replace(/\n +/g, '\n'); // Spaces after newline
+    
+    return fixedText;
+}
+
+// FOR save-comment.js ONLY - also add this encoding function:
+function encodeContentForGitHub(content) {
+    try {
+        const utf8Bytes = new TextEncoder().encode(content);
+        let binaryString = '';
+        for (let i = 0; i < utf8Bytes.length; i++) {
+            binaryString += String.fromCharCode(utf8Bytes[i]);
+        }
+        return btoa(binaryString);
+    } catch (error) {
+        console.warn('UTF-8 encoding failed, trying fallback:', error);
+        return btoa(unescape(encodeURIComponent(content)));
+    }
+}
   const { request, env } = context;
   
   try {
@@ -111,7 +183,7 @@ export async function onRequestGet(context) {
     console.log('File fetched successfully');
     
     // Decode the content
-    const content = atob(fileData.content.replace(/\n/g, ''));
+    const content = decodeGitHubContent(fileData.content);
     
     return new Response(JSON.stringify({ 
       success: true,

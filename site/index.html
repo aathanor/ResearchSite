@@ -1862,14 +1862,41 @@
         }
 
         // Fix encoding issues
+        // FOR index.html - REPLACE the existing fixEncodingIssues function
+// IMPORTANT: Type this manually, do NOT copy-paste to avoid syntax errors
+
         function fixEncodingIssues(text) {
-            // Common encoding issue fixes using hex escape sequences
-            text = text.replace(/\u00C3/g, '');
-            text = text.replace(/\u2014/g, '-'); 
-            text = text.replace(/\u201C/g, '"');
-            text = text.replace(/\u201D/g, '"');
-            text = text.replace(/\u2019/g, "'");
-            return text;
+            let fixedText = text;
+            
+            // Fix em dashes - type the corrupted characters manually from your document
+            fixedText = fixedText.replace(/â€"/g, '—');
+            fixedText = fixedText.replace(/â/g, '—');
+            
+            // Fix quotes - type these manually  
+            fixedText = fixedText.replace(/â€œ/g, '"');
+            fixedText.replace(/â€/g, '"');
+            
+            // Clean up Â characters around emphasis
+            fixedText = fixedText.replace(/Â\*/g, '*');
+            fixedText = fixedText.replace(/\*Â/g, '*');
+            fixedText = fixedText.replace(/Â_/g, '_'); 
+            fixedText = fixedText.replace(/_Â/g, '_');
+            
+            // Remove remaining Â characters
+            fixedText = fixedText.replace(/Â /g, ' ');
+            fixedText = fixedText.replace(/Â/g, '');
+            
+            // Clean up spaces
+            fixedText = fixedText.replace(/  +/g, ' ');
+            
+            // Keep your original Unicode fixes too
+            fixedText = fixedText.replace(/\u00C3/g, '');
+            fixedText = fixedText.replace(/\u2014/g, '—');
+            fixedText = fixedText.replace(/\u201C/g, '"');
+            fixedText = fixedText.replace(/\u201D/g, '"');
+            fixedText = fixedText.replace(/\u2019/g, "'");
+            
+            return fixedText;
         }
 
         // Helper function to validate that content is markdown, not HTML

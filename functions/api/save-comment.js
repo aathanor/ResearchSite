@@ -1,4 +1,77 @@
 export async function onRequestPost(context) {
+
+  // COMPLETELY SAFE VERSION - Use this in ALL files:
+
+function decodeGitHubContent(base64Content) {
+    try {
+        const cleanBase64 = base64Content.replace(/\n/g, '');
+        const binaryString = atob(cleanBase64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        let content = new TextDecoder('utf-8').decode(bytes);
+        content = fixCommonEncodingIssues(content);
+        return content;
+    } catch (error) {
+        console.warn('UTF-8 decoding failed, trying fallback method:', error);
+        try {
+            let content = atob(base64Content.replace(/\n/g, ''));
+            content = fixCommonEncodingIssues(content);
+            return content;
+        } catch (fallbackError) {
+            throw new Error('Could not decode content');
+        }
+    }
+}
+
+function fixCommonEncodingIssues(text) {
+    let fixedText = text;
+    
+    // Em dash fixes using Unicode escape sequences
+    fixedText = fixedText.replace(/\u00e2\u0080\u0094/g, '\u2014'); // â€" -> —
+    fixedText = fixedText.replace(/\u00e2/g, '\u2014'); // â -> —
+    
+    // Quote fixes using Unicode escape sequences  
+    fixedText = fixedText.replace(/\u00e2\u0080\u009c/g, '\u201c'); // â€œ -> "
+    fixedText = fixedText.replace(/\u00e2\u0080\u009d/g, '\u201d'); // â€ -> "
+    fixedText = fixedText.replace(/\u00e2\u0080\u0098/g, '\u2018'); // â€˜ -> '
+    fixedText = fixedText.replace(/\u00e2\u0080\u0099/g, '\u2019'); // â€™ -> '
+    
+    // Ellipsis fix
+    fixedText = fixedText.replace(/\u00e2\u0080\u00a6/g, '\u2026'); // â€¦ -> …
+    
+    // Clean up Â characters
+    fixedText = fixedText.replace(/\u00c2 /g, ' '); // Â  -> space
+    fixedText = fixedText.replace(/\u00c2\*/g, '*'); // Â* -> *
+    fixedText = fixedText.replace(/\*\u00c2/g, '*'); // *Â -> *
+    fixedText = fixedText.replace(/\u00c2_/g, '_'); // Â_ -> _  
+    fixedText = fixedText.replace(/_\u00c2/g, '_'); // _Â -> _
+    fixedText = fixedText.replace(/\u00c2/g, ''); // Remove remaining Â
+    
+    // Space cleanup
+    fixedText = fixedText.replace(/  +/g, ' '); // Multiple spaces -> single space
+    fixedText = fixedText.replace(/ +\n/g, '\n'); // Spaces before newline
+    fixedText = fixedText.replace(/\n +/g, '\n'); // Spaces after newline
+    
+    return fixedText;
+}
+
+// FOR save-comment.js ONLY - also add this encoding function:
+function encodeContentForGitHub(content) {
+    try {
+        const utf8Bytes = new TextEncoder().encode(content);
+        let binaryString = '';
+        for (let i = 0; i < utf8Bytes.length; i++) {
+            binaryString += String.fromCharCode(utf8Bytes[i]);
+        }
+        return btoa(binaryString);
+    } catch (error) {
+        console.warn('UTF-8 encoding failed, trying fallback:', error);
+        return btoa(unescape(encodeURIComponent(content)));
+    }
+}
+
   const { request, env } = context;
   
   try {
@@ -143,25 +216,8 @@ export async function onRequestPost(context) {
     console.log('File fetched successfully');
     
     // Decode the content
-    let content;
-    try {
-      // FIXED: Proper UTF-8 decoding from GitHub API
-      const base64Content = fileData.content.replace(/\n/g, '');
-      console.log('Base64 content length:', base64Content.length);
-      
-      // Use modern decoding approach to avoid corruption
-      const binaryString = atob(base64Content);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      content = new TextDecoder('utf-8').decode(bytes);
-      console.log('Content decoded successfully with UTF-8');
-    } catch (error) {
-      console.error('UTF-8 decoding failed, falling back to old method:', error);
-      // Fallback to old method if new one fails
-      content = atob(fileData.content.replace(/\n/g, ''));
-    }
+  
+    let content = decodeGitHubContent(fileData.content);
     
     console.log('Original content length:', content.length);
     console.log('Content sample after decoding:', content.substring(0, 200));
@@ -211,17 +267,7 @@ export async function onRequestPost(context) {
     console.log('Content sample before encoding:', content.substring(0, 200));
     
     // FIXED: Proper UTF-8 encoding for GitHub API
-    let encodedContent;
-    try {
-      // Use modern encoding approach to avoid corruption
-      const utf8Bytes = new TextEncoder().encode(content);
-      encodedContent = btoa(String.fromCharCode.apply(null, utf8Bytes));
-      console.log('Content encoded successfully with UTF-8');
-    } catch (error) {
-      console.error('UTF-8 encoding failed, falling back to old method:', error);
-      // Fallback to old method if new one fails
-      encodedContent = btoa(unescape(encodeURIComponent(content)));
-    }
+    const encodedContent = encodeContentForGitHub(content);
     
     const updateResponse = await fetch(fileUrl, {
       method: 'PUT',
