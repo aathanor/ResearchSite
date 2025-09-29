@@ -55,7 +55,7 @@ When I recognize a cat, what becomes immediately available includes:
 
 We would say that a _constellation of patterns_ becomes immediately available, not just a visual template. This constellation includes sensory patterns (visual, tactile), motor patterns (petting readiness), emotional patterns (affection, wariness), and linguistic patterns (the word "cat" and its associations).
 
-_Critical insight_: This constellation doesn't become available[^6] _after_ recognition—it IS what we call recognition. When philosophers and cognitive scientists speak of "recognizing a cat," they're referring to this immediate availability of the entire pattern-constellation, not to a preliminary identification step that then triggers these responses.
+_Critical insight_: This constellation doesn't become available _after_ recognition—it IS what we call recognition. When philosophers and cognitive scientists speak of "recognizing a cat," they're referring to this immediate availability of the entire pattern-constellation, not to a preliminary identification step that then triggers these responses.
 
 _Theoretical proposal_: Recognition is not the identification of a visual pattern that then triggers these responses. Rather, recognition IS this immediate constellation of readiness becoming available. The recognition and the readiness are not sequential—they are the same event.
 
@@ -290,5 +290,3 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^4]: There is abundant neurosciences literature documenting these claims, with Libet et al. (1983), Sato et al. (2024) and Pulvermüller & Fadiga (2010) being some of the most well known. The neurological evidence for PRI is a connected research field but it must be said our approach is and needs to stay philosophical: PRI has important consequences in the Philosophy of Language, Reference Theory and the way we understand LLMs and AI in general.
 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
-
-[^6]: question:doesn't become available:florin.cojocariu@s.unibuc.ro:1759171752225
