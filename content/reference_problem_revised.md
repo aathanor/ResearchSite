@@ -5,7 +5,7 @@ tags: ["reference-problem"]
 lens: ["philosophy"]
 status: "first_draft"
 date: 09.30.2025
----
+---[^10]
 
 # The Problem of Primitive Reference: A Pattern-Constellation Approach
 
@@ -443,3 +443,5 @@ The PC paradigm opens several concrete research paths:
 [^9]: approved:Approved
 
 Approvals do not have text enter fields but can be edited after that (like this one). Their role is to point to things the supervisor sees as worthy to keep and expand.:florin.cojocariu@s.unibuc.ro:1759240177806
+
+[^10]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759240197477
