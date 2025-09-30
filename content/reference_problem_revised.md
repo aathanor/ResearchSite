@@ -1,5 +1,5 @@
 ---
-title: "The Problem of Primitive Reference: A Pattern-Recognition Identity Approach"
+title: "The Problem of Primitive Reference: A Pattern-Constellation Approach"
 author: Florin Cojocariu
 tags: ["reference-problem"]
 lens: ["philosophy"]
@@ -13,9 +13,7 @@ date: 09.30.2025
 
 This work examines Field's challenge to Tarski's semantic theory - that reducing truth to reference and satisfaction merely pushes the philosophical problem to unexplained semantic primitives. We propose that this challenge dissolves through the Pattern-Constellation (PC) framework, which reconceives reference as an internal linguistic operation R(x^c, x^o) grounded in experiential pattern-recognition events. By distinguishing experiential actualization E({A}) from linguistic mediation ∃({A, a^c}), we show that Field's problem rests on a category error: assuming reference must bridge word and world rather than coordinate experiential patterns through language. The framework is validated by recent findings in language model architectures revealing dual rod/cap structures that mirror the x^o/x^c distinction.
 
-# 1. Introduction (revised)
-
-This revised Section 1 tightens the opening motivation, situates the Pattern-Constellation (PC) move relative to the classic critiques (Field, Tarski, Kripke, Fodor), and supplies a compact Notation & Primitives box that the rest of the paper will use. The aim is to make the core claims and terminology explicit from the start so readers can judge the empirical and philosophical moves with clarity.
+# 1. Introduction
 
 ## 1.1 Motivating the project: Why primitive reference remains a problem
 
