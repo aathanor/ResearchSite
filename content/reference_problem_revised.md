@@ -440,4 +440,6 @@ The PC paradigm opens several concrete research paths:
 
 [^8]: question:How does this work? In order to ask a question, clarification or agree with some text, simply select the text and a menu will appear. Select an option, write your comment and click "submit". It will be labelled with a number and stay visible in the right column.:florin.cojocariu@s.unibuc.ro:1759240101126
 
-[^9]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759240111645
+[^9]: approved:Approved
+
+Approvals do not have text enter fields but can be edited after that (like this one). Their role is to point to things the supervisor sees as worthy to keep and expand.:florin.cojocariu@s.unibuc.ro:1759240177806
