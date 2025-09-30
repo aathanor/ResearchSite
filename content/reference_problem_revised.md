@@ -19,7 +19,7 @@ This work examines Field's challenge to Tarski's semantic theory - that reducing
 
 Tarski’s semantic theory (and the T-schema in particular) gives us a valuable formal scaffold for[^8] talking about truth. Yet Hartry Field’s objection (1972) presses a persistent meta-question: the T-schema appears to shift explanatory weight onto unanalyzed semantic primitives — reference and satisfaction — rather than dissolve them. If truth is explained in terms of reference, what in turn explains reference? Subsequent families of theories (causal-historical, descriptivist/cluster, and intentional/phenomenological) each attempt to supply that explanation, but they leave a puzzling residue: they either posit a primitive ‘‘hook’’ connecting symbols to the world, or they trade one mystery for another (regress, circularity, or an unexplained mental–world relation).
 
-Two diagnoses are worth emphasizing before we offer our alternative.
+Two diagnoses are worth emphasizing before we offer our alternative.[^9]
 
 1. **Category assumption.** Most debates assume that reference is a *bridge* between two qualitatively distinct kinds of things (linguistic tokens/concepts on the one hand; worldly entities/properties on the other). The philosophical puzzle is then framed as how to build that bridge.
 2. **Phenomenological atomization.** Many theoretical moves implicitly treat pattern and recognition as separable: a pattern exists, then a cognitive faculty recognizes it. This atomizing move produces the very explanatory gap Field highlights.
@@ -439,3 +439,5 @@ The PC paradigm opens several concrete research paths:
 [^7]: What most famous language puzzles ignore is the _learning_ part. Almost all consider language as a given, abstract collection of tokens governed by abstract rules that we try (and partially succeed) to decode. What PC makes clear is that learning is essential in how language works, and learning is not an exclusively abstract process but is grounded in reality by Pattern Constellations. The way {WATER} is learned on twin Earths is crucial.
 
 [^8]: question:How does this work? In order to ask a question, clarification or agree with some text, simply select the text and a menu will appear. Select an option, write your comment and click "submit". It will be labelled with a number and stay visible in the right column.:florin.cojocariu@s.unibuc.ro:1759240101126
+
+[^9]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759240111645
