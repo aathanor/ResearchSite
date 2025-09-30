@@ -28,7 +28,7 @@ The Pattern-Constellation framework accepts Tarski’s insight about truth-as-st
 
 ## 1.2 The PC proposal in a sentence
 
-Reference is an internal linguistic operation that coordinates two modes of a lexical form—its referential, experiential mode and its conceptual, linguistic mode—within a learned, distributed Pattern-Constellation. Crucially, the elements that traditionally appear as separate (pattern vs recognition; word vs world) are here aspects of the same structured, learned system. Far from positing an extra-ontological hook, PC locates explanatory work[^11] in the dynamics of multimodal learning and social transmission.
+Reference is an internal linguistic operation that coordinates two modes of a lexical form—its referential, experiential mode and its conceptual, linguistic mode—within a learned, distributed Pattern-Constellation. Crucially, the elements that traditionally appear as separate (pattern vs recognition; word vs world) are here aspects of the same structured, learned system. Far from positing an extra-ontological hook, PC locates explanatory work in the dynamics of multimodal learning and social transmission.
 
 ### What the proposal *does* and *doesn't* claim
 
@@ -56,7 +56,6 @@ To avoid ambiguity, the following symbols and technical terms are used throughou
 **Central claim.** Field’s primitive-reference worry dissolves once we reject the bridge metaphor and accept that reference is an internal coordination operation (R) between two modes of use embedded in learned pattern-constellations. What appears as a need for a ‘‘primitive hook’’ is, in PC, the fact that recognition is primitive in experience: `E({A})` events are taken as phenomenologically atomic starting points for a naturalistic account.
 
 **Roadmap.** After setting these primitives, §2 develops the PC mechanics (learning dynamics, E/∃ distinction, neural motifs). §3 reinterprets causal, descriptivist, and intentional theories through the PC lens. §4 argues that PC dissolves Field’s formal worry and supplies testable empirical predictions (§6–§7 sketch computational and developmental validations). The conclusion (§10) sketches philosophical payoffs and research directions.
-
 
 ## 2. The Pattern Constellation Framework
 
@@ -349,7 +348,6 @@ The demand for primitive reference is like demanding primitive space-time connec
 
 **Empirical signature.** PC predicts that (a) judgments in borderline cases should show higher reaction-time and lower confidence, (b) perceptual/contextual priming can shift activation reliably across the threshold, and (c) training that amplifies certain diagnostic cues (e.g., repeatedly highlighting perceptual differences) will sharpen attractor basins and reduce borderlineity. Psychophysical experiments measuring continuous activation proxies (confidence, reaction times, graded scalar responses) should match the attractor predictions.
 
-
 ## 9. Language as Pattern Coordination System
 
 ### 9.1 Not Bridge but Dance
@@ -445,5 +443,3 @@ The PC paradigm opens several concrete research paths:
 Approvals do not have text enter fields but can be edited after that (like this one). Their role is to point to things the supervisor sees as worthy to keep and expand.:florin.cojocariu@s.unibuc.ro:1759240177806
 
 [^10]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759240197477
-
-[^11]: clarification:clarification:florin.cojocariu@s.unibuc.ro:1759240228653
