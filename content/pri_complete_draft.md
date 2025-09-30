@@ -31,7 +31,7 @@ However, conflating all pattern-matching with pattern-recognition may obscure im
 
 # The Immediacy of Recognition
 
-Genuine recognition[^8] often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
+Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
 
 This immediacy suggests something qualitatively different from algorithmic matching. Consider the phenomenological difference between:
 
@@ -53,7 +53,7 @@ When I recognize a cat, what becomes immediately available includes:
 * Linguistic associations ("kitty," "feline," proverbs about cats)
 * Contextual expectations (litter boxes, food bowls, favorite sleeping spots)
 
-We would say that a _constellation of patterns_ becomes immediately available, not just a visual template. This constellation[^9] includes sensory patterns (visual, tactile), motor patterns (petting readiness), emotional patterns (affection, wariness), and linguistic patterns (the word "cat" and its associations).
+We would say that a _constellation of patterns_ becomes immediately available, not just a visual template. This constellation includes sensory patterns (visual, tactile), motor patterns (petting readiness), emotional patterns (affection, wariness), and linguistic patterns (the word "cat" and its associations).
 
 _Critical insight_: This constellation doesn't become available _after_ recognition—it IS what we call recognition. When philosophers and cognitive scientists speak of "recognizing a cat," they're referring to this immediate availability of the entire pattern-constellation, not to a preliminary identification step that then triggers these responses.
 
@@ -290,7 +290,3 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^4]: There is abundant neurosciences literature documenting these claims, with Libet et al. (1983), Sato et al. (2024) and Pulvermüller & Fadiga (2010) being some of the most well known. The neurological evidence for PRI is a connected research field but it must be said our approach is and needs to stay philosophical: PRI has important consequences in the Philosophy of Language, Reference Theory and the way we understand LLMs and AI in general.
 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
-
-[^8]: clarification:Genuine recognition:florin.cojocariu@s.unibuc.ro:1758301530585
-
-[^9]: question:This constellation:florin.cojocariu@s.unibuc.ro:1758309480083
