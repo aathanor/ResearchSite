@@ -28,7 +28,7 @@ The Pattern-Constellation framework accepts Tarski’s insight about truth-as-st
 
 ## 1.2 The PC proposal in a sentence
 
-Reference is an internal linguistic operation that coordinates two modes of a lexical form—its referential, experiential mode and its conceptual, linguistic mode—within a learned, distributed Pattern-Constellation. Crucially, the elements that traditionally appear as separate (pattern vs recognition; word vs world) are here aspects of the same structured, learned system. Far from positing an extra-ontological hook, PC locates explanatory work in the dynamics of multimodal learning and social transmission.
+Reference is an internal linguistic operation that coordinates two modes of a lexical form—its referential, experiential mode and its conceptual, linguistic mode—within a learned, distributed Pattern-Constellation. Crucially, the elements that traditionally appear as separate (pattern vs recognition; word vs world) are here aspects of the same structured, learned system. Far from positing an extra-ontological hook, PC locates explanatory work[^11] in the dynamics of multimodal learning and social transmission.
 
 ### What the proposal *does* and *doesn't* claim
 
@@ -445,3 +445,5 @@ The PC paradigm opens several concrete research paths:
 Approvals do not have text enter fields but can be edited after that (like this one). Their role is to point to things the supervisor sees as worthy to keep and expand.:florin.cojocariu@s.unibuc.ro:1759240177806
 
 [^10]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759240197477
+
+[^11]: clarification:clarification:florin.cojocariu@s.unibuc.ro:1759240228653
