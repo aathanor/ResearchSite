@@ -147,7 +147,8 @@ async function logAccess(env, email) {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${env.GITHUB_TOKEN}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': 'Cloudflare-Worker'  // Add this
       },
       body: JSON.stringify(putBody)
     });
