@@ -2019,11 +2019,10 @@
                 
                 if (parts.length >= 4 && ['question', 'clarification', 'approved'].includes(parts[0].trim())) {
                     const type = parts[0].trim();
-                    const text = parts[1].trim()
-                        .replace(/\\:/g, ':')   // Unescape colons
-                        .replace(/\\n/g, '\n'); // Unescape newlines
+                    const text = parts[1].trim().replace(/\\:/g, ':');
                     const author = parts[2].trim();
                     const timestamp = parseInt(parts[3].trim());
+                    const selectedText = parts[4] ? parts[4].trim().replace(/\\:/g, ':') : '';
                     
                     console.log('Parsed as comment footnote:', { type, text, author, timestamp });
                     
@@ -2034,6 +2033,7 @@
                         text: text,
                         author: author,
                         timestamp: timestamp,
+                        selectedText: selectedText,
                         isComment: true
                     };
                 } else {
@@ -2210,14 +2210,9 @@
                         <div class="comment-number ${comment.type}">${comment.number}</div>
                         <div class="comment-type ${comment.type}">${typeDisplay[comment.type] || comment.type}</div>
                     </div>
+                    ${comment.selectedText ? `<div style="font-size: 12px; color: #6c757d; font-style: italic; margin-bottom: 8px; border-left: 2px solid #dee2e6; padding-left: 8px;">"${comment.selectedText}"</div>` : ''}
                     <div class="comment-content">${comment.text}</div>
-                    <div class="comment-meta">
-                        <span>By ${comment.author} - ${new Date(comment.timestamp).toLocaleDateString()}</span>
-                        <div class="comment-actions">
-                            <button class="comment-action" onclick="editComment(${comment.number})">Edit</button>
-                            <button class="comment-action" onclick="deleteComment(${comment.number})">Delete</button>
-                        </div>
-                    </div>
+                    <div class="comment-meta">...</div>
                 `;
                 
                 // Add click handler to highlight in document
@@ -2438,15 +2433,9 @@
                 return;
             }
             
-            // Strip the quoted text block before saving
-            let cleanText = text;
-            if (cleanText.startsWith('> "')) {
-                // Remove everything up to and including the first double newline
-                const parts = cleanText.split('\n\n');
-                if (parts.length > 1) {
-                    cleanText = parts.slice(1).join('\n\n').trim();
-                }
-            }
+            // Don't strip quotes - keep full text as entered
+            let cleanText = text.replace(/\n+/g, ' ').replace(/:/g, '\\:');
+            let cleanSelected = selectedText.replace(/\n+/g, ' ').replace(/:/g, '\\:');
             
             // Escape colons in text to avoid breaking delimiter
             cleanText = cleanText.replace(/\n/g, '\\n')  // Escape newlines
@@ -2459,7 +2448,7 @@
                 author: userEmail,
                 timestamp: Date.now(),
                 ref: `^${nextCommentNumber}`,
-                selectedText: selectedText,
+                selectedText: cleanSelected,
                 isComment: true
             };
             
@@ -2582,7 +2571,7 @@
         // Save comment to GitHub via API
         async function saveCommentToGitHub(comment) {
             try {
-                const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
+                const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}:${comment.selectedText}`;
                 
                 console.log('Saving comment to GitHub:', footnoteDefinition);
                 
