@@ -132,6 +132,9 @@ async function logAccess(env, email) {
       const data = await getResp.json();
       sha = data.sha;
       content = atob(data.content);
+      console.log('Got sha:', sha);
+    } else {
+      console.log('GET failed, status:', getResp.status);
     }
     
     const timestamp = new Date().toLocaleString('en-US', { 
@@ -150,7 +153,8 @@ async function logAccess(env, email) {
       content: btoa(content)
     };
     if (sha) putBody.sha = sha;
-
+    console.log('putBody:', JSON.stringify(putBody));
+    
     const putResp = await fetch(url, {
       method: 'PUT',
       headers: {
