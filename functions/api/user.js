@@ -134,7 +134,15 @@ async function logAccess(env, email) {
       content = atob(data.content);
     }
     
-    const timestamp = new Date().toISOString();
+    const timestamp = new Date().toLocaleString('en-US', { 
+      timeZone: 'Europe/Bucharest',
+      year: 'numeric',
+      month: '2-digit', 
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
     content += `${timestamp} - ${email}\n`;
     
     const putBody = {
