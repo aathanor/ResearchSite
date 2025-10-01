@@ -48,6 +48,8 @@ export async function onRequestGet(context) {
                    'anonymous';
       
       console.log('Extracted email:', email);
+
+      await logAccess(context.env, email);
       
       return new Response(JSON.stringify({ 
         email: email,
@@ -99,6 +101,46 @@ export async function onRequestGet(context) {
         'Access-Control-Allow-Origin': '*'
       }
     });
+  }
+}
+
+async function logAccess(env, email) {
+  try {
+    const logPath = 'access.log';
+    const url = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${logPath}`;
+    
+    let sha = null;
+    let content = '';
+    const getResp = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${env.GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+    
+    if (getResp.ok) {
+      const data = await getResp.json();
+      sha = data.sha;
+      content = atob(data.content);
+    }
+    
+    const timestamp = new Date().toISOString();
+    content += `${timestamp} - ${email}\n`;
+    
+    await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${env.GITHUB_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: 'Log access',
+        content: btoa(content),
+        sha: sha
+      })
+    });
+  } catch (error) {
+    console.error('Log failed:', error);
   }
 }
 
