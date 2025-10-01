@@ -17,20 +17,11 @@ This work examines Field's challenge to Tarski's semantic theory - that reducing
 
 ## Motivating the project
 
-<<<<<<< HEAD
 Tarski's semantic theory provides formal scaffolding for truth, yet Hartry Field's objection (1972) persists: the T-schema shifts explanatory weight onto unanalyzed semantic primitives—reference and satisfaction—rather than explaining them. If truth reduces to reference, what explains reference? Subsequent theories (causal-historical, descriptivist, intentional/phenomenological) either posit primitive "hooks" connecting symbols to world, or trade one mystery for another through regress, circularity, or unexplained mental-world relations.
 
 Two diagnoses precede our alternative:
 
 1. **Category assumption.** Most debates assume reference is a *bridge* between qualitatively distinct kinds (linguistic tokens/concepts versus worldly entities/properties). The puzzle becomes: how to build that bridge.
-=======
-Tarski’s semantic theory (and the T-schema in particular) gives us a valuable formal scaffold for[^8] talking about truth. Yet Hartry Field’s objection (1972) presses a persistent meta-question: the T-schema appears to shift explanatory weight onto unanalyzed semantic primitives — reference and satisfaction — rather than dissolve them. If truth is explained in terms of reference, what in turn explains reference? Subsequent families of theories (causal-historical, descriptivist/cluster, and intentional/phenomenological) each attempt to supply that explanation, but they leave a puzzling residue: they either posit a primitive ‘‘hook’’ connecting symbols to the world, or they trade one mystery for another (regress, circularity, or an unexplained mental–world relation).
-
-Two diagnoses are worth emphasizing before we offer our alternative.[^9]
-
-1. **Category assumption.** Most debates assume that reference is a *bridge* between two qualitatively distinct kinds of things (linguistic tokens/concepts on the one hand; worldly entities/properties on the other). The philosophical puzzle is then framed as how to build that bridge.
-2. **Phenomenological atomization.** Many theoretical moves implicitly treat pattern and recognition as separable: a pattern exists, then a cognitive faculty recognizes it. This atomizing move produces the very explanatory gap Field highlights.
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 2. **Phenomenological atomization.** Theories treat pattern and recognition as separable—a pattern exists, then cognition recognizes it. This atomizing move generates the explanatory gap Field highlights.
 
@@ -40,12 +31,7 @@ The Pattern-Constellation framework accepts Tarski's insight about truth-as-stru
 
 Reference is an internal linguistic operation coordinating two modes of a lexical form—its referential, experiential mode and its conceptual, linguistic mode—within a learned, distributed Pattern-Constellation. Elements traditionally appearing separate (pattern versus recognition; word versus world) are aspects of the same structured, learned system. Rather than positing extra-ontological hooks, PC locates explanatory work in multimodal learning dynamics and social transmission.
 
-<<<<<<< HEAD
 **Claims:** Reference emerges from histories of multimodal, recurrent encounters producing stable, distributed attractors (Pattern-Constellations). Coordination between conceptual use and referential activation is internal operation $\mathcal{R}(x^c, x^o)$ linking these modes.
-=======
-* **Does claim:** Reference emerges from histories of multimodal, recurrent encounters that produce stable, distributed attractors (Pattern-Constellations). The coordination between conceptual use and referential activation is an internal operation R(x^c, x^o) that manipulatively links these modes.
-* **Does not claim:** PC does not deny the role of external ecology or social practice; rather, these causal and social factors are part of the histories that build constellations. Nor does PC claim that computational models alone settle all philosophical questions — empirical claims are explicitly labeled and testable.
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 **Non-claims:** PC doesn't deny external ecology or social practice—these causal and social factors build constellations. Computational models don't alone settle philosophical questions—empirical claims are explicitly labeled and testable.
 
@@ -63,17 +49,7 @@ Reference is an internal linguistic operation coordinating two modes of a lexica
   
 *   $\mathcal{R}(x^c, x^o)$ **— internal coordination operation (Reference).** Two-place operation internal to linguistic/practical system mapping conceptual deployments ($x^c$) to referential activations ($x^o$), bringing full $\{X\}$ constellation online.
 
-<<<<<<< HEAD
 *   **PRU — Pattern-Recognition Unity.** Phenomenological claim: pattern and recognition are experientially indivisible. Recognizing isn't separate stage after pre-existing pattern but activation of indivisible experiential event $E(\{A\})$.
-=======
-* `{A}`** — Pattern-Constellation for type A.** A distributed, multimodal attractor of sensory, motor, affective and linguistic elements associated with a kind or type (e.g., `{DOG}`, `{WATER}`). Not an abstract Platonic pattern but a dispositional structure instantiated in neural/architectural dynamics.
-* `E({A})`** — Experiential actualization.** A concrete event in which the `{A}` constellation is activated by perception, action, or affect (seeing, touching, tasting, acting). `E` captures the pre-linguistic, lived occurrence of a pattern.
-* `a^o`** — referential / object-word mode.** The public, referential deployment of a lexical form (the ‘object-word’ reading). `E({A, a^o})` marks experiences in which the word-form co-occurs with the constellation and becomes embedded in it via learning.
-* `a^c`** — conceptual / concept-word mode.** The abstract, linguistic, or propositional deployment of the same lexical form (the ‘concept-word’ reading). `∃({A, a^c})` denotes conceptual/linguistic uses that operate in the abstracted realm (discourse, thought, counterfactuals).
-* `∃({...})`** — linguistic mediation operator.** Marks operations and patterns that primarily belong to the conceptual/linguistic domain (inference, communication about non-present items, syntactic manipulation).
-* `R(x^c, x^o)`** — internal coordination operation (Reference).** A two-place operation internal to the linguistic/practical system that maps conceptual deployments (`x^c`) to referential activations (`x^o`) and, in doing so, brings the full `{X}` constellation online.
-* `PRU`** — Pattern-Recognition Unity.** The phenomenological claim that pattern and recognition are experientially indivisible: recognizing is not a separate stage after a pre-existing pattern but the activation of an indivisible experiential event `E({A})`.
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 ## Central hypothesis and roadmap
 
@@ -83,21 +59,13 @@ Reference is an internal linguistic operation coordinating two modes of a lexica
 
 # The Pattern Constellation Framework
 
-<<<<<<< HEAD
 ## The Core Principle: PRU
 
 Pattern-Recognition Unity asserts pattern and recognition constitute atomic experiential events. When you see a duck in the duck-rabbit illusion, there is no pattern "duck" that you then recognize—only the atomic event of duck-seeing.
-=======
-## 2. The Pattern Constellation Framework
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 Main argument: when $\{DUCK\}$ PC activates via partial entity (visual pattern), all other patterns in PC activate. What we call "recognition" is simply *reaction*—it's absurd to speak of recognition without reaction. In PC framework, reaction is part of $\{DUCK\}$ Pattern Constellation, not ulterior action. This leads directly to conclusion: pattern and recognition are unified entity.
 
-<<<<<<< HEAD
 In PC notation: $E(\{DUCK\})$ - experiential actualization of duck pattern-constellation.[^1]
-=======
-Pattern-Recognition Unity asserts that pattern and recognition constitute, together, atomic experiential events. When you see a duck in the duck-rabbit illusion, there is no pattern "duck" that you then recognize—there is only the atomic event of duck-seeing.
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 By 'atomic' we mean experientially indivisible—not composed of separate pattern and recognition phases. Pattern exists only in its recognition, not as separate entity awaiting recognition.
 
@@ -109,11 +77,7 @@ By 'atomic' we mean experientially indivisible—not composed of separate patter
 
 **The encoding argument**: $\{DUCK\}$ exists as distributed network configuration—connection weights across sensory, motor, emotional, and linguistic nodes. No "duck photograph" exists separately. Visual Animal simulations with Hopfield networks demonstrate: you cannot locate where visual pattern is stored because visual neurons never fire in isolation. Pattern is real (measurable low-energy network state) but visual component isn't stored as separate entity—encoded in weights activating full constellation.
 
-<<<<<<< HEAD
 **Pre-linguistic recognition**: Cat recognizing mouse refutes stored-separate-pattern view. Cat has $\{MOUSE\}$ as integrated sensory-motor-emotional constellation, not conceptual representation plus recognition process. Recognition triggers hunting immediately—response patterns are part of what recognition is, not subsequent to it.
-=======
-**Stage 1: Pre-linguistic**
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 **Conceptual incoherence**: "Recognition without anything to recognize" makes no sense—but this means recognition requires simultaneous constellation activation, not pre-existing independent pattern waiting for discovery. Pattern exists only in its recognition as unified network state.
 
@@ -181,14 +145,7 @@ PC alternative: No internal symbols needing external connections. Instead, $\{A,
 
 # Dissolving the Reference Problem
 
-<<<<<<< HEAD
 ## The Dissolution Strategy
-=======
-- x^c operates in ∃ realm (conceptual mode)
-- x^o operates in E realm (referential mode)
-- x^o ∈ {X, x^o, x^c} (embedded in constellation)
-- {X} built through E({X, x^o}) events
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 PC framework doesn't solve reference problem but dissolves it by showing it rests on false presuppositions. Reference isn't word-world connection but internal linguistic operation:
 
@@ -203,14 +160,11 @@ When R operates, $x^o$ activates full $\{X\}$ constellation including all sensor
 Traditional problem: How does "dog" connect to dogs?
 
 PC answer:
-<<<<<<< HEAD
 1. $\{DOG\}$ forms through $E(\{DOG\})$ events (pre-linguistic)
 2. $dog^o$ integrates via $E(\{DOG, dog^o\})$ (Hebbian learning)
 3. $dog^c$ emerges for $\exists(\{DOG, dog^c\})$ uses (abstract thought)
 4. $\mathcal{R}(dog^c, dog^o)$ coordinates between modes
 5. $dog^o$ activates full $\{DOG\}$ constellation
-=======
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 No gap to bridge—just internal coordination grounded in experiential history.
 
@@ -416,13 +370,7 @@ $white^o$ is, however, special "object" like all properties: while it has direct
 
 ## Empty Names and Fiction (Meinong/fictional names)
 
-<<<<<<< HEAD
 **Puzzle.** Names apparently lacking real-world referents ("Sherlock Holmes", "Pegasus") nonetheless have cognitive and communicative uses: we ascribe properties, tell stories, make true/false claims relative to fictional frameworks. How do such names bear meaning without worldly object?
-=======
-* The demonstrative token is an `a^o` deployment tightly coupled to the current E-event (pointing + perception).
-* `R(a^c, a^o)` is highly context-sensitive: the mapping is parameterized by situational cues (speaker identity, spatio-temporal coordinates, gestural vector).
-* Because E-events instantiate the full `{A}` attractor in situ, reference feels direct: the constellation is brought online by the co-occurrence of perceptual, motor, and linguistic cues.
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 **Standard worry.** Theories tying meaning to real-world causal baptism or direct reference struggle: empty name has no historical referent to hook onto. Descriptivist accounts accommodate some uses but face circularity and variation in fictional practice.
 
@@ -440,7 +388,6 @@ $white^o$ is, however, special "object" like all properties: while it has direct
 
 **Puzzle.** Predicates like "heap", "bald", or "tall" admit borderline cases and paradoxical reasoning (sorites). Classical bivalence seems ill-fitted: adding one grain doesn't change "heap" status, but repeated applications lead to contradiction.
 
-<<<<<<< HEAD
 **Standard worry.** Accounts seeking crisp extensions face either arbitrariness (where to draw line) or paradoxical consequences. Semantic theories propose supervaluation, degrees, or contextualism, but each has costs.
 
 **PC diagnosis.** Vagueness arises naturally from graded attractor landscapes and fuzzy basin boundaries in pattern-constellations:
@@ -448,41 +395,14 @@ $white^o$ is, however, special "object" like all properties: while it has direct
 - $\{HEAP\}$ is attractor with broad, shallow basin; partial cues (number of grains, arrangement) produce graded activation levels rather than binary on/off retrieval
 - Borderline cases correspond to low-confidence activations where no single basin dominates. $\mathcal{R}(a^c, a^o)$ returns weak or probabilistic access to $\{HEAP\}$ constellation
 - Sorites construction exploits incremental changes that individually produce negligible changes in activation but cumulatively move system across basins—natural dynamical phenomenon without paradoxical metaphysical commitments
-=======
-* Authors and audiences build and stabilize `{FICTIONAL}` constellations via repeated imaginative E/∃ activity (narrative immersion, role-play, rehearsal). These constellations have internal coherence (causal/temporal relations, property bundles) even without stable external E-events tied to worldly objects.
-* The `a^o` slot is weakly or hypothetically filled (counterfactual E patterns, imagined percepts) so `R(a^c,a^o)` typically invokes internally generated activations rather than externally triggered ones.
-* This explains how fictional names support internal consistency, counterfactual reasoning, and intra-fiction truth conditions while lacking worldly baptismal grounding.
-
-**Upshot.** Empty names are not meaningless gaps but targets of intense `∃`-practice that instantiate stable conceptual attractors usable in thought and communication. The difference between fictional and real names is a difference in E/∃ weightings, not in kind.
-
-**Empirical signature.** PC predicts that engagement intensity (measured by physiological markers of immersion, frequency of narrative rehearsal, or linguistic co-occurrence statistics) correlates with the coherence and accessibility of fictional constellations. Neurocognitive studies should show overlap between activations for vividly imagined `E` patterns and the a^c activations when users process fictional names.
-
-***
-
-### 8.3 Vagueness and the sorites paradox
-
-**Puzzle.** Predicates like “heap”, “bald”, or “tall” admit borderline cases and admit paradoxical reasoning (sorites). Classical bivalence seems ill-fitted: adding one grain doesn’t change “heap” status, but repeated applications lead to contradiction.
-
-**Standard worry.** Accounts that seek crisp extensions face either arbitrariness (where to draw the line) or paradoxical consequences. Semantic theories propose supervaluation, degrees, or contextualism, but each has costs.
-
-**PC diagnosis.** Vagueness arises naturally from graded attractor landscapes and fuzzy basin boundaries in pattern-constellations:
-
-* `{HEAP}` is an attractor with a broad, shallow basin; partial cues (number of grains, arrangement) produce graded activation levels rather than binary on/off retrieval.
-* Borderline cases correspond to low-confidence activations where no single basin dominates. `R(a^c,a^o)` returns weak or probabilistic access to the `{HEAP}` constellation.
-* The sorites construction exploits incremental changes that individually produce negligible changes in activation but cumulatively move the system across basins — a natural dynamical phenomenon without paradoxical metaphysical commitments.
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 **Upshot.** Instead of forcing sharp line, PC models vagueness as feature of graded neural/representational dynamics: predicates implemented by attractors of varying sharpness, and borderlineity expected where basins overlap or are shallow.
 
 **Empirical signature.** PC predicts (a) judgments in borderline cases show higher reaction-time and lower confidence, (b) perceptual/contextual priming can shift activation reliably across threshold, and (c) training amplifying certain diagnostic cues will sharpen attractor basins and reduce borderlineity. Psychophysical experiments measuring continuous activation proxies should match attractor predictions.
 
-<<<<<<< HEAD
 # Language as Pattern Coordination System
 
 ## Not Bridge but Dance
-=======
-## 9. Language as Pattern Coordination System
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 
 Language doesn't bridge between mind and world. It coordinates E and ∃ realms through $x^o/x^c$ distinction. Like dancers responding to shared music, speakers coordinate their $E(\{A, a^o\})$ experiences through $\exists(\{A, a^c\})$ operations.
 
@@ -544,7 +464,6 @@ Truth = patterns stabilized through collective ∃ coordination of individually 
 
 Pre-linguistic:
 
-<<<<<<< HEAD
 $\{MOUSE\}$ in cat's brain built through $E(\{MOUSE\})$ events:
 - Visual: small, moving, mouse-shaped
 - Olfactory: mouse scent
@@ -622,9 +541,6 @@ PC framework dissolves Field's challenge by reconceiving reference entirely. Rat
 
 This isn't merely theoretical exercise. Framework:
 - Explains rod/cap structure in language models
-=======
-- Explains the rod/cap structure in language models
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
 - Accounts for referential success without semantic primitives
 - Unifies diverse phenomena under pattern-coordination principles
 - Suggests new research directions in linguistics and AI
@@ -642,7 +558,6 @@ PC paradigm opens concrete research paths:
 
 [^1]: Most probable learning mechanism for biological neural networks is Hebbian: what fires together, wires together. In application of Hebbian learning to Hopfield Networks, once trained such network can retrieve full pattern from partial cue. In $\{DUCK\}$ case, either head shape or "quack" or funny walk—all partial patterns of entire PC $\{DUCK\}$—presence of one activates entire PC.
 
-<<<<<<< HEAD
 [^2]: There is ample evidence that all infants, when learning words naming objects, tend to grab them, showing how motor areas are integrated with language areas and the need to *sense* object more closely and directly. Name is label for sensory and motor experiences.
 
 [^3]: Experiential actualization E doesn't need language at all. Present in animals, also the lived pre-linguistic mystery at core of modern phenomenology.
@@ -652,18 +567,3 @@ PC paradigm opens concrete research paths:
 [^5]: By no means only model possible, but most efficient of what we have now. Hopfield networks are few-shot learners and, once trained, remarkably effective.
 
 [^6]: If sensing pattern and reaction pattern (signifying "recognition") are both parts of unified PC, then idea of pattern without recognition doesn't make much sense. One can go through realism/anti-realism debate, but approach here is naturalistic and pragmatic: PCs are not abstract entities but real patterns in neural networks. We cannot make out where visual pattern is inside PC because visual neurons never fire in isolation. While PC pattern in NN is real, its visual component is elusive. Simply said, I cannot find in NN where dog image or dog sound are saved, but I can find easily entire $\{DOG\}$ PC.
-=======
-[^2]: There is ample evidence that all infants, when learning words naming objects, tend to grab them, showing how motor areas are integrated with language areas and the need to _sense_ the object more closely and directly. The name is a label for sensory and motor experiences.
-[^3]: Experiential actualization E does not need language at all. It is present in animals, but it is also the lived pre-linguistic mystery at the core of modern phenomenology.
-[^4]: This is a complicated and lengthy process in humans, which, by all data available, finishes well over the age of 18.
-[^5]: By no means is this the only model possible, but it is the most efficient of what we have now. Hopfield networks are few-shots learners and, once trained, are remarkably effective.
-[^6]: This may be a subject in itself, but for our purposes it is enough to say that if the sensing pattern and the reaction pattern (which signifies “recognition”) are both parts of a unified PC, then the idea of a pattern without recognition does not make too much sense. One can go through the realism/anti-realism debate rabbit hole, but the approach here is more naturalistic and pragmatic: PCs are not abstract entities but real patterns in neural networks. Funny enough, we cannot make out where the visual pattern is inside a PC because visual neurons never fire in isolation. So, while a PC pattern in a NN is real, its visual component is elusive. Simply said, I cannot find in a NN where the dog image or the dog sound are saved, but I can find easily the entire {DOG} PC.
-[^7]: What most famous language puzzles ignore is the _learning_ part. Almost all consider language as a given, abstract collection of tokens governed by abstract rules that we try (and partially succeed) to decode. What PC makes clear is that learning is essential in how language works, and learning is not an exclusively abstract process but is grounded in reality by Pattern Constellations. The way {WATER} is learned on twin Earths is crucial.
-
-[^8]: question:How does the comment system work? To ask a question, clarification, or agree with some text, simply select the text, and a menu will appear. Select an option, write your comment, and click "submit." It will be labelled with a number and stay visible in the right column.:florin.cojocariu@s.unibuc.ro:1759304193816
-
-[^9]: approved:Approved
-
-Approvals do not have text enter fields but can be edited after that (like this one). Their role is to point to things the supervisor sees as worthy to keep and expand.:florin.cojocariu@s.unibuc.ro:1759240177806
-
->>>>>>> 976e798486216105b6694de1b684c569d07beb0e
