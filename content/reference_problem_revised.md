@@ -15,7 +15,7 @@ This work examines Field's challenge to Tarski's semantic theory[^8] - that redu
 
 ## Motivating the project
 
-Tarski's semantic theory provides formal scaffolding for truth, yet Hartry Field's objection (1972) persists: the T-schema shifts explanatory weight onto unanalyzed semantic primitives—reference and satisfaction—rather than explaining them. If truth reduces to reference, what explains reference? Subsequent theories (causal-historical, descriptivist, intentional/phenomenological) either posit primitive "hooks" connecting symbols to world, or trade one mystery for another through regress, circularity, or unexplained mental-world relations.
+Tarski's semantic theory provides formal scaffolding for truth, yet Hartry Field's objection (1972) persists: the T-schema shifts explanatory weight onto unanalyzed semantic primitives—reference and satisfaction—rather than explaining them. If truth reduces to reference, what explains reference?[^9] Subsequent theories (causal-historical, descriptivist, intentional/phenomenological) either posit primitive "hooks" connecting symbols to world, or trade one mystery for another through regress, circularity, or unexplained mental-world relations.
 
 Two diagnoses precede our alternative:
 
@@ -587,3 +587,5 @@ PC paradigm opens concrete research paths:
 [^7]: What most famous language puzzles ignore is the _learning_ part. Almost all consider language as a given, abstract collection of tokens governed by abstract rules that we try (and partially succeed) to decode. What PC makes clear is that learning is essential in how language works, and learning is not an exclusively abstract process but is grounded in reality by Pattern Constellations. The way {WATER} is learned on twin Earths is crucial.
 
 [^8]: question:Aceasta ar fi o întrebare care e formulată după ce am selectat textul "This work examines Field's challenge to Tarski's semantic theory " și am ales "?Question":florin.cojocariu@s.unibuc.ro:1759343840727
+
+[^9]: clarification:long text:florin.cojocariu@s.unibuc.ro:1759344014186
