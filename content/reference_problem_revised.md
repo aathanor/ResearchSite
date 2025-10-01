@@ -15,7 +15,7 @@ This work examines Field's challenge to Tarski's semantic theory[^8] - that redu
 
 ## Motivating the project
 
-Tarski's semantic theory provides formal scaffolding for truth, yet Hartry Field's objection (1972) persists: the T-schema shifts explanatory weight onto unanalyzed semantic primitives—reference and satisfaction—rather than explaining them. If truth reduces to reference, what explains reference? Subsequent theories (causal-historical, descriptivist, intentional/phenomenological) either posit primitive "hooks" connecting symbols to world, or trade one mystery for another through regress, circularity, or unexplained mental-world relations.[^9]
+Tarski's semantic theory provides formal scaffolding for truth, yet Hartry Field's objection (1972) persists: the T-schema shifts explanatory weight onto unanalyzed semantic primitives—reference and satisfaction—rather than explaining them. If truth reduces to reference, what explains reference? Subsequent theories (causal-historical, descriptivist, intentional/phenomenological) either posit primitive "hooks" connecting symbols to world, or trade one mystery for another through regress, circularity, or unexplained mental-world relations.
 
 Two diagnoses precede our alternative:
 
@@ -586,6 +586,7 @@ PC paradigm opens concrete research paths:
 [^6]: This may be a subject in itself, but for our purposes it is enough to say that if the sensing pattern and the reaction pattern (which signifies “recognition”) are both parts of a unified PC, then the idea of a pattern without recognition does not make too much sense. One can go through the realism/anti-realism debate rabbit hole, but the approach here is more naturalistic and pragmatic: PCs are not abstract entities but real patterns in neural networks. Funny enough, we cannot make out where the visual pattern is inside a PC because visual neurons never fire in isolation. So, while a PC pattern in a NN is real, its visual component is elusive. Simply said, I cannot find in a NN where the dog image or the dog sound are saved, but I can find easily the entire {DOG} PC.
 [^7]: What most famous language puzzles ignore is the _learning_ part. Almost all consider language as a given, abstract collection of tokens governed by abstract rules that we try (and partially succeed) to decode. What PC makes clear is that learning is essential in how language works, and learning is not an exclusively abstract process but is grounded in reality by Pattern Constellations. The way {WATER} is learned on twin Earths is crucial.
 
-[^8]: question:Aceasta ar fi o întrebare care e formulată după ce am selectat textul "This work examines Field's challenge to Tarski's semantic theory " și am ales "?Question":florin.cojocariu@s.unibuc.ro:1759343840727
 
-[^9]: clarification:O cerere de clarificare după selectarea primului paragraf din 2.1.:florin.cojocariu@s.unibuc.ro:1759344098601
+[^8]: question:> "This work examines Field's challenge to Tarski's semantic theory"
+
+O întrebare legată de textul selectat, care e inserat automat:florin.cojocariu@s.unibuc.ro:1759344971917
