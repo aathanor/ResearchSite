@@ -124,7 +124,8 @@ async function logAccess(env, email) {
     const getResp = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${env.GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json'
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'Cloudflare-Worker'  // Add this
       }
     });
     
@@ -154,7 +155,7 @@ async function logAccess(env, email) {
     };
     if (sha) putBody.sha = sha;
     console.log('putBody:', JSON.stringify(putBody));
-    
+
     const putResp = await fetch(url, {
       method: 'PUT',
       headers: {
