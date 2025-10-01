@@ -8,14 +8,14 @@ date: 06.22.2025
 ---
 # Abstract
 
-This document focuses on three issues:[^8]
-* the confusion between pattern-matching[^9] (serial, analyical) and pattern-recognition (parallel, gestalt)
-* the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature.[^7]
+This document focuses on three issues:
+* the confusion between pattern-matching (serial, analyical) and pattern-recognition (parallel, gestalt)
+* the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature.
 * it introducess the concept of _Pattern Constellations_ as a way to understand recognition as the immediate availability of a constellation of patterns that include sensory, motor, emotional, and linguistic aspects.
 
 # The Pattern-Matching Confusion
 
-Much of what passes for "pattern recognition"[^10] in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations[^6]. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
+Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations.[^6] Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
 
 Pattern-matching involves:
 
@@ -25,13 +25,13 @@ Pattern-matching involves:
 * Decision algorithms
 * Temporal duration
 
-Many computer software algorithms exemplify pattern-matching strategies.[^11] Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines. Expert systems search through rule databases to find matching conditions.[^1]
+Many computer software algorithms exemplify pattern-matching strategies. Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines.[^7] Expert systems search through rule databases to find matching conditions.[^1]
 
-However, conflating all pattern-matching with pattern-recognition may obscure important distinctions about the nature of cognition.[^12]
+However, conflating all pattern-matching with pattern-recognition may obscure important distinctions about the nature of cognition.
 
 # The Immediacy of Recognition
 
-Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
+Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete[^8].[^2]
 
 This immediacy suggests something qualitatively different from algorithmic matching. Consider the phenomenological difference between:
 
@@ -291,24 +291,8 @@ Both types of existence are internal to pattern-recognition events - there's no 
 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
 
-[^6]: question:> "Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations"
+[^6]: question:Asta ar fi o întrebare. Textul selectat e salvat ca citat.:florin.cojocariu@s.unibuc.ro:1759354005152:Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations.
 
-O întrebare pentru textul selectat care e citat mai sus.:florin.cojocariu@s.unibuc.ro:1759345523066
+[^7]: clarification:O cerere de clarificare. Odată salvate ele pot fi editate sau șterse cu butoanele de mai jos, Edit, Delete. Puteți șterge aceste comentarii de probă sau proba editarea.:florin.cojocariu@s.unibuc.ro:1759354202496:Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines.
 
-[^7]: question:> "the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature."
-
-O întrebare legată de textul selectat care apare mai sus:florin.cojocariu@s.unibuc.ro:1759346166448
-
-[^8]: question:> "This document focuses on three issues:"
-
-Why?:florin.cojocariu@s.unibuc.ro:1759351904176
-
-[^9]: question:> "the confusion between pattern-matching"
-
-why, again?:florin.cojocariu@s.unibuc.ro:1759352599093:the confusion between pattern-matching
-
-[^10]: question:> "Much of what passes for "pattern recognition"" Now, for a last try...:florin.cojocariu@s.unibuc.ro:1759353039164:Much of what passes for "pattern recognition"
-
-[^11]: clarification:clarify!:florin.cojocariu@s.unibuc.ro:1759353709889:Many computer software algorithms exemplify pattern-matching strategies.
-
-[^12]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759353726960:However, conflating all pattern-matching with pattern-recognition may obscure important distinctions about the nature of cognition.
+[^8]: approved:Approved. (un pasaj marcat ca Approved are textul Approved inserat automat. Poate însă fi editat și completat ulterior.):florin.cojocariu@s.unibuc.ro:1759354114647:Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete
