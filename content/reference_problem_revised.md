@@ -9,7 +9,7 @@ date: 09.30.2025
 
 # Abstract
 
-This work examines Field's challenge to Tarski's semantic theory - that reducing truth to reference and satisfaction merely pushes the philosophical problem to unexplained semantic primitives. We propose that this challenge dissolves through the Pattern-Constellation (PC) framework, which reconceives reference as an internal linguistic operation $\mathcal{R}(x^c, x^o)$ grounded in experiential pattern-recognition events. By distinguishing experiential actualization $E(\{A\})$ from linguistic mediation $\exists(\{A, a^c\})$, we show that Field's problem rests on a category error: assuming reference must bridge word and world rather than coordinate experiential patterns through language. The framework is validated by recent findings in language model architectures revealing dual rod/cap structures that mirror the $x^o/x^c$ distinction.
+This work examines Field's challenge to Tarski's semantic theory - that reducing truth to reference and satisfaction merely pushes the philosophical problem to unexplained semantic primitives. We propose that this challenge dissolves through the Pattern-Constellation (PC) framework, which reconceives reference as an internal linguistic operation $\mathcal{R}(x^c, x^o)$ grounded in experiential pattern-recognition events. By distinguishing experiential activation $E(\{A\})$ from linguistic mediation $\exists(\{A, a^c\})$, we show that Field's problem rests on a category error: assuming reference must bridge word and world rather than coordinate experiential patterns through language. The framework is validated by recent findings in language model architectures revealing dual rod/cap structures that mirror the $x^o/x^c$ distinction.
 
 # Introduction
 
@@ -37,7 +37,7 @@ Reference is an internal linguistic operation coordinating two modes of a lexica
 
 * $\{A\}$ **— Pattern-Constellation for type A.** Distributed, multimodal attractor of sensory, motor, affective and linguistic elements associated with a kind (e.g., $\{DOG\}$, $\{WATER\}$). Not abstract Platonic pattern but dispositional structure instantiated in neural/architectural dynamics.
 
-* $E(\{A\})$ **— Experiential actualization.** Concrete event where $\{A\}$ constellation activates via perception, action, or affect. E captures pre-linguistic, lived pattern occurrence.
+* $E(\{A\})$ **— Experiential activation.** Concrete event where $\{A\}$ constellation activates via perception, action, or affect. E captures pre-linguistic, lived pattern occurrence.
 
 * $a^o$ **— referential/object-word mode.** Public, referential deployment of lexical form. $E(\{A, a^o\})$ marks experiences where word-form co-occurs with constellation, embedding via learning.
 
@@ -63,7 +63,7 @@ Pattern-Recognition Unity asserts pattern and recognition constitute atomic expe
 
 Main argument: when $\{DUCK\}$ PC activates via partial entity (visual pattern), all other patterns in PC activate. What we call "recognition" is simply *reaction*—it's absurd to speak of recognition without reaction. In PC framework, reaction is part of $\{DUCK\}$ Pattern Constellation, not ulterior action. This leads directly to conclusion: pattern and recognition are unified entity.
 
-In PC notation: $E(\{DUCK\})$ - experiential actualization of duck pattern-constellation.[^1]
+In PC notation: $E(\{DUCK\})$ - experiential activation of duck pattern-constellation.[^1]
 
 By 'atomic' we mean experientially indivisible—not composed of separate pattern and recognition phases. Pattern exists only in its recognition, not as separate entity awaiting recognition.
 
@@ -89,7 +89,7 @@ Developmental path from pre-linguistic pattern recognition to linguistic referen
 
 Framework distinguishes two realms of pattern operation:
 
-**E - Experiential Actualization**[^3]:
+**E - Experiential Activation**[^3]:
 - Marks direct pattern-recognition events
 - Pre-linguistic or with integrated labels
 - Operates in NNs through Hopfield-like attractor states
@@ -580,7 +580,7 @@ PC paradigm opens concrete research paths:
 [^1]: Most probable learning mechanism for biological neural networks is Hebbian: what fires together, wires together. In application of Hebbian learning to Hopfield Networks, once trained such network can retrieve full pattern from partial cue. In $\{DUCK\}$ case, either head shape or "quack" or funny walk—all partial patterns of entire PC $\{DUCK\}$—presence of one activates entire PC.
 
 [^2]: There is ample evidence that all infants, when learning words naming objects, tend to grab them, showing how motor areas are integrated with language areas and the need to _sense_ the object more closely and directly. The name is a label for sensory and motor experiences.
-[^3]: Experiential actualization E does not need language at all. It is present in animals, but it is also the lived pre-linguistic mystery at the core of modern phenomenology.
+[^3]: Experiential activation E does not need language at all. It is present in animals, but it is also the lived pre-linguistic mystery at the core of modern phenomenology.
 [^4]: This is a complicated and lengthy process in humans, which, by all data available, finishes well over the age of 18.
 [^5]: By no means is this the only model possible, but it is the most efficient of what we have now. Hopfield networks are few-shots learners and, once trained, are remarkably effective.
 [^6]: This may be a subject in itself, but for our purposes it is enough to say that if the sensing pattern and the reaction pattern (which signifies “recognition”) are both parts of a unified PC, then the idea of a pattern without recognition does not make too much sense. One can go through the realism/anti-realism debate rabbit hole, but the approach here is more naturalistic and pragmatic: PCs are not abstract entities but real patterns in neural networks. Funny enough, we cannot make out where the visual pattern is inside a PC because visual neurons never fire in isolation. So, while a PC pattern in a NN is real, its visual component is elusive. Simply said, I cannot find in a NN where the dog image or the dog sound are saved, but I can find easily the entire {DOG} PC.
