@@ -2098,6 +2098,9 @@
             
             let html = markdown;
             
+            // Fix \not\exists for KaTeX - ADD THIS
+            html = html.replace(/\\not\\exists/g, '\\nexists');
+            
             // Remove frontmatter
             html = html.replace(/^---[\s\S]*?---\n/, '');
             
