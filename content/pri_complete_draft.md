@@ -8,7 +8,7 @@ date: 06.22.2025
 ---
 # Abstract
 
-This document focuses on three issues:
+This document focuses on three issues:[^8]
 * the confusion between pattern-matching (serial, analyical) and pattern-recognition (parallel, gestalt)
 * the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature.[^7]
 * it introducess the concept of _Pattern Constellations_ as a way to understand recognition as the immediate availability of a constellation of patterns that include sensory, motor, emotional, and linguistic aspects.
@@ -298,3 +298,7 @@ O întrebare pentru textul selectat care e citat mai sus.:florin.cojocariu@s.uni
 [^7]: question:> "the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature."
 
 O întrebare legată de textul selectat care apare mai sus:florin.cojocariu@s.unibuc.ro:1759346166448
+
+[^8]: question:> "This document focuses on three issues:"
+
+Why?:florin.cojocariu@s.unibuc.ro:1759351904176
