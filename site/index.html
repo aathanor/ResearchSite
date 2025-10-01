@@ -2047,6 +2047,25 @@
             
             return { content, footnotes };
         }
+        function addSectionNumbering(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const counters = [0, 0, 0, 0, 0, 0];
+            
+            ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach((tag, level) => {
+                doc.querySelectorAll(tag).forEach(heading => {
+                    counters[level]++;
+                    for (let i = level + 1; i < counters.length; i++) {
+                        counters[i] = 0;
+                    }
+                    const number = counters.slice(0, level + 1).filter(n => n > 0).join('.');
+                    heading.textContent = `${number}. ${heading.textContent}`;
+                });
+            });
+            
+            return doc.body.innerHTML;
+        }
 
         // Convert markdown to HTML with footnote handling
         function markdownToHtml(markdown) {
@@ -2120,6 +2139,8 @@
             html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
             html = html.replace(/<p>(<li>)/g, '<ul>$1');
             html = html.replace(/(<\/li>)<\/p>/g, '$1</ul>');
+
+            html = addSectionNumbering(html);
             
             console.log('Final HTML length:', html.length);
             console.log('First 300 chars of HTML:', html.substring(0, 300));

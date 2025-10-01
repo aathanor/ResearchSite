@@ -2,6 +2,11 @@ export async function onRequestPost(context) {
 
   // COMPLETELY SAFE VERSION - Use this in ALL files:
 
+  function stripSectionNumbers(content) {
+      // Remove "1. ", "1.2. ", "1.2.3. " etc. from headers
+      return content.replace(/^(#{1,6})\s+(\d+(?:\.\d+)*)\.\s+/gm, '$1 ');
+  }
+
 function decodeGitHubContent(base64Content) {
     try {
         const cleanBase64 = base64Content.replace(/\n/g, '');
@@ -260,7 +265,7 @@ function encodeContentForGitHub(content) {
     }
     
     console.log('Modified content length:', content.length);
-    
+    content = stripSectionNumbers(content);
     // Update the file on GitHub
     console.log('Attempting to update file on GitHub...');
     console.log('Content length before encoding:', content.length);
