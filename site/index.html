@@ -2018,9 +2018,8 @@
                 console.log('Definition parts:', parts);
                 
                 if (parts.length >= 4 && ['question', 'clarification', 'approved'].includes(parts[0].trim())) {
-                    // This is a comment footnote
                     const type = parts[0].trim();
-                    const text = parts[1].trim();
+                    const text = parts[1].trim().replace(/\\:/g, ':');  // Unescape
                     const author = parts[2].trim();
                     const timestamp = parseInt(parts[3].trim());
                     
@@ -2437,6 +2436,19 @@
                 return;
             }
             
+            // Strip the quoted text block before saving
+            let cleanText = text;
+            if (cleanText.startsWith('> "')) {
+                // Remove everything up to and including the first double newline
+                const parts = cleanText.split('\n\n');
+                if (parts.length > 1) {
+                    cleanText = parts.slice(1).join('\n\n').trim();
+                }
+            }
+            
+            // Escape colons in text to avoid breaking delimiter
+            cleanText = cleanText.replace(/:/g, '\\:');
+
             const newComment = {
                 number: nextCommentNumber,
                 type: type,
