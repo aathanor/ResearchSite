@@ -7,9 +7,7 @@ status: "revised_draft"
 date: 09.30.2025
 ---
 
-# The Problem of Primitive Reference: A Pattern-Constellation Approach
-
-## Abstract
+# Abstract
 
 This work examines Field's challenge to Tarski's semantic theory - that reducing truth to reference and satisfaction merely pushes the philosophical problem to unexplained semantic primitives. We propose that this challenge dissolves through the Pattern-Constellation (PC) framework, which reconceives reference as an internal linguistic operation $\mathcal{R}(x^c, x^o)$ grounded in experiential pattern-recognition events. By distinguishing experiential actualization $E(\{A\})$ from linguistic mediation $\exists(\{A, a^c\})$, we show that Field's problem rests on a category error: assuming reference must bridge word and world rather than coordinate experiential patterns through language. The framework is validated by recent findings in language model architectures revealing dual rod/cap structures that mirror the $x^o/x^c$ distinction.
 

@@ -7,7 +7,7 @@ status: "first_draft"
 date: 09.30.2025
 ---
 
-# Introduction and Motivation
+# Abstract
 
 This document presents a unified formal system for describing pattern-constellations (PCs), their linguistic expression, and the operations that connect them. The formalism progresses from pre-linguistic pattern-recognition through primitive language use to abstract conceptual structures, ultimately addressing the problem of reference.
 
