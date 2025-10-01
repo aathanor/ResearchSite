@@ -2017,14 +2017,12 @@
                 const parts = definition.split(':');
                 console.log('Definition parts:', parts);
                 
-                if (parts.length >= 4 && ['question', 'clarification', 'approved'].includes(parts[0].trim())) {
+                if (parts.length >= 5 && ['question', 'clarification', 'approved'].includes(parts[0].trim())) {
                     const type = parts[0].trim();
                     const text = parts[1].trim().replace(/\\:/g, ':');
                     const author = parts[2].trim();
                     const timestamp = parseInt(parts[3].trim());
-                    const selectedText = parts[4] ? parts[4].trim().replace(/\\:/g, ':') : '';
-                    
-                    console.log('Parsed as comment footnote:', { type, text, author, timestamp });
+                    const selectedText = parts[4].trim().replace(/\\:/g, ':');
                     
                     footnoteDefinitions[ref] = {
                         ref: ref,
@@ -2433,8 +2431,17 @@
                 return;
             }
             
-            // Don't strip quotes - keep full text as entered
-            let cleanText = text.replace(/\n+/g, ' ').replace(/:/g, '\\:');
+            // Extract comment text (strip quote block)
+            let cleanText = text;
+            if (cleanText.includes('> "')) {
+                const parts = cleanText.split('\n\n');
+                if (parts.length > 1) {
+                    cleanText = parts.slice(1).join(' ').trim();
+                }
+            }
+
+            // Single line, escape colons
+            cleanText = cleanText.replace(/\n+/g, ' ').replace(/:/g, '\\:');
             let cleanSelected = selectedText.replace(/\n+/g, ' ').replace(/:/g, '\\:');
             
             // Escape colons in text to avoid breaking delimiter
