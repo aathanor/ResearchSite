@@ -50,7 +50,8 @@ export async function onRequestGet(context) {
       console.log('Extracted email:', email);
 
       await logAccess(context.env, email);
-      
+      console.log('After logAccess call');
+
       return new Response(JSON.stringify({ 
         email: email,
         authenticated: true,
@@ -105,10 +106,19 @@ export async function onRequestGet(context) {
 }
 
 async function logAccess(env, email) {
+  console.log('logAccess started', email);
   try {
+    console.log('Env check:', {
+      hasToken: !!env.GITHUB_TOKEN,
+      hasOwner: !!env.GITHUB_OWNER,
+      hasRepo: !!env.GITHUB_REPO
+    });
+    
     const logPath = 'access.log';
     const url = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${logPath}`;
     
+    console.log('Fetching:', url);
+
     let sha = null;
     let content = '';
     const getResp = await fetch(url, {
@@ -139,10 +149,11 @@ async function logAccess(env, email) {
         sha: sha
       })
     });
-  } catch (error) {
-    console.error('Log failed:', error);
+    } catch (error) {
+      console.error('Log failed:', error.message, error.stack);
+    }
+    console.log('logAccess ended');
   }
-}
 
 // Handle OPTIONS for CORS
 export async function onRequestOptions() {
