@@ -8,14 +8,14 @@ date: 06.22.2025
 ---
 # Abstract
 
-This document focuses on three issues:[^8]
-* the confusion between pattern-matching[^9] (serial, analyical) and pattern-recognition (parallel, gestalt)
-* the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature.[^7]
+This document focuses on three issues:
+* the confusion between pattern-matching (serial, analyical) and pattern-recognition (parallel, gestalt)
+* the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature.
 * it introducess the concept of _Pattern Constellations_ as a way to understand recognition as the immediate availability of a constellation of patterns that include sensory, motor, emotional, and linguistic aspects.
 
 # The Pattern-Matching Confusion
 
-Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations[^6]. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
+Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
 
 Pattern-matching involves:
 
@@ -290,19 +290,3 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^4]: There is abundant neurosciences literature documenting these claims, with Libet et al. (1983), Sato et al. (2024) and Pulvermüller & Fadiga (2010) being some of the most well known. The neurological evidence for PRI is a connected research field but it must be said our approach is and needs to stay philosophical: PRI has important consequences in the Philosophy of Language, Reference Theory and the way we understand LLMs and AI in general.
 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
-
-[^6]: question:> "Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations"
-
-O întrebare pentru textul selectat care e citat mai sus.:florin.cojocariu@s.unibuc.ro:1759345523066
-
-[^7]: question:> "the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature."
-
-O întrebare legată de textul selectat care apare mai sus:florin.cojocariu@s.unibuc.ro:1759346166448
-
-[^8]: question:> "This document focuses on three issues:"
-
-Why?:florin.cojocariu@s.unibuc.ro:1759351904176
-
-[^9]: question:> "the confusion between pattern-matching"
-
-why, again?:florin.cojocariu@s.unibuc.ro:1759352599093:the confusion between pattern-matching
