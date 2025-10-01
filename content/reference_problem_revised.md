@@ -588,4 +588,4 @@ PC paradigm opens concrete research paths:
 
 [^8]: question:Aceasta ar fi o întrebare care e formulată după ce am selectat textul "This work examines Field's challenge to Tarski's semantic theory " și am ales "?Question":florin.cojocariu@s.unibuc.ro:1759343840727
 
-[^9]: clarification:long paragraph:florin.cojocariu@s.unibuc.ro:1759344064008
+[^9]: clarification:O cerere de clarificare după selectarea primului paragraf din 2.1.:florin.cojocariu@s.unibuc.ro:1759344098601
