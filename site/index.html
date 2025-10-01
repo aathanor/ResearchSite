@@ -2413,67 +2413,59 @@
                 alert('Please enter comment text');
                 return;
             }
-            
             if (!currentDocument) {
                 alert('Please select a document first');
                 return;
             }
-            
             if (!range) {
                 alert('No text selection found');
                 return;
             }
             
             const selectedText = range.toString().trim();
-            
             if (!selectedText) {
                 alert('No text was selected');
                 return;
             }
             
+            // Strip quote block
+            let cleanText = text;
+            const doubleNewline = text.indexOf('\n\n');
+            if (doubleNewline !== -1) {
+                cleanText = text.substring(doubleNewline + 2);
+            }
+            cleanText = cleanText.replace(/\n+/g, ' ').replace(/:/g, '\\:').trim();
             
-
-            // Strip quote block - ADD HERE
-            let cleanText = text.replace(/^>\s*"[^"]*"\s*\n+/m, '').trim();
-            cleanText = cleanText.replace(/\n+/g, ' ').replace(/:/g, '\\:');
             let cleanSelected = selectedText.replace(/\n+/g, ' ').replace(/:/g, '\\:');
             
-            // Escape colons in text to avoid breaking delimiter
-            cleanText = cleanText.replace(/\n/g, '\\n')  // Escape newlines
-                                 .replace(/:/g, '\\:');  // Escape colons
-
             const newComment = {
                 number: nextCommentNumber,
                 type: type,
-                text: cleanText,  // cleaned comment only
+                text: cleanText,
                 author: userEmail,
                 timestamp: Date.now(),
                 ref: `^${nextCommentNumber}`,
-                selectedText: cleanSelected,  // quoted text separate
+                selectedText: cleanSelected,
                 isComment: true
             };
             
             console.log('Creating comment:', newComment);
             
-            // Show loading indicator
             const statusEl = document.getElementById('cache-info');
             const oldStatus = statusEl.textContent;
             statusEl.textContent = 'Saving...';
             statusEl.style.color = '#ffc107';
             
-            // Save to GitHub FIRST, before any UI updates
             const saveSuccess = await saveCommentToGitHub(newComment);
             
             if (saveSuccess === false) {
-                // Save failed - don't update anything
                 statusEl.textContent = 'Save failed!';
                 statusEl.style.color = '#dc3545';
                 alert('Failed to save comment to GitHub. Please try again.');
-                return false; // Exit without updating UI
+                return false;
             }
-            return true; // Continue to update UI
-
-            // Only update UI after successful save
+            
+            // Success path
             statusEl.textContent = 'Saved!';
             statusEl.style.color = '#28a745';
             setTimeout(() => {
@@ -2481,7 +2473,6 @@
                 statusEl.style.color = '';
             }, 2000);
             
-            // Now safe to update UI
             insertFootnoteAtRange(range, nextCommentNumber, type);
             currentComments.push(newComment);
             currentComments.sort((a, b) => a.number - b.number);
@@ -2490,13 +2481,14 @@
             displayComments();
             addFootnoteClickHandlers();
             
-            // Force reload to show changes
             setTimeout(() => {
                 loadDocument(currentDocument);
             }, 500);
             
             window.getSelection().removeAllRanges();
             currentCommentRange = null;
+            
+            return true;
         }
 
         // Insert footnote reference at specific range with better positioning
