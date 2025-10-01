@@ -2019,7 +2019,9 @@
                 
                 if (parts.length >= 4 && ['question', 'clarification', 'approved'].includes(parts[0].trim())) {
                     const type = parts[0].trim();
-                    const text = parts[1].trim().replace(/\\:/g, ':');  // Unescape
+                    const text = parts[1].trim()
+                        .replace(/\\:/g, ':')   // Unescape colons
+                        .replace(/\\n/g, '\n'); // Unescape newlines
                     const author = parts[2].trim();
                     const timestamp = parseInt(parts[3].trim());
                     
@@ -2447,7 +2449,8 @@
             }
             
             // Escape colons in text to avoid breaking delimiter
-            cleanText = cleanText.replace(/:/g, '\\:');
+            cleanText = cleanText.replace(/\n/g, '\\n')  // Escape newlines
+                                 .replace(/:/g, '\\:');  // Escape colons
 
             const newComment = {
                 number: nextCommentNumber,
