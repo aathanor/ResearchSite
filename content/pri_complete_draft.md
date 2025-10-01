@@ -31,7 +31,7 @@ However, conflating all pattern-matching with pattern-recognition may obscure im
 
 # The Immediacy of Recognition
 
-Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete.[^2]
+Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete[^8].[^2]
 
 This immediacy suggests something qualitatively different from algorithmic matching. Consider the phenomenological difference between:
 
@@ -294,3 +294,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^6]: question:Asta ar fi o întrebare. Textul selectat e salvat ca citat.:florin.cojocariu@s.unibuc.ro:1759354005152:Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations.
 
 [^7]: clarification:O cerere de clarificare. Odată salvate ele pot fi editate sau șterse cu butoanele de mai jos, Edit, Delete:florin.cojocariu@s.unibuc.ro:1759354048031:Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines.
+
+[^8]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759354058240:Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete
