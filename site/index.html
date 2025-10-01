@@ -1621,8 +1621,8 @@
                         displayName: 'Core Theory',
                         order: 1
                     },
-                    'problem-dissolutions': {
-                        displayName: 'Problem Dissolutions',
+                    'reference-problem': {
+                        displayName: 'The Reference Problem',
                         order: 2
                     },
                     'empirical-evidence': {
@@ -2100,7 +2100,7 @@
             
             // Fix \not\exists for KaTeX - ADD THIS
             html = html.replace(/\\not\\exists/g, '\\nexists');
-            
+
             // Remove frontmatter
             html = html.replace(/^---[\s\S]*?---\n/, '');
             
