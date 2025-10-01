@@ -1,5 +1,5 @@
 ---
-title: "The Problem of Primitive Reference: A Pattern-Constellation Approach"
+title: "3. The Problem of Primitive Reference: A Pattern-Constellation Approach"
 author: Florin Cojocariu
 tags: ["reference-problem"]
 lens: ["philosophy"]
