@@ -137,18 +137,21 @@ async function logAccess(env, email) {
     const timestamp = new Date().toISOString();
     content += `${timestamp} - ${email}\n`;
     
+    const putBody = {
+      message: 'Log access',
+      content: btoa(content)
+    };
+    if (sha) putBody.sha = sha;
+
     await fetch(url, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${env.GITHUB_TOKEN}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        message: 'Log access',
-        content: btoa(content),
-        sha: sha
-      })
+      body: JSON.stringify(putBody)
     });
+    
     } catch (error) {
       console.error('Log failed:', error.message, error.stack);
     }
