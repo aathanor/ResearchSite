@@ -2431,16 +2431,10 @@
                 return;
             }
             
-            // Extract comment text (strip quote block)
-            let cleanText = text;
-            if (cleanText.includes('> "')) {
-                const parts = cleanText.split('\n\n');
-                if (parts.length > 1) {
-                    cleanText = parts.slice(1).join(' ').trim();
-                }
-            }
+            
 
-            // Single line, escape colons
+            // Strip quote block - ADD HERE
+            let cleanText = text.replace(/^>\s*"[^"]*"\s*\n+/m, '').trim();
             cleanText = cleanText.replace(/\n+/g, ' ').replace(/:/g, '\\:');
             let cleanSelected = selectedText.replace(/\n+/g, ' ').replace(/:/g, '\\:');
             
@@ -2451,11 +2445,11 @@
             const newComment = {
                 number: nextCommentNumber,
                 type: type,
-                text: text,
+                text: cleanText,  // cleaned comment only
                 author: userEmail,
                 timestamp: Date.now(),
                 ref: `^${nextCommentNumber}`,
-                selectedText: cleanSelected,
+                selectedText: cleanSelected,  // quoted text separate
                 isComment: true
             };
             
