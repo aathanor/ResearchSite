@@ -15,7 +15,7 @@ This document focuses on three issues:[^8]
 
 # The Pattern-Matching Confusion
 
-Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations[^6]. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
+Much of what passes for "pattern recognition"[^10] in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations[^6]. Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
 
 Pattern-matching involves:
 
@@ -306,3 +306,5 @@ Why?:florin.cojocariu@s.unibuc.ro:1759351904176
 [^9]: question:> "the confusion between pattern-matching"
 
 why, again?:florin.cojocariu@s.unibuc.ro:1759352599093:the confusion between pattern-matching
+
+[^10]: question:> "Much of what passes for "pattern recognition"" Now, for a last try...:florin.cojocariu@s.unibuc.ro:1759353039164:Much of what passes for "pattern recognition"
