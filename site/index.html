@@ -2430,16 +2430,13 @@
                 return;
             }
             
-            // Get the selected text for context
             const selectedText = range.toString().trim();
-            console.log('Selected text for comment:', selectedText);
             
             if (!selectedText) {
                 alert('No text was selected');
                 return;
             }
             
-            // Create new comment
             const newComment = {
                 number: nextCommentNumber,
                 type: type,
@@ -2448,50 +2445,53 @@
                 timestamp: Date.now(),
                 ref: `^${nextCommentNumber}`,
                 selectedText: selectedText,
-                isComment: true  // Mark as comment footnote
+                isComment: true
             };
             
             console.log('Creating comment:', newComment);
             
-            // Insert footnote reference at selection in the DOM (visual feedback)
-            insertFootnoteAtRange(range, nextCommentNumber, type);
+            // Show loading indicator
+            const statusEl = document.getElementById('cache-info');
+            const oldStatus = statusEl.textContent;
+            statusEl.textContent = 'Saving...';
+            statusEl.style.color = '#ffc107';
             
-            // Add to current comments array
-            currentComments.push(newComment);
-            currentComments.sort((a, b) => a.number - b.number);
-            
-            // Save to GitHub with selected text context
+            // Save to GitHub FIRST, before any UI updates
             const saveSuccess = await saveCommentToGitHub(newComment);
             
-            // Only increment and update UI if save was successful
-            if (saveSuccess !== false) {
-                // Increment counter for next comment
-                nextCommentNumber++;
-                
-                // Refresh display
-                displayComments();
-                addFootnoteClickHandlers();
-                
-                // FIXED: Force document reload to show changes immediately
-                setTimeout(() => {
-                    loadDocument(currentDocument);
-                }, 500);
-            } else {
-                // Remove the comment from array if save failed
-                currentComments = currentComments.filter(c => c.number !== newComment.number);
-                
-                // Remove the footnote reference from DOM if save failed
-                const addedRef = document.querySelector(`[data-comment-number="${newComment.number}"]`);
-                if (addedRef) {
-                    addedRef.remove();
-                }
+            if (saveSuccess === false) {
+                // Save failed - don't update anything
+                statusEl.textContent = 'Save failed!';
+                statusEl.style.color = '#dc3545';
+                alert('Failed to save comment to GitHub. Please try again.');
+                return false; // Exit without updating UI
             }
+            return true; // Continue to update UI
+
+            // Only update UI after successful save
+            statusEl.textContent = 'Saved!';
+            statusEl.style.color = '#28a745';
+            setTimeout(() => {
+                statusEl.textContent = oldStatus;
+                statusEl.style.color = '';
+            }, 2000);
             
-            // Clear selection and range
+            // Now safe to update UI
+            insertFootnoteAtRange(range, nextCommentNumber, type);
+            currentComments.push(newComment);
+            currentComments.sort((a, b) => a.number - b.number);
+            nextCommentNumber++;
+            
+            displayComments();
+            addFootnoteClickHandlers();
+            
+            // Force reload to show changes
+            setTimeout(() => {
+                loadDocument(currentDocument);
+            }, 500);
+            
             window.getSelection().removeAllRanges();
             currentCommentRange = null;
-            
-            console.log('Comment add process completed');
         }
 
         // Insert footnote reference at specific range with better positioning
@@ -2642,10 +2642,12 @@
                 setTimeout(() => {
                     loadDocument(currentDocument);
                 }, 500);
+                return true;
             } else {
                 // Revert changes if update failed
                 comment.text = oldComment.text;
                 comment.timestamp = oldComment.timestamp;
+                return false;
             }
         }
 
@@ -2772,7 +2774,17 @@
                 textarea.placeholder = 'What needs to be clarified or expanded in this section?';
             }
             
-            textarea.value = existingText;
+            // Pre-fill with selected text in quotes (if new comment)
+            if (!isEdit && currentCommentRange) {
+                const selectedText = currentCommentRange.toString().trim();
+                if (selectedText) {
+                    textarea.value = `> "${selectedText}"\n\n${existingText}`;
+                } else {
+                    textarea.value = existingText;
+                }
+            } else {
+                textarea.value = existingText;
+            }
             
             // Position dialog 150px above selected text
             if (currentCommentRange && !isEdit) {
@@ -2851,7 +2863,8 @@
         }
         
         // Submit comment from dialog
-        function submitComment() {
+        // Make it async and handle save result
+        async function submitComment() {
             console.log('Submitting comment');
             
             const dialog = document.getElementById('comment-dialog');
@@ -2863,23 +2876,41 @@
                 return;
             }
             
+            // Disable submit button during save
+            const submitBtn = dialog.querySelector('button[onclick="submitComment()"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+            
+            let success = false;
+            
             if (dialog.isEdit && dialog.editCommentNumber) {
-                // Update existing comment
                 console.log('Updating existing comment:', dialog.editCommentNumber);
-                updateComment(dialog.editCommentNumber, text);
+                success = await updateComment(dialog.editCommentNumber, text);
             } else {
-                // Add new comment
                 console.log('Adding new comment with range:', currentCommentRange);
                 if (currentCommentRange && currentCommentType) {
-                    addComment(currentCommentType, text, currentCommentRange);
+                    success = await addComment(currentCommentType, text, currentCommentRange);
                 } else {
                     console.error('Missing comment range or type');
                     alert('Error: Missing selection or comment type');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
                     return;
                 }
             }
             
-            hideCommentDialog();
+            // Re-enable button
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            
+            // Only hide dialog if save succeeded
+            if (success !== false) {
+                hideCommentDialog();
+            } else {
+                // Show error in dialog
+                alert('Failed to save comment. Please try again or copy your text before closing.');
+            }
         }
         
         // Modal functions
