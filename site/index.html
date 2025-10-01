@@ -2210,7 +2210,13 @@
                     </div>
                     ${comment.selectedText ? `<div style="font-size: 12px; color: #6c757d; font-style: italic; margin-bottom: 8px; border-left: 2px solid #dee2e6; padding-left: 8px;">"${comment.selectedText}"</div>` : ''}
                     <div class="comment-content">${comment.text}</div>
-                    <div class="comment-meta">...</div>
+                    <div class="comment-meta">
+                        <span>By ${comment.author} - ${new Date(comment.timestamp).toLocaleDateString()}</span>
+                        <div class="comment-actions">
+                            <button class="comment-action" onclick="editComment(${comment.number})">Edit</button>
+                            <button class="comment-action" onclick="deleteComment(${comment.number})">Delete</button>
+                        </div>
+                    </div>
                 `;
                 
                 // Add click handler to highlight in document
