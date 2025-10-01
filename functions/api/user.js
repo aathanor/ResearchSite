@@ -143,7 +143,7 @@ async function logAccess(env, email) {
     };
     if (sha) putBody.sha = sha;
 
-    await fetch(url, {
+    const putResp = await fetch(url, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${env.GITHUB_TOKEN}`,
@@ -151,7 +151,13 @@ async function logAccess(env, email) {
       },
       body: JSON.stringify(putBody)
     });
-    
+
+    console.log('PUT status:', putResp.status);
+    if (!putResp.ok) {
+      const err = await putResp.text();
+      console.error('PUT error:', err);
+    }
+
     } catch (error) {
       console.error('Log failed:', error.message, error.stack);
     }
