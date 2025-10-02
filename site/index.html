@@ -623,6 +623,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             user-select: none;
+            position: relative;
         }
         
         .overview-item:hover {
@@ -633,6 +634,62 @@
         
         .overview-item:active {
             transform: translateY(0);
+        }
+        
+        .overview-item.dimmed {
+            opacity: 0.4;
+            cursor: default;
+            filter: grayscale(50%);
+        }
+        
+        .overview-item.dimmed:hover {
+            transform: none;
+            box-shadow: none;
+            opacity: 0.4;
+        }
+        
+        /* Tooltip for overview items */
+        .overview-tooltip {
+            position: absolute;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 3000;
+            min-width: 200px;
+            max-width: 300px;
+            display: none;
+            pointer-events: none;
+        }
+        
+        .overview-tooltip.show {
+            display: block;
+        }
+        
+        .overview-tooltip-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: #495057;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .overview-tooltip-docs {
+            font-size: 12px;
+            color: #6c757d;
+            line-height: 1.6;
+        }
+        
+        .overview-tooltip-doc {
+            padding: 3px 0;
+        }
+        
+        .overview-tooltip-empty {
+            font-size: 12px;
+            color: #adb5bd;
+            font-style: italic;
         }
         
         /* Filter indicator in left panel */
@@ -827,6 +884,12 @@
             <span class="comment-option-text">Approved / Keep</span>
         </div>
     </div>
+    
+    <!-- Overview Tooltip -->
+    <div class="overview-tooltip" id="overview-tooltip">
+        <div class="overview-tooltip-title" id="tooltip-title"></div>
+        <div class="overview-tooltip-docs" id="tooltip-docs"></div>
+    </div>
    
     <!-- Comment Dialog -->
     <div id="comment-dialog" style="display: none; position: absolute; 
@@ -881,12 +944,12 @@
                         This research explores a novel theory where pattern recognition is the fundamental mechanism of cognition. Rather than treating concepts as symbols needing sensory "grounding," all cognitive processes—from perception to abstract reasoning—emerge from interconnected patterns forming dynamic constellations. These <emphasis>Pattern Constellations</emphasis> are the cognitive building blocks that give rise to meaning, reference, and conscious experience.
                     </p>
                     <p style="margin-bottom: 15px;">
-                        The framework addresses longstanding problems in philosophy of mind, cognitive science, and AI—including the hard problem of consciousness, symbol grounding, reference, and compositional thought. It draws on empirical evidence from semantic embeddings, neuroscience, vision science, and large language models. Because of its inter-disciplinar nature, the research is organized into four main areas: Core Theory, Problem Dissolutions, Empirical Evidence, and Connections to other fields. You can navigate the research using the document list on the left, or explore topics using the Research Map below.
+                        The framework addresses longstanding problems in philosophy of mind, cognitive science, and AI—including the hard problem of consciousness, symbol grounding, reference, and compositional thought. It draws on empirical evidence from semantic embeddings, neuroscience, vision science, and large language models. Because of its inter-disciplinar nature, the research is organized into three main areas (the tabs on the left column): Philosophy, Cognition,Computer Sciences/Math. There are also 4 types of documents: Core Theory, Problem Dissolutions, Empirical Evidence, and Connections to other fields. You can navigate the research using the document list on the left, or explore topics using the Research Map below.
                     </p>
                 </div>
                 
                 <h2 style="color: #495057; margin-bottom: 25px; font-size: 24px; text-align: center;">Research Map</h2>
-                <p style="text-align: center; color: #6c757d; margin-bottom: 30px; font-size: 14px;">Click any area below to see its docs and to filter documents by topic</p>
+                <p style="text-align: center; color: #6c757d; margin-bottom: 30px; font-size: 14px;">Click topics to filter documents • Hover to see document lists</p>
                 
                 <div class="overview-graph" style="margin-bottom: 30px;">
                     <div class="overview-section core-theory">
@@ -933,7 +996,7 @@
                 </div>
                 
                 <p style="text-align: center; color: #6c757d; font-size: 14px; font-style: italic;">
-                    Select a document from the left panel to begin reading, or click any topic above to explore related documents.
+                    Browse documents in the left panel, or click any topic above to filter by area
                 </p>
             </div>
         </div>
@@ -954,7 +1017,7 @@
         <div class="overview-content">
             <span class="overview-close" onclick="hideOverview()">&times;</span>
             <h2 style="margin-bottom: 10px; color: #2c3e50; font-size: 28px;">Project Overview</h2>
-            <p style="color: #6c757d; margin-bottom: 25px; font-size: 16px;">Pattern Recognition Identity Research - Click any item to filter documents</p>
+            <p style="color: #6c757d; margin-bottom: 25px; font-size: 16px;">Click topics to filter documents • Hover to see document lists</p>
            
             <div class="overview-graph">
                 <div class="overview-section core-theory">
@@ -1195,8 +1258,133 @@
                     });
                 });
                 
+                // Initialize overview tooltips
+                initializeOverviewTooltips();
+                
             } catch (error) {
                 console.error('Error during initialization:', error);
+            }
+        }
+        
+        // Initialize overview item tooltips and dimming
+        function initializeOverviewTooltips() {
+            console.log('Initializing overview tooltips');
+            
+            // Get all overview items (both on landing page and in modal)
+            const overviewItems = document.querySelectorAll('.overview-item');
+            const tooltip = document.getElementById('overview-tooltip');
+            
+            if (!tooltip) {
+                console.warn('Tooltip element not found');
+                return;
+            }
+            
+            overviewItems.forEach(item => {
+                const category = item.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+                if (!category) return;
+                
+                // Check if there are documents with this tag
+                const docsWithTag = getDocumentsWithTag(category);
+                
+                // Dim if no documents
+                if (docsWithTag.length === 0) {
+                    item.classList.add('dimmed');
+                    item.style.cursor = 'default';
+                    // Remove the onclick for dimmed items
+                    item.removeAttribute('onclick');
+                }
+                
+                // Add hover event
+                item.addEventListener('mouseenter', (e) => {
+                    if (item.classList.contains('dimmed')) {
+                        showTooltip(e, category, []);
+                    } else {
+                        showTooltip(e, category, docsWithTag);
+                    }
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    hideTooltip();
+                });
+            });
+        }
+        
+        // Get documents with a specific tag
+        function getDocumentsWithTag(tag) {
+            if (!globalData || !globalData.documents) return [];
+            
+            const normalizedTag = tag.toLowerCase().replace(/\s+/g, '-');
+            const docs = [];
+            
+            Object.values(globalData.documents).forEach(doc => {
+                if (doc.tags && Array.isArray(doc.tags)) {
+                    const hasTag = doc.tags.some(docTag => {
+                        if (!docTag) return false;
+                        const normalizedDocTag = docTag.toLowerCase().replace(/\s+/g, '-');
+                        return normalizedDocTag === normalizedTag;
+                    });
+                    
+                    if (hasTag) {
+                        docs.push(doc);
+                    }
+                }
+            });
+            
+            return docs;
+        }
+        
+        // Show tooltip with document list
+        function showTooltip(event, category, docs) {
+            const tooltip = document.getElementById('overview-tooltip');
+            const tooltipTitle = document.getElementById('tooltip-title');
+            const tooltipDocs = document.getElementById('tooltip-docs');
+            
+            if (!tooltip || !tooltipTitle || !tooltipDocs) return;
+            
+            // Set title
+            const displayName = category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            tooltipTitle.textContent = displayName;
+            
+            // Set document list
+            if (docs.length === 0) {
+                tooltipDocs.innerHTML = '<div class="overview-tooltip-empty">No documents yet</div>';
+            } else {
+                tooltipDocs.innerHTML = docs
+                    .slice(0, 10) // Limit to 10 docs
+                    .map(doc => `<div class="overview-tooltip-doc">• ${doc.title || doc.id}</div>`)
+                    .join('');
+                
+                if (docs.length > 10) {
+                    tooltipDocs.innerHTML += `<div class="overview-tooltip-doc" style="margin-top: 6px; font-style: italic;">...and ${docs.length - 10} more</div>`;
+                }
+            }
+            
+            // Position tooltip near the item
+            const rect = event.target.getBoundingClientRect();
+            const tooltipWidth = 300; // max-width from CSS
+            
+            let left = rect.right + 10 + window.scrollX;
+            let top = rect.top + window.scrollY;
+            
+            // Keep tooltip on screen
+            if (left + tooltipWidth > window.innerWidth) {
+                left = rect.left - tooltipWidth - 10 + window.scrollX;
+            }
+            
+            if (left < 10) {
+                left = 10;
+            }
+            
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.classList.add('show');
+        }
+        
+        // Hide tooltip
+        function hideTooltip() {
+            const tooltip = document.getElementById('overview-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('show');
             }
         }
 
@@ -2646,6 +2834,10 @@
         // Modal functions
         function showOverview() {
             document.getElementById('overview-modal').classList.add('show');
+            // Re-initialize tooltips for modal items
+            setTimeout(() => {
+                initializeOverviewTooltips();
+            }, 100);
         }
 
         function hideOverview() {
