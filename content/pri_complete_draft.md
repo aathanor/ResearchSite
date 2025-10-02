@@ -6,7 +6,7 @@ lens: ["philosophy", "cognition"]
 status: "developing"
 date: 06.22.2025
 ---
-# Abstract[^9]
+# Abstract[^9][^10]
 
 This document focuses on three issues:
 * the confusion between pattern-matching (serial, analyical) and pattern-recognition (parallel, gestalt)
@@ -298,3 +298,5 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^8]: approved:Approved. (un pasaj marcat ca "Approved" are textul Approved inserat automat. Poate însă fi editat și completat ulterior.):florin.cojocariu@s.unibuc.ro:1759382117509:Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete
 
 [^9]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759409952324
+
+[^10]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759410867025:Neuroscience reveals that neural systems operate through constellation-activation rather than sequential processing. The most direct support comes from studies of unconscious neural processing, which consistently show that specific response circuits activate before conscious awareness of stimuli.While Libet's experiments examined self-initiated action rather than stimulus recognition, they establish the broader principle that neural preparation precedes conscious awareness—challenging any model that assumes conscious recognition must precede response readiness. Libet's classic experiments revealed that motor readiness potentials begin 350-500ms before people report being aware of their intention to move. Similarly, the amygdala responds to threatening faces presented too briefly for conscious recognition (around 30ms), and subliminal words activate semantic networks and motor areas before conscious identification.This temporal evidence directly challenges traditional models where recognition precedes response preparation. Instead, it supports PRI's claim that recognition IS immediate constellation-activation. When you see a cat, petting readiness, emotional responses, and approach behaviors are already activated before conscious awareness that you've "recognized" a cat. There's no temporal gap because the constellation-activation IS the recognition event, not something that produces recognition.
