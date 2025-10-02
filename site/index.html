@@ -2140,16 +2140,17 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             
-            const counters = [0, 0, 0, 0, 0, 0];
+            // Start counters at h2 level since h1 is the document title
+            const counters = [0, 0, 0, 0, 0];  // h2, h3, h4, h5, h6
             
-            doc.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
-                const level = parseInt(heading.tagName[1]) - 1; // h1=0, h2=1, etc.
+            doc.querySelectorAll('h2, h3, h4, h5, h6').forEach(heading => {
+                const level = parseInt(heading.tagName[1]) - 2; // h2=0, h3=1, h4=2, etc.
                 
                 // Increment current level
                 counters[level]++;
                 
                 // Reset all deeper levels
-                for (let i = level + 1; i < 6; i++) {
+                for (let i = level + 1; i < 5; i++) {
                     counters[i] = 0;
                 }
                 
