@@ -1036,15 +1036,15 @@
         <div class="center-panel" id="center-panel">
             <div style="max-width: 900px; margin: 0 auto; padding: 40px;">
                 <h1 style="color: #2c3e50; margin-bottom: 20px;">Pattern Constellations Research</h1>
-                <p style="color: #495057; margin-bottom: 20px; font-size: 16px; line-height: 1.6;">
+                <p style="color: #495057; margin-bottom: 20px; font-size: 14px; line-height: 1.6;">
                     1. Main Point, Scope and Method
                     This research investigates patterns as the fundamental organizing principle of reality, proposing that what Western philosophy has traditionally separated as "pattern" (object) and "recognition" (subject) are actually a single unified event appearing dual only through conceptual analysis. The Pattern-Recognition Identity (PRI) framework operates not as another theory requiring proof, but as a lens that dissolves rather than solves classical philosophical problems—from consciousness and causation to symbol grounding and reference. The method combines empirical analysis of semantic patterns in language models (revealing rod/cap structures where literal uses cluster tightly while figurative uses disperse) with philosophical investigation showing how patterns emerge through repetition-based encoding in both biological and artificial neural systems. This approach bridges Dennett's compression-based pattern realism with phenomenological insights about immediate versus mediated existence, suggesting that patterns are neither purely objective regularities nor subjective impositions but unified recognition-events crystallized through iterative exposure. 
                 </p>
-                <p style="color: #6c757d; margin-bottom: 40px; font-size: 16px; line-height: 1.6;"></p>
+                <p style="color: #6c757d; margin-bottom: 40px; font-size: 14px; line-height: 1.6;"></p>
                     2. Research Areas and Navigation
                     The project's interdisciplinary scope risks becoming a maze without clear organizing principles. The three domains—philosophy (metaphysics, epistemology, philosophy of mind), cognition (neural pattern-recognition, embodied cognition, consciousness studies), and computer science/mathematics (LLM architectures, semantic embeddings, information theory)—converge around the empirical discovery that meaning manifests as geometric topology in high-dimensional spaces. Navigation through this landscape requires maintaining tension between dissolution and construction: using PRI to eliminate false problems inherited from dualistic thinking while building concrete demonstrations through semantic analysis. The four research areas provide structure: core theory develops the pattern-constellation framework and PRI principle; problem-dissolutions show how traditional puzzles vanish when pattern/recognition unity is recognized; empirical evidence examines rod/cap structures in language models and convergent learning mechanisms across biological and artificial systems; connections explore resonances with Eastern non-dualism, implications for AI consciousness, and applications to fields from aesthetics to ethics. The key is remembering this isn't about adding complexity but recognizing simplicity—patterns all the way down, with recognition being the pattern itself rather than something done to it.
                 </p>
-                <p style="color: #6c757d; margin-bottom: 40px; font-size: 16px; line-height: 1.6;">
+                <p style="color: #6c757d; margin-bottom: 40px; font-size: 14px; line-height: 1.6;">
                     <strong>Navigation:</strong> Use the colored topic areas below to filter documents by theme, or browse the categorized document list on the left. Click the "Project Overview" button for a comprehensive view. Each document supports inline commenting—select any text to add questions, clarifications, or approvals that are saved directly to the repository.
                 </p>
                 
@@ -1867,8 +1867,25 @@
                 }
                 
                 // Display content
+                // Display content with title and date
+                const lastUpdated = new Date().toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
                 document.getElementById('center-panel').innerHTML = `
                     <article class="document-content" id="document-content">
+                        <div style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #e9ecef;">
+                            <h1 style="margin: 0 0 0.5rem 0; font-size: 2.2em; font-weight: 600; color: #1a1a1a; border: none; padding: 0;">
+                                ${doc.title || doc.id.replace('.md', '')}
+                            </h1>
+                            <div style="font-size: 0.9em; color: #6c757d;">
+                                Last updated: ${lastUpdated}
+                            </div>
+                        </div>
                         ${htmlContent}
                         ${footnotesSection}
                     </article>
