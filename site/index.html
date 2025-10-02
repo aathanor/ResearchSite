@@ -948,6 +948,7 @@
                     </p>
                 </div>
                 
+                
                 <h2 style="color: #495057; margin-bottom: 25px; font-size: 24px; text-align: center;">Research Map</h2>
                 <p style="text-align: center; color: #6c757d; margin-bottom: 30px; font-size: 14px;">Click topics to filter documents • Hover to see document lists</p>
                 
@@ -960,6 +961,7 @@
                             <div class="overview-item" onclick="filterByCategory('pattern-recognition-unity')">Pattern-Recognition Unity</div>
                             <div class="overview-item" onclick="filterByCategory('learning-vs-inference')">Learning vs Inference</div>
                             <div class="overview-item" onclick="filterByCategory('hopfield-networks')">Hopfield Networks with Hebbian Learning</div>
+                            <div class="overview-item" onclick="filterByCategory('formalism')">Formalism</div>
                             <div class="overview-item" onclick="filterByCategory('animal-cognition')">Animal Cognition</div>
                             <div class="overview-item" onclick="filterByCategory('language-patterns')">Language Pattern Constellations</div>
                         </div>
@@ -1028,6 +1030,7 @@
                         <div class="overview-item" onclick="filterByCategory('pattern-recognition-unity')">Pattern-Recognition Unity</div>
                         <div class="overview-item" onclick="filterByCategory('learning-vs-inference')">Learning vs Inference</div>
                         <div class="overview-item" onclick="filterByCategory('hopfield-networks')">Hopfield Networks with Hebbian Learning</div>
+                        <div class="overview-item" onclick="filterByCategory('formalism')">Formalism</div>
                         <div class="overview-item" onclick="filterByCategory('animal-cognition')">Animal Cognition</div>
                         <div class="overview-item" onclick="filterByCategory('language-patterns')">Language Pattern Constellations</div>
                     </div>
@@ -1101,6 +1104,7 @@
                 'pattern-recognition-unity': 'core-theory',
                 'learning-vs-inference': 'core-theory',
                 'hopfield-networks': 'core-theory',
+                'formalism': 'core-theory',
                 'animal-cognition': 'core-theory',
                 'language-patterns': 'core-theory',
                 
@@ -1316,12 +1320,43 @@
             const normalizedTag = tag.toLowerCase().replace(/\s+/g, '-');
             const docs = [];
             
+            // Mapping from specific tags to broad categories
+            const tagToCategoryMap = {
+                'methodological-precautions': 'core-theory',
+                'pattern-constellations': 'core-theory',
+                'pattern-recognition-unity': 'core-theory',
+                'learning-vs-inference': 'core-theory',
+                'hopfield-networks': 'core-theory',
+                'formalism': 'core-theory',
+                'animal-cognition': 'core-theory',
+                'language-patterns': 'core-theory',
+                
+                'reference-problem': 'problem-dissolutions',
+                'hard-problem': 'problem-dissolutions',
+                'symbol-grounding': 'problem-dissolutions',
+                'composition-problem': 'problem-dissolutions',
+                
+                'semantic-embeddings': 'empirical-evidence',
+                'llms-linguistic-animals': 'empirical-evidence',
+                'neuroscience-evidence': 'empirical-evidence',
+                'vision-animal-model': 'empirical-evidence',
+                
+                'eastern-philosophy': 'connections',
+                'analytical-phenomenology': 'connections',
+                'transformer-architecture': 'connections'
+            };
+            
+            // Find which broad category this specific tag belongs to
+            const broadCategory = tagToCategoryMap[normalizedTag];
+            
             Object.values(globalData.documents).forEach(doc => {
                 if (doc.tags && Array.isArray(doc.tags)) {
                     const hasTag = doc.tags.some(docTag => {
                         if (!docTag) return false;
                         const normalizedDocTag = docTag.toLowerCase().replace(/\s+/g, '-');
-                        return normalizedDocTag === normalizedTag;
+                        // Match if document has the specific tag OR the broad category tag
+                        return normalizedDocTag === normalizedTag || 
+                               (broadCategory && normalizedDocTag === broadCategory);
                     });
                     
                     if (hasTag) {
@@ -1658,6 +1693,7 @@
                     'pattern-recognition-unity': 'core-theory',
                     'learning-vs-inference': 'core-theory',
                     'hopfield-networks': 'core-theory',
+                    'formalism': 'core-theory',
                     'animal-cognition': 'core-theory',
                     'language-patterns': 'core-theory',
                     

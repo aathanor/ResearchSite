@@ -1,7 +1,7 @@
 ---
 title: "2. A Formal System for Pattern-Constellations"
 author: Florin Cojocariu
-tags: ["core-theory"]
+tags: ["formalism"]
 lens: ["philosophy", "cs-math"]
 status: "first_draft"
 date: 09.30.2025
