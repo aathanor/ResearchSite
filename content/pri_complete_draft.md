@@ -9,6 +9,7 @@ date: 06.22.2025
 # Abstract
 
 This document focuses on three issues:
+
 * the confusion between pattern-matching (serial, analyical) and pattern-recognition (parallel, gestalt)
 * the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature.
 * it introducess the concept of _Pattern Constellations_ as a way to understand recognition as the immediate availability of a constellation of patterns that include sensory, motor, emotional, and linguistic aspects.
