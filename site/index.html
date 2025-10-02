@@ -4,7 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pattern Constellations - Footnote Comments</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <style>
+
+        /* Formula/inline code styling */
+        .formula, code {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #d63384;
+            white-space: nowrap;
+        }
         /* Import Lato font */
         @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
 
@@ -38,8 +53,9 @@
         }
        
         .header h1 {
-            font-size: 16px;
+            font-size: 24px; /* Increased from 16px to be bigger than document h1 */
             color: #495057;
+            font-weight: 700;
         }
        
         .header-actions {
@@ -55,7 +71,7 @@
        
         .btn-overview {
             padding: 8px 16px;
-            background: #0066cc;
+            background: #502a97;
             color: white;
             border: none;
             border-radius: 4px;
@@ -64,7 +80,7 @@
         }
        
         .btn-overview:hover {
-            background: #0052a3;
+            background: #68508d;
         }
        
         /* Main layout */
@@ -167,7 +183,7 @@
         }
 
         .document-content h1 {
-            font-size: 2em;
+            font-size: 2em; /* This is now smaller than the header title (24px vs ~32px) */
             font-weight: 600;
             margin: 2rem 0 1.5rem 0;
             line-height: 1.2;
@@ -635,67 +651,79 @@
         .overview-item:active {
             transform: translateY(0);
         }
-        
-        .overview-item.dimmed {
+
+        /* Disabled state for items with no documents */
+        .overview-item.no-docs {
             opacity: 0.4;
-            cursor: default;
-            filter: grayscale(50%);
+            cursor: not-allowed;
+            color: #6c757d !important;
+            background: #f8f9fa !important;
+            border-color: #dee2e6 !important;
         }
-        
-        .overview-item.dimmed:hover {
+
+        .overview-item.no-docs:hover {
             transform: none;
             box-shadow: none;
             opacity: 0.4;
         }
-        
-        /* Tooltip for overview items */
-        .overview-tooltip {
+
+        /* Tooltip for items with no documents */
+        .overview-item.no-docs::after {
+            content: "No docs yet here";
             position: absolute;
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 3000;
-            min-width: 200px;
-            max-width: 300px;
-            display: none;
-            pointer-events: none;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 1000;
+            margin-bottom: 5px;
         }
-        
-        .overview-tooltip.show {
-            display: block;
+
+        .overview-item.no-docs:hover::after {
+            opacity: 1;
+            visibility: visible;
         }
-        
-        .overview-tooltip-title {
-            font-weight: 600;
-            font-size: 13px;
-            color: #495057;
-            margin-bottom: 8px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #e9ecef;
+
+        /* Tooltip for items with documents - shows document list */
+        .overview-item:not(.no-docs)::before {
+            content: attr(data-doc-list);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: pre-line;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 1000;
+            margin-bottom: 5px;
+            max-width: 600px;
+            min-width: 250px;
+            text-align: left;
+            line-height: 1.4;
         }
-        
-        .overview-tooltip-docs {
-            font-size: 12px;
-            color: #6c757d;
-            line-height: 1.6;
-        }
-        
-        .overview-tooltip-doc {
-            padding: 3px 0;
-        }
-        
-        .overview-tooltip-empty {
-            font-size: 12px;
-            color: #adb5bd;
-            font-style: italic;
+
+        .overview-item:not(.no-docs):hover::before {
+            opacity: 1;
+            visibility: visible;
         }
         
         /* Filter indicator in left panel */
         .filter-indicator {
-            background: #e3f2fd;
-            border: 1px solid #2196f3;
+            border: 1px solid #dee2e6;
             border-radius: 6px;
             padding: 10px 15px;
             margin-bottom: 15px;
@@ -703,7 +731,7 @@
             align-items: center;
             justify-content: space-between;
             font-size: 14px;
-            color: #1976d2;
+            color: #495057;
         }
         
         .filter-indicator.show {
@@ -711,7 +739,6 @@
         }
         
         .filter-clear {
-            background: #2196f3;
             color: white;
             border: none;
             border-radius: 4px;
@@ -719,6 +746,77 @@
             font-size: 12px;
             cursor: pointer;
             transition: background 0.2s;
+        }
+        
+        /* Category-specific filter indicator colors */
+        .filter-indicator.core-theory {
+            background: rgba(46, 91, 186, 0.1);
+            border-color: #2E5BBA;
+            color: #2E5BBA;
+        }
+        
+        .filter-indicator.core-theory .filter-clear {
+            background: #2E5BBA;
+        }
+        
+        .filter-indicator.core-theory .filter-clear:hover {
+            background: #1E3A5F;
+        }
+        
+        .filter-indicator.problem-dissolutions {
+            background: rgba(230, 126, 34, 0.1);
+            border-color: #E67E22;
+            color: #E67E22;
+        }
+        
+        .filter-indicator.problem-dissolutions .filter-clear {
+            background: #E67E22;
+        }
+        
+        .filter-indicator.problem-dissolutions .filter-clear:hover {
+            background: #A0522D;
+        }
+        
+        .filter-indicator.empirical-evidence {
+            background: rgba(39, 174, 96, 0.1);
+            border-color: #27AE60;
+            color: #27AE60;
+        }
+        
+        .filter-indicator.empirical-evidence .filter-clear {
+            background: #27AE60;
+        }
+        
+        .filter-indicator.empirical-evidence .filter-clear:hover {
+            background: #1E6344;
+        }
+        
+        .filter-indicator.connections {
+            background: rgba(142, 68, 173, 0.1);
+            border-color: #8E44AD;
+            color: #8E44AD;
+        }
+        
+        .filter-indicator.connections .filter-clear {
+            background: #8E44AD;
+        }
+        
+        .filter-indicator.connections .filter-clear:hover {
+            background: #5B2C6F;
+        }
+        
+        .filter-indicator.methodology {
+            background: rgba(46, 91, 186, 0.1);
+            border-color: #2E5BBA;
+            color: #2E5BBA;
+        }
+        
+        .filter-indicator.methodology .filter-clear {
+            background: #2E5BBA;
+        }
+        
+        .filter-indicator.methodology .filter-clear:hover {
+            background: #1E3A5F;
         }
         
         /* Category-specific document backgrounds when filtered */
@@ -865,7 +963,6 @@
         <div class="header-actions">
             <span id="user-info" class="header-info">Loading...</span>
             <span id="cache-info" class="header-info">Ready</span>
-            <button class="btn-overview" onclick="showOverview()">Project Overview</button>
         </div>
     </div>
    
@@ -883,12 +980,6 @@
             <span class="comment-option-icon">✓</span>
             <span class="comment-option-text">Approved / Keep</span>
         </div>
-    </div>
-    
-    <!-- Overview Tooltip -->
-    <div class="overview-tooltip" id="overview-tooltip">
-        <div class="overview-tooltip-title" id="tooltip-title"></div>
-        <div class="overview-tooltip-docs" id="tooltip-docs"></div>
     </div>
    
     <!-- Comment Dialog -->
@@ -918,6 +1009,18 @@
     <div class="main-container">
         <!-- Left Panel - Documents -->
         <div class="left-panel">
+            <!-- Project Overview button moved here -->
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <button class="btn-overview" onclick="showOverview()" style="margin-bottom: 0;">Project Overview</button>
+                <span style="font-size: 12px; color: #6c757d; font-style: italic;">← overview and filter documents by subject</span>
+            </div>
+            
+            <!-- Filter indicator moved above lens tabs -->
+            <div class="filter-indicator" id="filter-indicator">
+                <span id="filter-text">Filtered by: </span>
+                <button class="filter-clear" onclick="clearCategoryFilter()">Clear Filter</button>
+            </div>
+            
             <div class="lens-tabs">
                 <button class="lens-tab active" data-lens="all">All</button>
                 <button class="lens-tab" data-lens="philosophy">Philosophy</button>
@@ -925,84 +1028,16 @@
                 <button class="lens-tab" data-lens="cs-math">CS/Math</button>
             </div>
             
-            <!-- Filter indicator -->
-            <div class="filter-indicator" id="filter-indicator">
-                <span id="filter-text">Filtered by: </span>
-                <button class="filter-clear" onclick="clearCategoryFilter()">Clear Filter</button>
-            </div>
-            
             <!-- Categories will be added dynamically -->
         </div>
        
         <!-- Center - Main content -->
         <div class="center-panel" id="center-panel">
-            <div class="welcome-screen" style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
-                <h1 style="color: #2c3e50; margin-bottom: 20px; font-size: 32px;">Pattern Constellations Research</h1>
-                
-                <div style="color: #495057; font-size: 16px; line-height: 1.7; margin-bottom: 40px;">
-                    <p style="margin-bottom: 15px;">
-                        This research explores a novel theory where pattern recognition is the fundamental mechanism of cognition. Rather than treating concepts as symbols needing sensory "grounding," all cognitive processes—from perception to abstract reasoning—emerge from interconnected patterns forming dynamic constellations. These <em>Pattern Constellations</em> are the cognitive building blocks that give rise to meaning, reference, and conscious experience.
-                    </p>
-                    <p style="margin-bottom: 15px;">
-                        The framework addresses longstanding problems in philosophy of mind, cognitive science, and AI—including the hard problem of consciousness, symbol grounding, reference, and compositional thought. It draws on empirical evidence from semantic embeddings, neuroscience, vision science, and large language models. Because of its inter-disciplinar nature, the research is organized into three main areas (the tabs on the left column): Philosophy, Cognition,Computer Sciences/Math. There are also 4 types of documents: Core Theory, Problem Dissolutions, Empirical Evidence, and Connections to other fields. 
-                    </p>
-                    <p style="margin-bottom: 15px;">
-                        You can navigate the research using the <strong>list on the left</strong>, or explore topics using the Research <strong>Map below</strong>.
-                    </p>
+            <div style="max-width: 700px;">
+                <div style="text-align: center; padding: 60px; color: #6c757d;">
+                    <h2 style="color: #495057; margin-bottom: 10px;">Select a document to begin</h2>
+                    <p>Choose a document from the left panel</p>
                 </div>
-                
-                
-                <h2 style="color: #495057; margin-bottom: 25px; font-size: 24px; text-align: center;">Research Map</h2>
-                <p style="text-align: center; color: #6c757d; margin-bottom: 30px; font-size: 14px;">Click topics to filter documents • Hover to see document lists</p>
-                
-                <div class="overview-graph" style="margin-bottom: 30px;">
-                    <div class="overview-section core-theory">
-                        <h3>Core Theory</h3>
-                        <div class="overview-items">
-                            <div class="overview-item" onclick="filterByCategory('methodological-precautions')">Methodological Precautions</div>
-                            <div class="overview-item" onclick="filterByCategory('pattern-constellations')">Pattern Constellations</div>
-                            <div class="overview-item" onclick="filterByCategory('pattern-recognition-unity')">Pattern-Recognition Unity</div>
-                            <div class="overview-item" onclick="filterByCategory('learning-vs-inference')">Learning vs Inference</div>
-                            <div class="overview-item" onclick="filterByCategory('hopfield-networks')">Hopfield Networks with Hebbian Learning</div>
-                            <div class="overview-item" onclick="filterByCategory('formalism')">Formalism</div>
-                            <div class="overview-item" onclick="filterByCategory('animal-cognition')">Animal Cognition</div>
-                            <div class="overview-item" onclick="filterByCategory('language-patterns')">Language Pattern Constellations</div>
-                        </div>
-                    </div>
-                   
-                    <div class="overview-section problem-dissolutions">
-                        <h3>Problem Dissolutions</h3>
-                        <div class="overview-items">
-                            <div class="overview-item" onclick="filterByCategory('reference-problem')">Reference Problem</div>
-                            <div class="overview-item" onclick="filterByCategory('hard-problem')">Hard Problem</div>
-                            <div class="overview-item" onclick="filterByCategory('symbol-grounding')">Symbol Grounding</div>
-                            <div class="overview-item" onclick="filterByCategory('composition-problem')">Composition Problem</div>
-                        </div>
-                    </div>
-                   
-                    <div class="overview-section empirical-evidence">
-                        <h3>Empirical Evidence</h3>
-                        <div class="overview-items">
-                            <div class="overview-item" onclick="filterByCategory('semantic-embeddings')">Semantic Embeddings & Rod-Cap Structure</div>
-                            <div class="overview-item" onclick="filterByCategory('llms-linguistic-animals')">LLMs as Linguistic Animals</div>
-                            <div class="overview-item" onclick="filterByCategory('neuroscience-evidence')">Neurosciences Evidence</div>
-                            <div class="overview-item" onclick="filterByCategory('vision-animal-model')">Vision Animal Model</div>
-                        </div>
-                    </div>
-                   
-                    <div class="overview-section connections">
-                        <h3>Connections</h3>
-                        <div class="overview-items">
-                            <div class="overview-item" onclick="filterByCategory('eastern-philosophy')">Eastern Philosophy</div>
-                            <div class="overview-item" onclick="filterByCategory('analytical-phenomenology')">Analytical Phenomenology</div>
-                            <div class="overview-item" onclick="filterByCategory('transformer-architecture')">Transformer Architecture</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <p style="text-align: center; color: #6c757d; font-size: 14px; font-style: italic;">
-                    Browse documents in the left panel, or click any topic above to filter by area
-                </p>
             </div>
         </div>
        
@@ -1022,49 +1057,48 @@
         <div class="overview-content">
             <span class="overview-close" onclick="hideOverview()">&times;</span>
             <h2 style="margin-bottom: 10px; color: #2c3e50; font-size: 28px;">Project Overview</h2>
-            <p style="color: #6c757d; margin-bottom: 25px; font-size: 16px;">Click topics to filter documents • Hover to see document lists</p>
+            <p style="color: #6c757d; margin-bottom: 25px; font-size: 16px;">Pattern Recognition Identity Research - Click any item to filter documents</p>
            
-            <div class="overview-graph">
+            <div class="overview-graph" id="overview-graph">
                 <div class="overview-section core-theory">
                     <h3>Core Theory</h3>
                     <div class="overview-items">
-                        <div class="overview-item" onclick="filterByCategory('methodological-precautions')">Methodological Precautions</div>
-                        <div class="overview-item" onclick="filterByCategory('pattern-constellations')">Pattern Constellations</div>
-                        <div class="overview-item" onclick="filterByCategory('pattern-recognition-unity')">Pattern-Recognition Unity</div>
-                        <div class="overview-item" onclick="filterByCategory('learning-vs-inference')">Learning vs Inference</div>
-                        <div class="overview-item" onclick="filterByCategory('hopfield-networks')">Hopfield Networks with Hebbian Learning</div>
-                        <div class="overview-item" onclick="filterByCategory('formalism')">Formalism</div>
-                        <div class="overview-item" onclick="filterByCategory('animal-cognition')">Animal Cognition</div>
-                        <div class="overview-item" onclick="filterByCategory('language-patterns')">Language Pattern Constellations</div>
+                        <div class="overview-item" data-category="methodological-precautions" onclick="filterByCategory('methodological-precautions')">Methodological Precautions</div>
+                        <div class="overview-item" data-category="pattern-constellations" onclick="filterByCategory('pattern-constellations')">Pattern Constellations</div>
+                        <div class="overview-item" data-category="pattern-recognition-unity" onclick="filterByCategory('pattern-recognition-unity')">Pattern-Recognition Unity</div>
+                        <div class="overview-item" data-category="learning-vs-inference" onclick="filterByCategory('learning-vs-inference')">Learning vs Inference</div>
+                        <div class="overview-item" data-category="hopfield-networks" onclick="filterByCategory('hopfield-networks')">Hopfield Networks with Hebbian Learning</div>
+                        <div class="overview-item" data-category="animal-cognition" onclick="filterByCategory('animal-cognition')">Animal Cognition</div>
+                        <div class="overview-item" data-category="language-patterns" onclick="filterByCategory('language-patterns')">Language Pattern Constellations</div>
                     </div>
                 </div>
                
                 <div class="overview-section problem-dissolutions">
                     <h3>Problem Dissolutions</h3>
                     <div class="overview-items">
-                        <div class="overview-item" onclick="filterByCategory('reference-problem')">Reference Problem</div>
-                        <div class="overview-item" onclick="filterByCategory('hard-problem')">Hard Problem</div>
-                        <div class="overview-item" onclick="filterByCategory('symbol-grounding')">Symbol Grounding</div>
-                        <div class="overview-item" onclick="filterByCategory('composition-problem')">Composition Problem</div>
+                        <div class="overview-item" data-category="reference-problem" onclick="filterByCategory('reference-problem')">Reference Problem</div>
+                        <div class="overview-item" data-category="hard-problem" onclick="filterByCategory('hard-problem')">Hard Problem</div>
+                        <div class="overview-item" data-category="symbol-grounding" onclick="filterByCategory('symbol-grounding')">Symbol Grounding</div>
+                        <div class="overview-item" data-category="composition-problem" onclick="filterByCategory('composition-problem')">Composition Problem</div>
                     </div>
                 </div>
                
                 <div class="overview-section empirical-evidence">
                     <h3>Empirical Evidence</h3>
                     <div class="overview-items">
-                        <div class="overview-item" onclick="filterByCategory('semantic-embeddings')">Semantic Embeddings & Rod-Cap Structure</div>
-                        <div class="overview-item" onclick="filterByCategory('llms-linguistic-animals')">LLMs as Linguistic Animals</div>
-                        <div class="overview-item" onclick="filterByCategory('neuroscience-evidence')">Neurosciences Evidence</div>
-                        <div class="overview-item" onclick="filterByCategory('vision-animal-model')">Vision Animal Model</div>
+                        <div class="overview-item" data-category="semantic-embeddings" onclick="filterByCategory('semantic-embeddings')">Semantic Embeddings & Rod-Cap Structure</div>
+                        <div class="overview-item" data-category="llms-linguistic-animals" onclick="filterByCategory('llms-linguistic-animals')">LLMs as Linguistic Animals</div>
+                        <div class="overview-item" data-category="neuroscience-evidence" onclick="filterByCategory('neuroscience-evidence')">Neurosciences Evidence</div>
+                        <div class="overview-item" data-category="vision-animal-model" onclick="filterByCategory('vision-animal-model')">Vision Animal Model</div>
                     </div>
                 </div>
                
                 <div class="overview-section connections">
                     <h3>Connections</h3>
                     <div class="overview-items">
-                        <div class="overview-item" onclick="filterByCategory('eastern-philosophy')">Eastern Philosophy</div>
-                        <div class="overview-item" onclick="filterByCategory('analytical-phenomenology')">Analytical Phenomenology</div>
-                        <div class="overview-item" onclick="filterByCategory('transformer-architecture')">Transformer Architecture</div>
+                        <div class="overview-item" data-category="eastern-philosophy" onclick="filterByCategory('eastern-philosophy')">Eastern Philosophy</div>
+                        <div class="overview-item" data-category="analytical-phenomenology" onclick="filterByCategory('analytical-phenomenology')">Analytical Phenomenology</div>
+                        <div class="overview-item" data-category="transformer-architecture" onclick="filterByCategory('transformer-architecture')">Transformer Architecture</div>
                     </div>
                 </div>
             </div>
@@ -1086,12 +1120,30 @@
 
         // Category filtering functions
         let currentCategoryFilter = null;
+
+        function renderMath() {
+            const content = document.getElementById('document-content');
+            if (!content || !window.renderMathInElement) return;
+            
+            renderMathInElement(content, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ],
+                throwOnError: false
+            });
+        }
         
         function filterByCategory(category) {
             console.log('Filtering by category:', category);
             
             // Add visual feedback to the clicked item (only if event is available)
             if (typeof event !== 'undefined' && event.target) {
+                // Check if item has no docs - if so, don't proceed
+                if (event.target.classList.contains('no-docs')) {
+                    return;
+                }
+                
                 event.target.style.transform = 'scale(0.95)';
                 setTimeout(() => {
                     event.target.style.transform = '';
@@ -1107,7 +1159,6 @@
                 'pattern-recognition-unity': 'core-theory',
                 'learning-vs-inference': 'core-theory',
                 'hopfield-networks': 'core-theory',
-                'formalism': 'core-theory',
                 'animal-cognition': 'core-theory',
                 'language-patterns': 'core-theory',
                 
@@ -1245,6 +1296,57 @@
             console.log('=== END DEBUG ===');
         }
 
+        // Function to update overview items based on document availability
+        function updateOverviewItems() {
+            if (!globalData || !globalData.documents) {
+                console.log('No globalData available for overview update');
+                return;
+            }
+
+            console.log('Updating overview items based on document availability');
+            
+            // Get all overview items
+            const overviewItems = document.querySelectorAll('.overview-item');
+            
+            overviewItems.forEach(item => {
+                const category = item.getAttribute('data-category');
+                if (!category) return;
+                
+                // Find documents that have this specific tag
+                const docsWithTag = Object.values(globalData.documents).filter(doc => {
+                    if (!doc.tags) return false;
+                    const docTags = Array.isArray(doc.tags) ? doc.tags : [doc.tags];
+                    return docTags.some(tag => {
+                        if (!tag) return false;
+                        const normalizedTag = tag.toLowerCase().replace(/\s+/g, '-');
+                        const normalizedCategory = category.toLowerCase();
+                        return normalizedTag === normalizedCategory;
+                    });
+                });
+
+                console.log(`Category ${category}: ${docsWithTag.length} documents`);
+
+                if (docsWithTag.length === 0) {
+                    // No documents - gray out and disable
+                    item.classList.add('no-docs');
+                    item.onclick = null; // Remove click handler
+                } else {
+                    // Has documents - enable and add tooltip with document list
+                    item.classList.remove('no-docs');
+                    
+                    // Create document list for tooltip
+                    const docTitles = docsWithTag.map(doc => `• ${doc.title || doc.id.replace('.md', '')}`);
+                    const docListText = `Documents (${docsWithTag.length}):\n${docTitles.join('\n')}`;
+                    item.setAttribute('data-doc-list', docListText);
+                    
+                    // Restore click handler if it was removed
+                    if (!item.onclick) {
+                        item.onclick = () => filterByCategory(category);
+                    }
+                }
+            });
+        }
+
         // Initialize the application
         async function init() {
             if (isInitialized) return;
@@ -1253,6 +1355,9 @@
             try {
                 await fetchUserEmail();
                 await buildLeftPanel();
+                
+                // Update overview items after documents are loaded
+                updateOverviewItems();
                 
                 // Add lens tab functionality
                 document.querySelectorAll('.lens-tab').forEach(tab => {
@@ -1265,164 +1370,8 @@
                     });
                 });
                 
-                // Initialize overview tooltips
-                initializeOverviewTooltips();
-                
             } catch (error) {
                 console.error('Error during initialization:', error);
-            }
-        }
-        
-        // Initialize overview item tooltips and dimming
-        function initializeOverviewTooltips() {
-            console.log('Initializing overview tooltips');
-            
-            // Get all overview items (both on landing page and in modal)
-            const overviewItems = document.querySelectorAll('.overview-item');
-            const tooltip = document.getElementById('overview-tooltip');
-            
-            if (!tooltip) {
-                console.warn('Tooltip element not found');
-                return;
-            }
-            
-            overviewItems.forEach(item => {
-                const category = item.getAttribute('onclick').match(/'([^']+)'/)?.[1];
-                if (!category) return;
-                
-                // Check if there are documents with this tag
-                const docsWithTag = getDocumentsWithTag(category);
-                
-                // Dim if no documents
-                if (docsWithTag.length === 0) {
-                    item.classList.add('dimmed');
-                    item.style.cursor = 'default';
-                    // Remove the onclick for dimmed items
-                    item.removeAttribute('onclick');
-                }
-                
-                // Add hover event
-                item.addEventListener('mouseenter', (e) => {
-                    if (item.classList.contains('dimmed')) {
-                        showTooltip(e, category, []);
-                    } else {
-                        showTooltip(e, category, docsWithTag);
-                    }
-                });
-                
-                item.addEventListener('mouseleave', () => {
-                    hideTooltip();
-                });
-            });
-        }
-        
-        // Get documents with a specific tag
-        function getDocumentsWithTag(tag) {
-            if (!globalData || !globalData.documents) return [];
-            
-            const normalizedTag = tag.toLowerCase().replace(/\s+/g, '-');
-            const docs = [];
-            
-            // Mapping from specific tags to broad categories
-            const tagToCategoryMap = {
-                'methodological-precautions': 'core-theory',
-                'pattern-constellations': 'core-theory',
-                'pattern-recognition-unity': 'core-theory',
-                'learning-vs-inference': 'core-theory',
-                'hopfield-networks': 'core-theory',
-                'formalism': 'core-theory',
-                'animal-cognition': 'core-theory',
-                'language-patterns': 'core-theory',
-                
-                'reference-problem': 'problem-dissolutions',
-                'hard-problem': 'problem-dissolutions',
-                'symbol-grounding': 'problem-dissolutions',
-                'composition-problem': 'problem-dissolutions',
-                
-                'semantic-embeddings': 'empirical-evidence',
-                'llms-linguistic-animals': 'empirical-evidence',
-                'neuroscience-evidence': 'empirical-evidence',
-                'vision-animal-model': 'empirical-evidence',
-                
-                'eastern-philosophy': 'connections',
-                'analytical-phenomenology': 'connections',
-                'transformer-architecture': 'connections'
-            };
-            
-            // Find which broad category this specific tag belongs to
-            const broadCategory = tagToCategoryMap[normalizedTag];
-            
-            Object.values(globalData.documents).forEach(doc => {
-                if (doc.tags && Array.isArray(doc.tags)) {
-                    const hasTag = doc.tags.some(docTag => {
-                        if (!docTag) return false;
-                        const normalizedDocTag = docTag.toLowerCase().replace(/\s+/g, '-');
-                        // Match if document has the specific tag OR the broad category tag
-                        return normalizedDocTag === normalizedTag || 
-                               (broadCategory && normalizedDocTag === broadCategory);
-                    });
-                    
-                    if (hasTag) {
-                        docs.push(doc);
-                    }
-                }
-            });
-            
-            return docs;
-        }
-        
-        // Show tooltip with document list
-        function showTooltip(event, category, docs) {
-            const tooltip = document.getElementById('overview-tooltip');
-            const tooltipTitle = document.getElementById('tooltip-title');
-            const tooltipDocs = document.getElementById('tooltip-docs');
-            
-            if (!tooltip || !tooltipTitle || !tooltipDocs) return;
-            
-            // Set title
-            const displayName = category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-            tooltipTitle.textContent = displayName;
-            
-            // Set document list
-            if (docs.length === 0) {
-                tooltipDocs.innerHTML = '<div class="overview-tooltip-empty">No documents yet</div>';
-            } else {
-                tooltipDocs.innerHTML = docs
-                    .slice(0, 10) // Limit to 10 docs
-                    .map(doc => `<div class="overview-tooltip-doc">• ${doc.title || doc.id}</div>`)
-                    .join('');
-                
-                if (docs.length > 10) {
-                    tooltipDocs.innerHTML += `<div class="overview-tooltip-doc" style="margin-top: 6px; font-style: italic;">...and ${docs.length - 10} more</div>`;
-                }
-            }
-            
-            // Position tooltip near the item
-            const rect = event.target.getBoundingClientRect();
-            const tooltipWidth = 300; // max-width from CSS
-            
-            let left = rect.right + 10 + window.scrollX;
-            let top = rect.top + window.scrollY;
-            
-            // Keep tooltip on screen
-            if (left + tooltipWidth > window.innerWidth) {
-                left = rect.left - tooltipWidth - 10 + window.scrollX;
-            }
-            
-            if (left < 10) {
-                left = 10;
-            }
-            
-            tooltip.style.left = left + 'px';
-            tooltip.style.top = top + 'px';
-            tooltip.classList.add('show');
-        }
-        
-        // Hide tooltip
-        function hideTooltip() {
-            const tooltip = document.getElementById('overview-tooltip');
-            if (tooltip) {
-                tooltip.classList.remove('show');
             }
         }
 
@@ -1445,6 +1394,10 @@
                 globalData = await response.json();
                 console.log('Loaded data:', globalData);
                 console.log('Raw documents data:', globalData.documents);
+                
+                // Update overview items when data is loaded
+                setTimeout(updateOverviewItems, 100);
+                
                 return globalData;
             } catch (error) {
                 console.error('Failed to load documents:', error);
@@ -1668,8 +1621,8 @@
                         displayName: 'Core Theory',
                         order: 1
                     },
-                    'problem-dissolutions': {
-                        displayName: 'Problem Dissolutions',
+                    'reference-problem': {
+                        displayName: 'The Reference Problem',
                         order: 2
                     },
                     'empirical-evidence': {
@@ -1696,14 +1649,13 @@
                     'pattern-recognition-unity': 'core-theory',
                     'learning-vs-inference': 'core-theory',
                     'hopfield-networks': 'core-theory',
-                    'formalism': 'core-theory',
                     'animal-cognition': 'core-theory',
                     'language-patterns': 'core-theory',
                     
-                    'reference-problem': 'problem-dissolutions',
-                    'hard-problem': 'problem-dissolutions',
-                    'symbol-grounding': 'problem-dissolutions',
-                    'composition-problem': 'problem-dissolutions',
+                    'reference-problem': 'reference-problem',
+                    'hard-problem': 'reference-problem',
+                    'symbol-grounding': 'reference-problem',
+                    'composition-problem': 'reference-problem',
                     
                     'semantic-embeddings': 'empirical-evidence',
                     'llms-linguistic-animals': 'empirical-evidence',
@@ -1865,6 +1817,7 @@
                         ${footnotesSection}
                     </article>
                 `;
+                setTimeout(renderMath, 50);
                 
                 // Display comments
                 displayComments();
@@ -1938,14 +1891,41 @@
         }
 
         // Fix encoding issues
+        // FOR index.html - REPLACE the existing fixEncodingIssues function
+// IMPORTANT: Type this manually, do NOT copy-paste to avoid syntax errors
+
         function fixEncodingIssues(text) {
-            // Common encoding issue fixes using hex escape sequences
-            text = text.replace(/\u00C3/g, '');
-            text = text.replace(/\u2014/g, '-'); 
-            text = text.replace(/\u201C/g, '"');
-            text = text.replace(/\u201D/g, '"');
-            text = text.replace(/\u2019/g, "'");
-            return text;
+            let fixedText = text;
+            
+            // Fix em dashes - type the corrupted characters manually from your document
+            fixedText = fixedText.replace(/â€"/g, '—');
+            fixedText = fixedText.replace(/â/g, '—');
+            
+            // Fix quotes - type these manually  
+            fixedText = fixedText.replace(/â€œ/g, '"');
+            fixedText.replace(/â€/g, '"');
+            
+            // Clean up Â characters around emphasis
+            fixedText = fixedText.replace(/Â\*/g, '*');
+            fixedText = fixedText.replace(/\*Â/g, '*');
+            fixedText = fixedText.replace(/Â_/g, '_'); 
+            fixedText = fixedText.replace(/_Â/g, '_');
+            
+            // Remove remaining Â characters
+            fixedText = fixedText.replace(/Â /g, ' ');
+            fixedText = fixedText.replace(/Â/g, '');
+            
+            // Clean up spaces
+            fixedText = fixedText.replace(/  +/g, ' ');
+            
+            // Keep your original Unicode fixes too
+            fixedText = fixedText.replace(/\u00C3/g, '');
+            fixedText = fixedText.replace(/\u2014/g, '—');
+            fixedText = fixedText.replace(/\u201C/g, '"');
+            fixedText = fixedText.replace(/\u201D/g, '"');
+            fixedText = fixedText.replace(/\u2019/g, "'");
+            
+            return fixedText;
         }
 
         // Helper function to validate that content is markdown, not HTML
@@ -2037,14 +2017,12 @@
                 const parts = definition.split(':');
                 console.log('Definition parts:', parts);
                 
-                if (parts.length >= 4 && ['question', 'clarification', 'approved'].includes(parts[0].trim())) {
-                    // This is a comment footnote
+                if (parts.length >= 5 && ['question', 'clarification', 'approved'].includes(parts[0].trim())) {
                     const type = parts[0].trim();
-                    const text = parts[1].trim();
+                    const text = parts[1].trim().replace(/\\:/g, ':');
                     const author = parts[2].trim();
                     const timestamp = parseInt(parts[3].trim());
-                    
-                    console.log('Parsed as comment footnote:', { type, text, author, timestamp });
+                    const selectedText = parts[4].trim().replace(/\\:/g, ':');
                     
                     footnoteDefinitions[ref] = {
                         ref: ref,
@@ -2053,6 +2031,7 @@
                         text: text,
                         author: author,
                         timestamp: timestamp,
+                        selectedText: selectedText,
                         isComment: true
                     };
                 } else {
@@ -2084,6 +2063,30 @@
             
             return { content, footnotes };
         }
+        function addSectionNumbering(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const counters = [0, 0, 0, 0, 0, 0];
+            
+            doc.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+                const level = parseInt(heading.tagName[1]) - 1; // h1=0, h2=1, etc.
+                
+                // Increment current level
+                counters[level]++;
+                
+                // Reset all deeper levels
+                for (let i = level + 1; i < 6; i++) {
+                    counters[i] = 0;
+                }
+                
+                // Build number from non-zero counters up to current level
+                const number = counters.slice(0, level + 1).join('.');
+                heading.textContent = `${number} ${heading.textContent}`;
+            });
+            
+            return doc.body.innerHTML;
+        }
 
         // Convert markdown to HTML with footnote handling
         function markdownToHtml(markdown) {
@@ -2094,6 +2097,9 @@
             
             let html = markdown;
             
+            // Fix \not\exists for KaTeX - ADD THIS
+            html = html.replace(/\\not\\exists/g, '\\nexists');
+
             // Remove frontmatter
             html = html.replace(/^---[\s\S]*?---\n/, '');
             
@@ -2101,6 +2107,9 @@
             html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
             html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
             html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            
+            // IMPORTANT: Process inline code/formulas BEFORE bold/italic
+            html = html.replace(/`([^`]+)`/g, '<span class="formula">$1</span>');
             
             // Bold and italic
             html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
@@ -2154,6 +2163,8 @@
             html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
             html = html.replace(/<p>(<li>)/g, '<ul>$1');
             html = html.replace(/(<\/li>)<\/p>/g, '$1</ul>');
+
+            html = addSectionNumbering(html);
             
             console.log('Final HTML length:', html.length);
             console.log('First 300 chars of HTML:', html.substring(0, 300));
@@ -2197,6 +2208,7 @@
                         <div class="comment-number ${comment.type}">${comment.number}</div>
                         <div class="comment-type ${comment.type}">${typeDisplay[comment.type] || comment.type}</div>
                     </div>
+                    ${comment.selectedText ? `<div style="font-size: 12px; color: #6c757d; font-style: italic; margin-bottom: 8px; border-left: 2px solid #dee2e6; padding-left: 8px;">"${comment.selectedText}"</div>` : ''}
                     <div class="comment-content">${comment.text}</div>
                     <div class="comment-meta">
                         <span>By ${comment.author} - ${new Date(comment.timestamp).toLocaleDateString()}</span>
@@ -2407,79 +2419,82 @@
                 alert('Please enter comment text');
                 return;
             }
-            
             if (!currentDocument) {
                 alert('Please select a document first');
                 return;
             }
-            
             if (!range) {
                 alert('No text selection found');
                 return;
             }
             
-            // Get the selected text for context
             const selectedText = range.toString().trim();
-            console.log('Selected text for comment:', selectedText);
-            
             if (!selectedText) {
                 alert('No text was selected');
                 return;
             }
             
-            // Create new comment
+            // Strip quote block
+            let cleanText = text;
+            const doubleNewline = text.indexOf('\n\n');
+            if (doubleNewline !== -1) {
+                cleanText = text.substring(doubleNewline + 2);
+            }
+            cleanText = cleanText.replace(/\n+/g, ' ').replace(/:/g, '\\:').trim();
+            
+            let cleanSelected = selectedText.replace(/\n+/g, ' ').replace(/:/g, '\\:');
+            
             const newComment = {
                 number: nextCommentNumber,
                 type: type,
-                text: text,
+                text: cleanText,
                 author: userEmail,
                 timestamp: Date.now(),
                 ref: `^${nextCommentNumber}`,
-                selectedText: selectedText,
-                isComment: true  // Mark as comment footnote
+                selectedText: cleanSelected,
+                isComment: true
             };
             
             console.log('Creating comment:', newComment);
             
-            // Insert footnote reference at selection in the DOM (visual feedback)
-            insertFootnoteAtRange(range, nextCommentNumber, type);
+            const statusEl = document.getElementById('cache-info');
+            const oldStatus = statusEl.textContent;
+            statusEl.textContent = 'Saving...';
+            statusEl.style.color = '#ffc107';
             
-            // Add to current comments array
-            currentComments.push(newComment);
-            currentComments.sort((a, b) => a.number - b.number);
-            
-            // Save to GitHub with selected text context
             const saveSuccess = await saveCommentToGitHub(newComment);
             
-            // Only increment and update UI if save was successful
-            if (saveSuccess !== false) {
-                // Increment counter for next comment
-                nextCommentNumber++;
-                
-                // Refresh display
-                displayComments();
-                addFootnoteClickHandlers();
-                
-                // FIXED: Force document reload to show changes immediately
-                setTimeout(() => {
-                    loadDocument(currentDocument);
-                }, 500);
-            } else {
-                // Remove the comment from array if save failed
-                currentComments = currentComments.filter(c => c.number !== newComment.number);
-                
-                // Remove the footnote reference from DOM if save failed
-                const addedRef = document.querySelector(`[data-comment-number="${newComment.number}"]`);
-                if (addedRef) {
-                    addedRef.remove();
-                }
+            if (saveSuccess === false) {
+                statusEl.textContent = 'Save failed!';
+                statusEl.style.color = '#dc3545';
+                alert('Failed to save comment to GitHub. Please try again.');
+                return false;
             }
             
-            // Clear selection and range
+            // Success path
+            statusEl.textContent = 'Saved!';
+            statusEl.style.color = '#28a745';
+            setTimeout(() => {
+                statusEl.textContent = oldStatus;
+                statusEl.style.color = '';
+            }, 2000);
+            
+            insertFootnoteAtRange(range, nextCommentNumber, type);
+            currentComments.push(newComment);
+            currentComments.sort((a, b) => a.number - b.number);
+            nextCommentNumber++;
+            
+            displayComments();
+            addFootnoteClickHandlers();
+            
+            setTimeout(() => {
+                loadDocument(currentDocument);
+            }, 500);
+            
             window.getSelection().removeAllRanges();
             currentCommentRange = null;
             
-            console.log('Comment add process completed');
+            return true;
         }
 
         // Insert footnote reference at specific range with better positioning
@@ -2555,7 +2570,7 @@
         // Save comment to GitHub via API
         async function saveCommentToGitHub(comment) {
             try {
-                const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}`;
+                const footnoteDefinition = `[^${comment.number}]: ${comment.type}:${comment.text}:${comment.author}:${comment.timestamp}:${comment.selectedText}`;
                 
                 console.log('Saving comment to GitHub:', footnoteDefinition);
                 
@@ -2630,10 +2645,12 @@
                 setTimeout(() => {
                     loadDocument(currentDocument);
                 }, 500);
+                return true;
             } else {
                 // Revert changes if update failed
                 comment.text = oldComment.text;
                 comment.timestamp = oldComment.timestamp;
+                return false;
             }
         }
 
@@ -2760,7 +2777,17 @@
                 textarea.placeholder = 'What needs to be clarified or expanded in this section?';
             }
             
-            textarea.value = existingText;
+            // Pre-fill with selected text in quotes (if new comment)
+            if (!isEdit && currentCommentRange) {
+                const selectedText = currentCommentRange.toString().trim();
+                if (selectedText) {
+                    textarea.value = `> "${selectedText}"\n\n${existingText}`;
+                } else {
+                    textarea.value = existingText;
+                }
+            } else {
+                textarea.value = existingText;
+            }
             
             // Position dialog 150px above selected text
             if (currentCommentRange && !isEdit) {
@@ -2839,7 +2866,8 @@
         }
         
         // Submit comment from dialog
-        function submitComment() {
+        // Make it async and handle save result
+        async function submitComment() {
             console.log('Submitting comment');
             
             const dialog = document.getElementById('comment-dialog');
@@ -2851,32 +2879,46 @@
                 return;
             }
             
+            // Disable submit button during save
+            const submitBtn = dialog.querySelector('button[onclick="submitComment()"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+            
+            let success = false;
+            
             if (dialog.isEdit && dialog.editCommentNumber) {
-                // Update existing comment
                 console.log('Updating existing comment:', dialog.editCommentNumber);
-                updateComment(dialog.editCommentNumber, text);
+                success = await updateComment(dialog.editCommentNumber, text);
             } else {
-                // Add new comment
                 console.log('Adding new comment with range:', currentCommentRange);
                 if (currentCommentRange && currentCommentType) {
-                    addComment(currentCommentType, text, currentCommentRange);
+                    success = await addComment(currentCommentType, text, currentCommentRange);
                 } else {
                     console.error('Missing comment range or type');
                     alert('Error: Missing selection or comment type');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
                     return;
                 }
             }
             
-            hideCommentDialog();
+            // Re-enable button
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            
+            // Only hide dialog if save succeeded
+            if (success !== false) {
+                hideCommentDialog();
+            } else {
+                // Show error in dialog
+                alert('Failed to save comment. Please try again or copy your text before closing.');
+            }
         }
         
         // Modal functions
         function showOverview() {
             document.getElementById('overview-modal').classList.add('show');
-            // Re-initialize tooltips for modal items
-            setTimeout(() => {
-                initializeOverviewTooltips();
-            }, 100);
         }
 
         function hideOverview() {
