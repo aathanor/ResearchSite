@@ -291,7 +291,7 @@ Both types of existence are internal to pattern-recognition events - there's no 
 
 [^5]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
 
-[^6]: question:Asta ar fi o întrebare. Textul selectat e salvat ca citat.:florin.cojocariu@s.unibuc.ro:1759354005152:Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations.
+[^6]: question:Asta ar fi o întrebare. Textul selectat inițial în document e salvat ca citat pentru o bună referință.:florin.cojocariu@s.unibuc.ro:1759382060118:Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations.
 
 [^7]: clarification:O cerere de clarificare. Odată salvate ele pot fi editate sau șterse cu butoanele de mai jos, Edit, Delete. Puteți șterge aceste comentarii de probă sau proba editarea.:florin.cojocariu@s.unibuc.ro:1759354202496:Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines.
 
