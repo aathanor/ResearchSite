@@ -6,7 +6,7 @@ lens: ["philosophy", "cognition"]
 status: "developing"
 date: 06.22.2025
 ---
-# Abstract[^9]
+# Abstract
 
 This document focuses on three issues:
 * the confusion between pattern-matching (serial, analyical) and pattern-recognition (parallel, gestalt)
@@ -296,5 +296,3 @@ Both types of existence are internal to pattern-recognition events - there's no 
 [^7]: clarification:O cerere de clarificare. Toate comentariile, odată salvate, pot fi editate sau șterse cu butoanele de mai jos, Edit, Delete. Puteți șterge aceste comentarii de probă sau încerca editarea lor.:florin.cojocariu@s.unibuc.ro:1759382101574:Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines.
 
 [^8]: approved:Approved. (un pasaj marcat ca "Approved" are textul Approved inserat automat. Poate însă fi editat și completat ulterior.):florin.cojocariu@s.unibuc.ro:1759382117509:Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete
-
-[^9]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759430217901:We would say that a constellation of patterns becomes immediately available, not just a visual template. This constellation includes sensory patterns (visual, tactile), motor patterns (petting readiness), emotional patterns (affection, wariness), and linguistic patterns (the word "cat" and its associations).Critical insight\: This constellation doesn't become available after recognition—it IS what we call recognition. When philosophers and cognitive scientists speak of "recognizing a cat," they're referring to this immediate availability of the entire pattern-constellation, not to a preliminary identification step that then triggers these responses.Theoretical proposal\: Recognition is not the identification of a visual pattern that then triggers these responses. Rather, recognition IS this immediate constellation of readiness becoming available. The recognition and the readiness are not sequential—they are the same event.This would explain the experiential immediacy\: there is no process of matching followed by retrieval of appropriate responses. The constellation of readiness would be what recognition is, not what recognition produces. There's no temporal sequence of "visual input → memory search → recognition achieved." Instead, the entire constellation becomes simultaneously "close to hand," and that constellation-activation IS the recognition event.
