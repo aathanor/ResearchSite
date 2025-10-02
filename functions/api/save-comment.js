@@ -355,184 +355,70 @@ function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedTe
   }
   
   // Clean the selected text and contexts
-  const cleanSelectedText = selectedText.trim();
   const cleanBeforeContext = beforeContext ? beforeContext.trim() : '';
   const cleanAfterContext = afterContext ? afterContext.trim() : '';
   
   let insertionIndex = -1;
-  
-  // Strategy 1: Try to find the exact selected text AS-IS
+
+  // Clean the selected text
+  const cleanSelectedText = selectedText.trim();
+
+  // STRATEGY 1: Try exact match (for short selections)
   insertionIndex = content.indexOf(cleanSelectedText);
   if (insertionIndex !== -1) {
-    console.log('Found exact selected text at:', insertionIndex);
+    console.log('Found exact match at:', insertionIndex);
     insertionIndex = insertionIndex + cleanSelectedText.length;
-    console.log('Will insert footnote reference after selection at:', insertionIndex);
-  }
-  
-  // Strategy 2: Try to find selected text WITH backticks (for formulas)
-  if (insertionIndex === -1) {
+  } 
+  // STRATEGY 2: Try with backticks (for formulas/code)
+  else {
     const withBackticks = `\`${cleanSelectedText}\``;
     insertionIndex = content.indexOf(withBackticks);
     if (insertionIndex !== -1) {
-      console.log('Found text with backticks at:', insertionIndex);
-      // Insert AFTER the closing backtick
+      console.log('Found with backticks at:', insertionIndex);
       insertionIndex = insertionIndex + withBackticks.length;
-      console.log('Will insert footnote reference after backticked text at:', insertionIndex);
     }
   }
-  
-  // Strategy 3: Try to find with other common markdown wrappers
-  if (insertionIndex === -1) {
-    const variations = [
-      `**${cleanSelectedText}**`,  // Bold
-      `*${cleanSelectedText}*`,    // Italic
-      `***${cleanSelectedText}***`, // Bold italic
-      `_${cleanSelectedText}_`,    // Italic alt
-      `__${cleanSelectedText}__`   // Bold alt
-    ];
+
+  // STRATEGY 3: For longer selections, use first/last sentence
+  if (insertionIndex === -1 && cleanSelectedText.length > 50) {
+    console.log('Using first/last sentence matching for long selection');
     
-    for (const variation of variations) {
-      insertionIndex = content.indexOf(variation);
-      if (insertionIndex !== -1) {
-        console.log('Found text with markdown wrapper:', variation);
-        insertionIndex = insertionIndex + variation.length;
-        console.log('Will insert footnote reference after wrapped text at:', insertionIndex);
-        break;
-      }
-    }
-  }
-  
-  // Strategy 4: Use before and after context to find the location
-  if (insertionIndex === -1 && cleanBeforeContext && cleanAfterContext) {
-    // Try with original text
-    let pattern = cleanBeforeContext + cleanSelectedText + cleanAfterContext;
-    let patternIndex = content.indexOf(pattern);
+    const sentences = cleanSelectedText.split(/[.!?]+\s+/).filter(s => s.trim().length > 0);
     
-    // Try with backticked text
-    if (patternIndex === -1) {
-      pattern = cleanBeforeContext + `\`${cleanSelectedText}\`` + cleanAfterContext;
-      patternIndex = content.indexOf(pattern);
-    }
-    
-    if (patternIndex !== -1) {
-      // Find where the selected text ends (accounting for possible backticks)
-      const selectedTextStart = patternIndex + cleanBeforeContext.length;
-      const possibleBacktick = content.charAt(selectedTextStart);
+    if (sentences.length >= 2) {
+      const firstSentence = sentences[0].trim();
+      const lastSentence = sentences[sentences.length - 1].trim();
       
-      if (possibleBacktick === '`') {
-        // Text is backticked, insert after closing backtick
-        insertionIndex = selectedTextStart + 1 + cleanSelectedText.length + 1; // +1 for opening, +1 for closing
-      } else {
-        // Text is not backticked
-        insertionIndex = selectedTextStart + cleanSelectedText.length;
-      }
-      
-      console.log('Found using full context, inserting after selection at:', insertionIndex);
-    }
-  }
-  
-  // Strategy 5: Use just before context
-  if (insertionIndex === -1 && cleanBeforeContext) {
-    const beforeIndex = content.indexOf(cleanBeforeContext);
-    if (beforeIndex !== -1) {
-      const afterBeforeIndex = beforeIndex + cleanBeforeContext.length;
-      const remainingContent = content.substring(afterBeforeIndex);
-      
-      // Try to find selected text (with or without backticks) in remaining content
-      let selectedInRemaining = remainingContent.indexOf(cleanSelectedText);
-      let foundWithBackticks = false;
-      
-      if (selectedInRemaining === -1) {
-        const withBackticks = `\`${cleanSelectedText}\``;
-        selectedInRemaining = remainingContent.indexOf(withBackticks);
-        if (selectedInRemaining !== -1) {
-          foundWithBackticks = true;
-          selectedInRemaining += withBackticks.length;
-        }
-      } else {
-        selectedInRemaining += cleanSelectedText.length;
-      }
-      
-      if (selectedInRemaining !== -1) {
-        insertionIndex = afterBeforeIndex + selectedInRemaining;
-        console.log('Found using before context, inserting after selection at:', insertionIndex);
-      }
-    }
-  }
-  
-  // Strategy 6: Fuzzy matching (normalize spaces and punctuation)
-  if (insertionIndex === -1) {
-    const normalizeText = (text) => {
-      return text.toLowerCase()
-        .replace(/[^\w\s]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-    };
-    
-    const normalizedSelected = normalizeText(cleanSelectedText);
-    const words = normalizedSelected.split(' ');
-    
-    if (words.length >= 2) {
-      // Try to find a sequence of these words in the content
-      const contentLower = content.toLowerCase();
-      const contentWords = contentLower.match(/\w+/g) || [];
-      
-      for (let i = 0; i <= contentWords.length - words.length; i++) {
-        const slice = contentWords.slice(i, i + words.length).join(' ');
-        if (slice === normalizedSelected) {
-          // Found the word sequence, now find it in original content
-          const wordsRegex = new RegExp(
-            words.map(w => `\\b${w}\\b`).join('\\s+'),
-            'i'
-          );
-          const match = content.match(wordsRegex);
-          if (match) {
-            const matchIndex = content.indexOf(match[0]);
-            // Check if there's a closing backtick right after the match
-            const afterMatch = matchIndex + match[0].length;
-            if (content.charAt(afterMatch) === '`') {
-              insertionIndex = afterMatch + 1;
-            } else {
-              insertionIndex = afterMatch;
-            }
-            console.log('Found using fuzzy matching, inserting at:', insertionIndex);
-            break;
-          }
+      const firstIndex = content.indexOf(firstSentence);
+      if (firstIndex !== -1) {
+        const searchFrom = firstIndex + firstSentence.length;
+        const remainingContent = content.substring(searchFrom);
+        const lastIndex = remainingContent.indexOf(lastSentence);
+        
+        if (lastIndex !== -1) {
+          insertionIndex = searchFrom + lastIndex + lastSentence.length;
+          console.log('Found using first/last sentence at:', insertionIndex);
         }
       }
-    }
-  }
-  
-  // Strategy 7: Last resort - find a reasonable location (NOT at the beginning)
-  if (insertionIndex === -1) {
-    console.warn('Could not locate selected text, using fallback strategy');
-    
-    // Skip frontmatter
-    let searchStart = 0;
-    const frontmatterEnd = content.indexOf('---', 3);
-    if (frontmatterEnd !== -1) {
-      searchStart = frontmatterEnd + 3;
-    }
-    
-    // Find the end of the first meaningful paragraph after frontmatter
-    const remainingContent = content.substring(searchStart);
-    const firstParagraphEnd = remainingContent.indexOf('\n\n');
-    
-    if (firstParagraphEnd !== -1) {
-      insertionIndex = searchStart + firstParagraphEnd;
-    } else {
-      // Find end of first sentence after frontmatter
-      const sentenceEnd = remainingContent.search(/[.!?]\s/);
-      if (sentenceEnd !== -1) {
-        insertionIndex = searchStart + sentenceEnd + 1;
-      } else {
-        // Very last resort - middle of document
-        insertionIndex = Math.floor(content.length / 2);
+    } else if (sentences.length === 1) {
+      // Single sentence - just find it
+      const singleSentence = sentences[0].trim();
+      const foundIndex = content.indexOf(singleSentence);
+      if (foundIndex !== -1) {
+        insertionIndex = foundIndex + singleSentence.length;
+        console.log('Found single sentence at:', insertionIndex);
       }
     }
+  }
+
+  // FALLBACK: If still not found, append at end of document (safest)
+  if (insertionIndex === -1) {
+    console.warn('Could not locate selection, appending footnote at end');
+    insertionIndex = content.length;
+  }
     
     console.log('Using fallback insertion at:', insertionIndex);
-  }
+  
   
   // Insert footnote reference at the found position
   if (insertionIndex !== -1 && insertionIndex <= content.length) {
