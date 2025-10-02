@@ -9,7 +9,7 @@ date: 09.30.2025
 
 # Abstract
 
-This document presents a unified formal system for describing pattern-constellations (PCs), their linguistic expression, and the operations that connect them. The formalism progresses from pre-linguistic pattern-recognition through primitive language use to abstract conceptual structures, ultimately addressing the problem of reference.
+This document attempts a unified formal system for describing pattern-constellations (PCs), their linguistic expression, and the operations that connect them. The formalism progresses from pre-linguistic pattern recognition through primitive language use to abstract conceptual structures, ultimately addressing the problem of reference.
 
 Pattern Constellations are introduced and explained elsewhere; this document is focused on scaffolding a formalism around them. For the purposes here, we’ll recall that a Pattern Constellation is a stable attractor[^1] configuration in a neural network that integrates sensory, motor, emotional, social, and (once learned) linguistic patterns. Formed through Hebbian learning where co-occurring patterns wire together. Activated as a unified whole when any partial pattern triggers it. Exists as a weighted complex network structure that can be measured in NN models, not an abstract entity. PCs are formalized in §2 below.
 
@@ -19,7 +19,7 @@ Pattern Constellations are introduced and explained elsewhere; this document is 
 
 ## Experiential Actualization
 
-**Notation**: $E(\{A\})$ or $E(\{A, a^o\})$[^2]
+**Notation**: $E(\{A\})$ or $E(\{A, a^o\})$
 
 **Reads as**: _"Pattern-constellation A is experientially activated" or "Pattern-constellation A labelled with the object-word $a^o$ is experientially activated"_
 
@@ -57,7 +57,7 @@ Pattern Constellations are introduced and explained elsewhere; this document is 
 
 ## Linguistic Mediation
 
-**Notation**: $\exists(\{A, a^c\})$
+**Notation**: $\exists(\{A, a^c\})$[^2]
 
 **Reads as**: "Pattern-constellation A is linguistically mediated through concept-word $a^c$.
 
@@ -435,9 +435,11 @@ Staying in $\exists(\{X, x^c\})$ realm
 
 ## Motivation
 
-Not all patterns are directly sensory-grounded. Some patterns emerge at the level of linguistic patterns themselves.
+Language in use builds its own Pattern Constellations: when looking at how a word like cat (with both its uses $cat^o$ and $cat^c$) is used in a corpus of text in all possible sentences, we can find _patterns of use_. The most visible and empirically present in LLMs are the corresponding literal, concrete vs metaphoric, abstract uses. But language also encodes feeling, distance from ego and other dimensions, all together generating veritable Pattern Constellations for each word in the language space. This is the “abstract space” we all feel we enter when thinking detached from the real world.
 
-**Key insight**: Mathematical and logical concepts are patterns visible in how we use language, not patterns of direct sensory experience.
+Hereafter is an attempt to formalize this idea.
+
+**Key insight**: The relation between the complexity of language and real world is maintained by the original object-word $x^o$, which is part of the primitive PC, acting as a label for it.
 
 ## Hierarchy of Patterns
 
@@ -447,7 +449,7 @@ $\{A\}$ or $\{A, a^o, a^c\}$ = Constellation integrating:
   - Sensory patterns
   - Motor patterns  
   - Emotional patterns
-  - Linguistic patterns ($a^o$ and $a^c$)
+  - Linguistic patterns ($a^o$ and $a^c$) at a later stage
 
 Built through: $E(\{A, a^o\})$ events during learning
 Mediated through: $\exists(\{A, a^c\})$ for abstract use
@@ -459,12 +461,16 @@ Mediated through: $\exists(\{A, a^c\})$ for abstract use
 Can be seen as meta-constellation over primitive PCs
 Patterns IN linguistic space ($\exists$ realm)
 Built through observing regularities in $\exists(\{A, a^c\})$ usage
-Can be written ⟪$a^o$, $a^c$⟫ when emphasizing dual modes
+Can be written ⟪$a^o$, $a^c$⟫ when emphasizing dual modes and connecting word to object:
+
+$\{A\}$ -> $\{A, a^o, a^c\}$ -> ⟪$a^o$, $a^c$⟫ -> ⟪a⟫
 
 **Level 3: Mathematical/Logical Symbols**
 
 Symbols functioning as $x^o$ for LPCs
-Patterns of patterns of language
+Patterns of patterns of language: “variable x” encodes an aspect of a repeating feature of language “sentences keep coherence when one word is replaced with a likewise word”; "addition “+” is the pattern for all sentences of the type “if I have some somethings and I receive a new something, then I’ll have more soomethings”; and so on.
+
+This Math/Logical level have its own labels for patterns (symbols), creates its own patterns of use (formalisms), and may have general PC structure, but on its own specific dimensions.[^3]
 
 ## Notation
 
@@ -596,3 +602,4 @@ Similar $E(\{A, a^o\})$ and $E(\{B, b^o\})$ histories
 
 [^1]: This is best modelled by Hopfield Networks, a type of NN that learns rapidly and remembers patterns. Its theoretical basis is built around minimum energy configuration and in this respect a learned pattern is literally an attractor.
 [^2]: Both $E$ and $\exists$ are used in the sense of “existence”, but according to the two different uses we have for “existence”, un-mediated, and mediated. To recognize something in the real world is, in terms of mental states, to become aware of its existence, thus E. However, for conceptual things, it is rather their possibility for existence in the abstract space that is recognized, hence the $\exists$ from logic.
+[^3]: We can speculate that these levels of abstractions go up, in the way metalogic included logic with its own symbols and patterns, but keeping the same fundamental feature of PCs because this is the fundamental functioning structure for our brains.
