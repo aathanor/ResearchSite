@@ -138,7 +138,7 @@ When a cat-constellation becomes present, this IS the recognition of a cat. The 
 # Position in Current Research
 
 PRU emerges from observations about limitations in current computational approaches across multiple research programs:
-    
+
 **Embodied Cognition**: Research has demonstrated "sensorimotor activation" during language processing, supporting claims about embodied grounding of cognitive processes (Barsalou, 1999; Glenberg, 1997; Wilson, 2002). However, many approaches in this tradition still work with representational frameworks where embodied representations are processed by cognitive systems—what Dreyfus (1992) critiqued as retaining the computational paradigm's fundamental assumptions while merely adding "embodied" content.
 
 **Enactivism and Ecological Psychology**: These approaches reject internal representations while emphasizing organism-environment coupling (Varela et al., 1991; Gibson, 1979; Chemero, 2009). Recent work calls for "integration of methodologies and mutual enrichment" between these approaches (Kiverstein & Miller, 2015). Current integration attempts often propose multiple levels of analysis rather than fundamental unity.
@@ -315,7 +315,6 @@ McCarthy, J., & Hayes, P. J. (1969). Some philosophical problems from the standp
 Newell, A., & Simon, H. A. (1972). Human problem solving. Prentice-Hall.
 Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... & Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30.
 
-
 **Secondary Sources**
 *Philosophy*
 
@@ -362,5 +361,3 @@ Shanahan, M. (2024). Talking about large language models. Communications of the 
 [^7]: clarification:O cerere de clarificare. Toate comentariile, odată salvate, pot fi editate sau șterse cu butoanele de mai jos, Edit, Delete. Puteți șterge aceste comentarii de probă sau încerca editarea lor.:florin.cojocariu@s.unibuc.ro:1759382101574:Traditional computer vision systems extract features, compare them to stored templates, and output classification results through computational pipelines.
 
 [^8]: approved:Approved. (un pasaj marcat ca "Approved" are textul Approved inserat automat. Poate însă fi editat și completat ulterior.):florin.cojocariu@s.unibuc.ro:1759382117509:Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete
-
-[^9]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759470856129:We would say that a constellation of patterns becomes immediately available, not just a visual template. This constellation includes sensory patterns (visual, tactile), motor patterns (petting readiness), emotional patterns (affection, wariness), and linguistic patterns (the word "cat" and its associations).Critical insight\: This constellation doesn't become available after recognition—it IS what we call recognition. When philosophers and cognitive scientists speak of "recognizing a cat," they're referring to this immediate availability of the entire pattern-constellation, not to a preliminary identification step that then triggers these responses.Theoretical proposal\: Recognition is not the identification of a visual pattern that then triggers these responses. Rather, recognition IS this immediate constellation of readiness becoming available. The recognition and the readiness are not sequential—they are the same event.This would explain the experiential immediacy\: there is no process of matching followed by retrieval of appropriate responses. The constellation of readiness would be what recognition is, not what recognition produces. There's no temporal sequence of "visual input → memory search → recognition achieved." Instead, the entire constellation becomes simultaneously "close to hand," and that constellation-activation IS the recognition event.
