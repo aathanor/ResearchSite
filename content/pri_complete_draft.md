@@ -288,6 +288,7 @@ Both types of existence are internal to pattern-recognition events - there's no 
 # References
 
 **Primary Sources**
+
 *Philosophy*
 
 Chalmers, D. J. (1995). Facing up to the problem of consciousness. Journal of Consciousness Studies, 2(3), 200–219.
@@ -331,6 +332,7 @@ Newell, A., & Simon, H. A. (1972). Human problem solving. Prentice-Hall.
 Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... & Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30.
 
 **Secondary Sources**
+
 *Philosophy*
 
 Clark, A. (2013). Whatever next? Predictive brains, situated agents, and the future of cognitive science. Behavioral and Brain Sciences, 36(3), 181–204.
