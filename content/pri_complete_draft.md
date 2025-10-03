@@ -291,28 +291,43 @@ Both types of existence are internal to pattern-recognition events - there's no 
 *Philosophy*
 
 Chalmers, D. J. (1995). Facing up to the problem of consciousness. Journal of Consciousness Studies, 2(3), 200–219.
+
 Dennett, D. C. (1984). Cognitive wheels: The frame problem of AI. In Minds, Machines and Evolution (pp. 129–151). Cambridge University Press.
+
 Field, H. (1972). Tarski's theory of truth. The Journal of Philosophy, 69(13), 347–375.
+
 Fodor, J. A. (1975). The language of thought. Harvard University Press.
+
 Harnad, S. (1990). The symbol grounding problem. Physica D: Nonlinear Phenomena, 42(1-3), 335–346.
+
 Heidegger, M. (1927/1962). Being and time (J. Macquarrie & E. Robinson, Trans.). Harper & Row.
+
 Kant, I. (1781/1998). Critique of pure reason (P. Guyer & A. W. Wood, Trans.). Cambridge University Press.
+
 Merleau-Ponty, M. (1945/2012). Phenomenology of perception (D. A. Landes, Trans.). Routledge.
+
 Tarski, A. (1944). The semantic conception of truth: And the foundations of semantics. Philosophy and Phenomenological Research, 4(3), 341–376.
 
 *Cognition*
 
 Barsalou, L. W. (1999). Perceptual symbol systems. Behavioral and Brain Sciences, 22(4), 577–660.
+
 Chemero, A. (2009). Radical embodied cognitive science. Review of General Psychology, 13(4), 323–330.
+
 Gibson, J. J. (1979). The ecological approach to visual perception. Houghton Mifflin.
+
 Glenberg, A. M. (1997). What memory is for: Creating meaning in the service of action. Behavioral and Brain Sciences, 20(1), 41–50.
+
 Varela, F. J., Thompson, E., & Rosch, E. (1991). The embodied mind: Cognitive science and human experience. MIT Press.
 
 *Computer Science*
 
 Marr, D. (1982). Vision: A computational investigation into the human representation and processing of visual information. MIT Press.
+
 McCarthy, J., & Hayes, P. J. (1969). Some philosophical problems from the standpoint of artificial intelligence. Machine Intelligence, 4, 463–502.
+
 Newell, A., & Simon, H. A. (1972). Human problem solving. Prentice-Hall.
+
 Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... & Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30.
 
 
@@ -320,29 +335,44 @@ Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ..
 *Philosophy*
 
 Clark, A. (2013). Whatever next? Predictive brains, situated agents, and the future of cognitive science. Behavioral and Brain Sciences, 36(3), 181–204.
-Cojocariu, F. (Year TBD). Patterns, pragmatism, and mild realism: An empirical probe. [Essay for Modern Metaphysics Class]
+
+Cojocariu, F. (2025). Patterns, pragmatism, and mild realism: An empirical probe. [Essay for Modern Metaphysics Class]
+
 Dreyfus, H. L. (1992). What computers still can't do: A critique of artificial reason. MIT Press.
+
 Hohwy, J. (2013). The predictive mind. Oxford University Press.
+
 Kiverstein, J., & Miller, M. (2015). The embodied brain: Towards a radical embodied cognitive neuroscience. Frontiers in Human Neuroscience, 9, 237.
+
 Wilson, M. (2002). Six views of embodied cognition. Psychonomic Bulletin & Review, 9(4), 625–636.
 
 *Cognition*
 
 Dehaene, S., Naccache, L., Le Clec'H, G., Koechlin, E., Mueller, M., Dehaene-Lambertz, G., ... & Le Bihan, D. (1998). Imaging unconscious semantic priming. Nature, 395(6702), 597–600.
+
 Friston, K. (2010). The free-energy principle: A unified brain theory? Nature Reviews Neuroscience, 11(2), 127–138.
+
 Gallese, V. (2003). The roots of empathy: The shared manifold hypothesis and the neural basis of intersubjectivity. Psychopathology, 36(4), 171–180.
+
 Libet, B., Gleason, C. A., Wright, E. W., & Pearl, D. K. (1983). Time of conscious intention to act in relation to onset of cerebral activity (readiness-potential): The unconscious initiation of a freely voluntary act. Brain, 106(3), 623–642.
+
 Morris, J. S., Öhman, A., & Dolan, R. J. (1998). Conscious and unconscious emotional learning in the human amygdala. Nature, 393(6684), 467–470.
+
 Nakamura, K., Dehaene, S., Jobert, A., Le Bihan, D., & Kouider, S. (2007). Automatic activation of motor programs by auditory perception of action sounds. NeuroImage, 37(2), 564–575.
+
 Pulvermüller, F., & Fadiga, L. (2010). Active perception: Sensorimotor circuits as a cortical basis for language. Nature Reviews Neuroscience, 11(5), 351–360.
+
 Rizzolatti, G., Fogassi, L., & Gallese, V. (2001). Neurophysiological mechanisms underlying the understanding and imitation of action. Nature Reviews Neuroscience, 2(9), 661–670.
+
 Sato, W., Kochiyama, T., Uono, S., Matsuda, K., Usui, K., Inoue, Y., & Toichi, M. (2024). Sensorimotor simulation semantics: Grounding linguistic meaning in sensory and motor experience. Nature Human Behaviour, 8, 1–15.
+
 Whalen, P. J., Rauch, S. L., Etcoff, N. L., McInerney, S. C., Lee, M. B., & Jenike, M. A. (1998). Fear and the human amygdala. Journal of Neuroscience, 18(1), 411–418.
 
 *Computer Science*
 
 Brown, T., Mann, B., Ryder, N., Subbiah, M., Kaplan, J. D., Dhariwal, P., ... & others. (2020). Language models are few-shot learners. Advances in Neural Information Processing Systems, 33, 1877–1901.
 LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521(7553), 436–444.
+
 Shanahan, M. (2024). Talking about large language models. Communications of the ACM, 67(2), 68–79.
 
 ---
@@ -363,4 +393,3 @@ Shanahan, M. (2024). Talking about large language models. Communications of the 
 
 [^8]: approved:Approved. (un pasaj marcat ca "Approved" are textul Approved inserat automat. Poate însă fi editat și completat ulterior.):florin.cojocariu@s.unibuc.ro:1759382117509:Genuine recognition often operates differently. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete
 
-[^9]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759470856129:We would say that a constellation of patterns becomes immediately available, not just a visual template. This constellation includes sensory patterns (visual, tactile), motor patterns (petting readiness), emotional patterns (affection, wariness), and linguistic patterns (the word "cat" and its associations).Critical insight\: This constellation doesn't become available after recognition—it IS what we call recognition. When philosophers and cognitive scientists speak of "recognizing a cat," they're referring to this immediate availability of the entire pattern-constellation, not to a preliminary identification step that then triggers these responses.Theoretical proposal\: Recognition is not the identification of a visual pattern that then triggers these responses. Rather, recognition IS this immediate constellation of readiness becoming available. The recognition and the readiness are not sequential—they are the same event.This would explain the experiential immediacy\: there is no process of matching followed by retrieval of appropriate responses. The constellation of readiness would be what recognition is, not what recognition produces. There's no temporal sequence of "visual input → memory search → recognition achieved." Instead, the entire constellation becomes simultaneously "close to hand," and that constellation-activation IS the recognition event.
