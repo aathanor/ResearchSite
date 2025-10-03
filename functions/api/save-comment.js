@@ -347,91 +347,134 @@ function encodeContentForGitHub(content) {
 // Add footnote comment to content
 // Add footnote comment to content
 function addFootnoteComment(content, footnoteDefinition, footnoteRef, selectedText, beforeContext, afterContext) {
-  console.log('Adding footnote:', { footnoteDefinition, footnoteRef, selectedText, beforeContext, afterContext });
+  console.log('Adding footnote:', { footnoteDefinition, footnoteRef, selectedText });
   
   if (!footnoteRef || !selectedText) {
     console.error('Missing footnoteRef or selectedText');
     return content;
   }
   
-  // Clean the selected text and contexts
-  const cleanBeforeContext = beforeContext ? beforeContext.trim() : '';
-  const cleanAfterContext = afterContext ? afterContext.trim() : '';
-  
-  let insertionIndex = -1;
-
-  // Clean the selected text
   const cleanSelectedText = selectedText.trim();
-
-  // STRATEGY 1: Try exact match (for short selections)
-  insertionIndex = content.indexOf(cleanSelectedText);
-  if (insertionIndex !== -1) {
-    console.log('Found exact match at:', insertionIndex);
-    insertionIndex = insertionIndex + cleanSelectedText.length;
-  } 
-  // STRATEGY 2: Try with backticks (for formulas/code)
-  else {
-    const withBackticks = `\`${cleanSelectedText}\``;
-    insertionIndex = content.indexOf(withBackticks);
-    if (insertionIndex !== -1) {
-      console.log('Found with backticks at:', insertionIndex);
-      insertionIndex = insertionIndex + withBackticks.length;
+  let insertionIndex = -1;
+  
+  // Strategy 1: For long selections (>6 words), use last 5 words as anchor
+  const words = cleanSelectedText.split(/\s+/);
+  if (words.length > 6) {
+    const lastWords = words.slice(-5).join(' ');
+    console.log('Long selection detected, using last 5 words as anchor:', lastWords);
+    
+    // Try to find these last words (with various markdown wrappers)
+    const variations = [
+      lastWords,
+      `\`${lastWords}\``,
+      `**${lastWords}**`,
+      `*${lastWords}*`
+    ];
+    
+    for (const variation of variations) {
+      insertionIndex = content.indexOf(variation);
+      if (insertionIndex !== -1) {
+        insertionIndex = insertionIndex + variation.length;
+        console.log('Found last words with variation, inserting at:', insertionIndex);
+        break;
+      }
     }
-  }
-
-  // STRATEGY 3: For longer selections, use first/last sentence
-  if (insertionIndex === -1 && cleanSelectedText.length > 50) {
-    console.log('Using first/last sentence matching for long selection');
     
-    const sentences = cleanSelectedText.split(/[.!?]+\s+/).filter(s => s.trim().length > 0);
-    
-    if (sentences.length >= 2) {
-      const firstSentence = sentences[0].trim();
-      const lastSentence = sentences[sentences.length - 1].trim();
-      
-      const firstIndex = content.indexOf(firstSentence);
-      if (firstIndex !== -1) {
-        const searchFrom = firstIndex + firstSentence.length;
-        const remainingContent = content.substring(searchFrom);
-        const lastIndex = remainingContent.indexOf(lastSentence);
-        
-        if (lastIndex !== -1) {
-          insertionIndex = searchFrom + lastIndex + lastSentence.length;
-          console.log('Found using first/last sentence at:', insertionIndex);
+    // If still not found, try fuzzy matching on last words
+    if (insertionIndex === -1) {
+      const lastWordsPattern = lastWords.split(/\s+/).map(w => 
+        w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      ).join('\\s+');
+      const regex = new RegExp(lastWordsPattern, 'i');
+      const match = content.match(regex);
+      if (match) {
+        const matchIndex = content.indexOf(match[0]);
+        insertionIndex = matchIndex + match[0].length;
+        // Check for closing backtick
+        if (content.charAt(insertionIndex) === '`') {
+          insertionIndex++;
         }
-      }
-    } else if (sentences.length === 1) {
-      // Single sentence - just find it
-      const singleSentence = sentences[0].trim();
-      const foundIndex = content.indexOf(singleSentence);
-      if (foundIndex !== -1) {
-        insertionIndex = foundIndex + singleSentence.length;
-        console.log('Found single sentence at:', insertionIndex);
+        console.log('Found last words via fuzzy match, inserting at:', insertionIndex);
       }
     }
   }
-
-  // FALLBACK: If still not found, append at end of document (safest)
+  
+  // Strategy 2: For short selections, try exact match with wrappers
   if (insertionIndex === -1) {
-    console.warn('Could not locate selection, appending footnote at end');
-    insertionIndex = content.length;
+    const variations = [
+      cleanSelectedText,
+      `\`${cleanSelectedText}\``,
+      `**${cleanSelectedText}**`,
+      `*${cleanSelectedText}*`,
+      `***${cleanSelectedText}***`,
+      `_${cleanSelectedText}_`,
+      `__${cleanSelectedText}__`
+    ];
+    
+    for (const variation of variations) {
+      insertionIndex = content.indexOf(variation);
+      if (insertionIndex !== -1) {
+        insertionIndex = insertionIndex + variation.length;
+        console.log('Found exact text with wrapper, inserting at:', insertionIndex);
+        break;
+      }
+    }
   }
+  
+  // Strategy 3: Use context if available
+  if (insertionIndex === -1 && beforeContext && afterContext) {
+    const beforeIndex = content.indexOf(beforeContext.trim());
+    if (beforeIndex !== -1) {
+      const searchStart = beforeIndex + beforeContext.trim().length;
+      const searchText = words.length > 6 ? words.slice(-5).join(' ') : cleanSelectedText;
+      const afterBeforeIndex = content.indexOf(searchText, searchStart);
+      
+      if (afterBeforeIndex !== -1) {
+        insertionIndex = afterBeforeIndex + searchText.length;
+        if (content.charAt(insertionIndex) === '`') insertionIndex++;
+        console.log('Found using context, inserting at:', insertionIndex);
+      }
+    }
+  }
+  
+  // Strategy 4: Last resort - find a safe location (NOT at end of document)
+  if (insertionIndex === -1) {
+    console.warn('Could not locate text, using safe fallback');
+    
+    // Skip frontmatter
+    let searchStart = 0;
+    const frontmatterEnd = content.indexOf('---', 3);
+    if (frontmatterEnd !== -1) {
+      searchStart = frontmatterEnd + 3;
+    }
+    
+    // Find end of first paragraph after frontmatter
+    const remainingContent = content.substring(searchStart);
+    const firstParagraphEnd = remainingContent.indexOf('\n\n');
+    
+    if (firstParagraphEnd !== -1) {
+      insertionIndex = searchStart + firstParagraphEnd;
+    } else {
+      // Use middle of document instead of end
+      insertionIndex = Math.floor(content.length * 0.3);
+    }
     
     console.log('Using fallback insertion at:', insertionIndex);
+  }
   
-  
-  // Insert footnote reference at the found position
+  // Insert footnote reference
   if (insertionIndex !== -1 && insertionIndex <= content.length) {
     const beforeText = content.substring(0, insertionIndex);
     const afterText = content.substring(insertionIndex);
     content = beforeText + footnoteRef + afterText;
     console.log('Successfully inserted footnote reference at position:', insertionIndex);
   } else {
-    console.error('Could not find valid insertion point, appending at end');
-    content = content.trim() + footnoteRef;
+    console.error('Invalid insertion point, appending at safe location');
+    const safePoint = content.indexOf('\n\n') > 0 ? content.indexOf('\n\n') : content.length * 0.3;
+    content = content.substring(0, safePoint) + footnoteRef + content.substring(safePoint);
   }
   
-  // Add footnote definition at the end of the content
+  // Add footnote definition at the end
   if (!content.endsWith('\n')) {
     content += '\n';
   }
