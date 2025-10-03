@@ -92,13 +92,13 @@ Neuroscience reveals that neural systems operate through constellation-activatio
 
 While Libet's experiments examined self-initiated action rather than stimulus recognition, they establish the broader principle that neural preparation precedes conscious awareness—challenging any model that assumes conscious recognition must precede response readiness. Libet's classic experiments revealed that motor readiness potentials begin 350-500ms before people report being aware of their intention to move (Libet et al., 1983). Similarly, the amygdala responds to threatening faces presented too briefly for conscious recognition, around 30ms (Whalen et al., 1998; Morris et al., 1998), and subliminal words activate semantic networks and motor areas before conscious identification (Dehaene et al., 1998; Nakamura et al., 2007).
 
-This temporal evidence directly challenges traditional models where recognition precedes response preparation. Instead, it supports PRI's claim that recognition IS immediate constellation-activation. When you see a cat, petting readiness, emotional responses, and approach behaviors are already activated before conscious awareness that you've "recognized" a cat. There's no temporal gap because the constellation-activation IS the recognition event, not something that produces recognition.[^10]
+This temporal evidence directly challenges traditional models where recognition precedes response preparation. Instead, it supports PRU's claim that recognition IS immediate constellation-activation. When you see a cat, petting readiness, emotional responses, and approach behaviors are already activated before conscious awareness that you've "recognized" a cat. There's no temporal gap because the constellation-activation IS the recognition event, not something that produces recognition.[^10]
 
 ## Cross-Modal Integration
 
 Additional evidence comes from research showing neural integration across modalities. Studies demonstrate that "seeing action verbs, such as 'kick' or 'lick,' elicited similar brain activation patterns in the motor and premotor areas compared to the actual movements the words referred to" (Pulvermüller & Fadiga, 2010). Similar findings exist across modalities, with "sensorimotor areas involved in perception and action" overlapping with "brain regions that are active during language comprehension" (Sato et al., 2024).[^4]
 
-These findings converge on a picture where recognition is not pattern-matching but constellation-activation—supporting PRI's dissolution of the recognition process into immediate readiness-availability. Word-patterns, action-patterns, and sensory-patterns involve genuinely integrated neural networks rather than separate systems that become associated (Gallese, 2003; Rizzolatti et al., 2001). This integration explains both why recognition appears immediate (readiness activation IS recognition) and why learning transfers across modalities (different aspects of cognition/reaction are part of unified networks).
+These findings converge on a picture where recognition is not pattern-matching but constellation-activation—supporting PRU's dissolution of the recognition process into immediate readiness-availability. Word-patterns, action-patterns, and sensory-patterns involve genuinely integrated neural networks rather than separate systems that become associated (Gallese, 2003; Rizzolatti et al., 2001). This integration explains both why recognition appears immediate (readiness activation IS recognition) and why learning transfers across modalities (different aspects of cognition/reaction are part of unified networks).
 
 # The Unity Thesis
 
@@ -168,7 +168,7 @@ The question shifts from "how do LLMs understand?" to "why did we think understa
 
 # Dissolving Classical Problems
 
-PRI's primary test is whether long-standing problems genuinely disappear rather than being relabeled:
+PRU's primary test is whether long-standing problems genuinely disappear rather than being relabeled:
 
 **The Symbol Grounding Problem**: This problem "remains unsolved" with "many solutions" having "encountered inconsistencies to different extents" (Harnad, 1990). PRU proposes the problem dissolves if linguistic patterns develop as integrated aspects of sensory-motor-emotional constellations rather than as separate symbols requiring grounding.
 
@@ -188,7 +188,7 @@ Hartry Field's formulation of the primitive reference problem highlights a funda
 
 Field's challenge to Tarski's truth schema illustrates the core problem (Tarski, 1944). Tarski proposed: "Snow is white" is true if and only if snow is white. Field's concern is that the right side {snow is white} (using braces to avoid quotation confusion) appears to be just another bunch of words with no primitive reference to actual snow. Where is the connection to the external world?
 
-**PRI's dissolution**: The problem dissolves when we recognize that {snow is white} is not disconnected words floating in semantic space, but word-patterns as they exist **integrated with sensation-patterns** within the snow-constellation-pattern. This constellation includes:
+**PRU's dissolution**: The problem dissolves when we recognize that {snow is white} is not disconnected words floating in semantic space, but word-patterns as they exist **integrated with sensation-patterns** within the snow-constellation-pattern. This constellation includes:
 
 * Visual patterns (white color, crystalline structure, brightness, light reflection)
 * Tactile patterns (cold temperature, wet texture, granular feel, melting)
@@ -212,7 +212,7 @@ Field's concern becomes even clearer through his analysis of Tarski's approach t
 
 Field's worry: Even with adequate translation, we've just replaced one semantic term with another. How do either 'Deutschland' OR 'Germany' connect to the actual country? As Field puts it, Tarski's "denotation definitions like DE and DG merely obscure the need for" genuine theories of how language connects to world.
 
-**PRI's dissolution using accolades notation:**
+**PRU's dissolution using accolades notation:**
 
 **German Speaker:** {Deutschland} = word-pattern integrated within constellation including:
 
@@ -257,7 +257,7 @@ This means "cat" doesn't name an external object that my mind represents. "Cat" 
 
 But PRU differs from Kant in crucial ways: Where Kant maintains that empirical cats are genuinely objective (we really do know cats as spatially-temporal objects with causal powers), PRU suggests the cat-constellation IS what we mean by "cat"—there's no separate empirical object beyond the constellation.
 
-And where Kant's cognitive structures are universal and necessary, PRI's pattern-constellations are embodied, developed through individual history, and potentially variable across persons and cultures.
+And where Kant's cognitive structures are universal and necessary, PRU's pattern-constellations are embodied, developed through individual history, and potentially variable across persons and cultures.
 
 So PRU offers a naturalized, embodied version of the Kantian insight that all object-access is mediated through cognitive structures, but without Kant's transcendental apparatus or his preservation of objective empirical knowledge.
 
@@ -286,6 +286,8 @@ Both types of existence are internal to pattern-recognition events - there's no 
 **A Neo-Tarskian View**: Once Field's primitive reference problem is dissolved, Tarski's internal approach to reference becomes more viable (Tarski, 1944). But rather than reference between expressions in formal languages, we have reference between aspects of lived pattern-constellations. Truth becomes internal coherence within these constellations rather than correspondence to external states of affairs.
 
 # References
+
+_(NB: provisional list, part of the titles skimmed not deeply engaged yet)_
 
 **Primary Sources**
 
