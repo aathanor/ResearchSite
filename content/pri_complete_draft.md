@@ -138,7 +138,7 @@ When a cat-constellation becomes present, this IS the recognition of a cat. The 
 # Position in Current Research
 
 PRU emerges from observations about limitations in current computational approaches across multiple research programs:
-    
+
 **Embodied Cognition**: Research has demonstrated "sensorimotor activation" during language processing, supporting claims about embodied grounding of cognitive processes (Barsalou, 1999; Glenberg, 1997; Wilson, 2002). However, many approaches in this tradition still work with representational frameworks where embodied representations are processed by cognitive systems—what Dreyfus (1992) critiqued as retaining the computational paradigm's fundamental assumptions while merely adding "embodied" content.
 
 **Enactivism and Ecological Psychology**: These approaches reject internal representations while emphasizing organism-environment coupling (Varela et al., 1991; Gibson, 1979; Chemero, 2009). Recent work calls for "integration of methodologies and mutual enrichment" between these approaches (Kiverstein & Miller, 2015). Current integration attempts often propose multiple levels of analysis rather than fundamental unity.
@@ -329,7 +329,6 @@ McCarthy, J., & Hayes, P. J. (1969). Some philosophical problems from the standp
 Newell, A., & Simon, H. A. (1972). Human problem solving. Prentice-Hall.
 
 Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... & Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30.
-
 
 **Secondary Sources**
 *Philosophy*
