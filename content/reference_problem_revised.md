@@ -262,7 +262,7 @@ Demand for primitive reference is like demanding primitive space-time connection
 
 ## Two Modes of Word Function
 
-PC framework reveals[^8] words operate in two distinct modes:
+PC framework reveals words operate in two distinct modes:
 
 **$x^o$ (object-word mode)**:
 - Referential, grounded in E realm
@@ -585,5 +585,3 @@ PC paradigm opens concrete research paths:
 [^5]: By no means is this the only model possible, but it is the most efficient of what we have now. Hopfield networks are few-shots learners and, once trained, are remarkably effective.
 [^6]: This may be a subject in itself, but for our purposes it is enough to say that if the sensing pattern and the reaction pattern (which signifies “recognition”) are both parts of a unified PC, then the idea of a pattern without recognition does not make too much sense. One can go through the realism/anti-realism debate rabbit hole, but the approach here is more naturalistic and pragmatic: PCs are not abstract entities but real patterns in neural networks. Funny enough, we cannot make out where the visual pattern is inside a PC because visual neurons never fire in isolation. So, while a PC pattern in a NN is real, its visual component is elusive. Simply said, I cannot find in a NN where the dog image or the dog sound are saved, but I can find easily the entire {DOG} PC.
 [^7]: What most famous language puzzles ignore is the _learning_ part. Almost all consider language as a given, abstract collection of tokens governed by abstract rules that we try (and partially succeed) to decode. What PC makes clear is that learning is essential in how language works, and learning is not an exclusively abstract process but is grounded in reality by Pattern Constellations. The way {WATER} is learned on twin Earths is crucial.
-
-[^8]: question:What reveals?:florin.cojocariu@s.unibuc.ro:1759606690635:PC framework reveals
