@@ -15,6 +15,8 @@ This document focuses on three issues:
 * the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature.
 * it introduces the concept of _Pattern Constellations_ as a way to understand recognition as the immediate availability of a constellation of patterns that include sensory, motor, emotional, and linguistic aspects.
 
+This is mostly a sketch of the filosofical ideas behind PRU. A more formalized argument can be fount in "Pattern Constellations Formalism"
+
 # The Pattern-Matching Confusion
 
 Much of what passes for "pattern recognition" in cognitive science and artificial intelligence involves what we can distinguish as pattern-matching—a process involving sequential search, retrieval, and comparison operations (Newell & Simon, 1972; Marr, 1982).[^6] Consider finding the correct key for a lock from a ring of keys: you must search through candidates, retrieve each possibility, compare it to the lock's requirements, and iterate until finding a match.
@@ -115,11 +117,11 @@ Consider learning about hammers. Traditional models might suggest a child first 
 
 **Empirical question**: Whether these develop as genuinely integrated constellations or as separate systems that become tightly coupled is an open research question that would require developmental studies tracking multiple modalities simultaneously.
 
-# Pattern-Recognition Identity (PRI)
+# Pattern-Recognition Unity (PRU)
 
-**Core theoretical proposal**: Pattern-Recognition Identity (PRI)—pattern and recognition are not two related events but a single event appearing as two when viewed through dualistic conceptual lenses.
+**Core theoretical proposal**: Pattern-Recognition Unity (PRU)—pattern and recognition are not two related events but a single event appearing as two when viewed through dualistic conceptual lenses.
 
-According to PRI:
+According to PRU:
 
 * There are no patterns waiting to be recognized
 * There are no recognition processes that operate on patterns
@@ -253,41 +255,21 @@ This means "cat" doesn't name an external object that my mind represents. "Cat" 
 * Emotional patterns (affection, wariness)
 * Word-patterns ("cat," "kitty," "feline")
 
-**This captures a key Kantian insight about mediated access** (Kant, 1781/1998): For Kant, we never have direct access to things-in-themselves, only to objects-as-they-appear-to-us through our cognitive structures (space, time, categories). Similarly, PRU suggests we never have access to cats-in-themselves, only to cat-pattern-constellations.
-
-But PRU differs from Kant in crucial ways: Where Kant maintains that empirical cats are genuinely objective (we really do know cats as spatially-temporal objects with causal powers), PRU suggests the cat-constellation IS what we mean by "cat"—there's no separate empirical object beyond the constellation.
-
-And where Kant's cognitive structures are universal and necessary, PRU's pattern-constellations are embodied, developed through individual history, and potentially variable across persons and cultures.
-
-So PRU offers a naturalized, embodied version of the Kantian insight that all object-access is mediated through cognitive structures, but without Kant's transcendental apparatus or his preservation of objective empirical knowledge.
-
-The thing-in-itself remains as whatever-it-is that interacts with our sensory systems, but unlike Kant, PRU doesn't preserve a realm of objective empirical knowledge about it.
-
 ## Mind and World
 
 Traditional philosophical problems about how mind connects to world assume a fundamental separation that needs bridging. If pattern-recognition is genuinely one event that includes both sensation-patterns and word-patterns as internal aspects, this separation becomes a conceptual artifact rather than a real problem requiring solution.
 
 The classic "problem of the external world" dissolves: there's no problem of how internal representations connect to external reality because sensations and words are both aspects of pattern-recognition events, not internal copies of external things.
 
-**Toward a Formal Framework**: This connects to insights from my analysis of semantic patterns in language models, where reference operates as R(concept-word, object-word) - entirely internal linguistic operations rather than word-to-world connections. PRU extends this: reference operates between different aspects of pattern-constellations (sensation-patterns, action-patterns, word-patterns) without requiring external grounding.
+The key to understanding this is to realize that, almost like in LLMs, learning and using the learned word are different stages. Pattern Constellations form in learning, when, if it is about a real object of the world, the direct contact with it is crucial. An infant learning what a cat is is exposed repeteadly to sense stimulus, motor patterns and lingusitic patterns that form, in time, what we can call the primitive PC {CAT, $cat^o$} (see formalism for notations)
 
-We can distinguish two types of existence within pattern-constellations:
+As language evolves in training and use, $cat^c$ appears, the abstract "dimension" of the word, and a pattern of "cat"use in sentences is formed: $\<\<cat\>$. From now on, the direct contact with the cat is not necessary in order to refer to the cat. I.e. in inference, reference becomes mostly internal (with the exception of the situation I am talking about a cat in fronmt of me). 
 
-* **E (immediate existence)**: The direct, pre-linguistic presence of sensation-patterns and readiness-patterns
-* **∃ (mediated existence)**: The linguistic-conceptual patterns that develop integrated with sensation-patterns
-
-For example, in cat-recognition:
-
-* E: immediate visual, tactile, emotional patterns being present
-* ∃: word-patterns ("cat," "feline") as integrated aspects of the same constellation
-
-Both types of existence are internal to pattern-recognition events - there's no E without ∃ (even pre-linguistic recognition has proto-conceptual structure) and no ∃ without E (linguistic patterns are grounded in embodied readiness).
-
-**A Neo-Tarskian View**: Once Field's primitive reference problem is dissolved, Tarski's internal approach to reference becomes more viable (Tarski, 1944). But rather than reference between expressions in formal languages, we have reference between aspects of lived pattern-constellations. Truth becomes internal coherence within these constellations rather than correspondence to external states of affairs.
+There is a more detailed treatment of the problem of reference in the "The Problem of Primitive Reference: A Pattern-Constellation Approach" and a more formalized treatment in "Pattern Constellations Formalism"
 
 # References
 
-_(NB: provisional list, part of the titles skimmed not deeply engaged yet)_
+_(NB: provisional list not proper bibliography; part of the titles skimmed not deeply engaged yet, part of them just reading list)_
 
 **Primary Sources**
 
