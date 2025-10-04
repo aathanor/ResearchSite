@@ -15,7 +15,7 @@ This document focuses on three issues:
 * the conceptual dualism that separates "pattern" from "recognition" and the fact that what we understand by recognition is actually a set of integrated patterns (sensory, motor, emotional, linguistic) of a reactive nature.
 * it introduces the concept of _Pattern Constellations_ as a way to understand recognition as the immediate availability of a constellation of patterns that include sensory, motor, emotional, and linguistic aspects.
 
-This is mostly a sketch of the filosofical ideas behind PRU. A more formalized argument can be fount in "Pattern Constellations Formalism"
+This is mostly a sketch of the filosofical ideas behind PRU. A more formalized argument can be found in "Pattern Constellations Formalism"
 
 # The Pattern-Matching Confusion
 
