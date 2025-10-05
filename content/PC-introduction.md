@@ -241,6 +241,99 @@ The serial nature of reasoning (logic) and language (word by word) explains why 
 
 The solution isn't in adding new explanations but in recognizing that Pattern-Constellations are what's fundamental. Everything else—patterns, recognition, stimulus, response, cause & effect[^9]—are conceptual divisions we've imposed on unified constellation events. Like discovering space-time, we're not solving the pattern-recognition problem but seeing there was never separation to explain.
 
+# References
+(NB: provisional list not proper bibliography; part of the titles already used and to be added in text, part skimmed not deeply engaged yet, part of them just reading list)
+
+**Primary Sources**
+
+==Philosophy==
+
+Chalmers, D. J. (1995). Facing up to the problem of consciousness. Journal of Consciousness Studies, 2(3), 200–219.
+
+Dennett, D. C. (1984). Cognitive wheels: The frame problem of AI. In Minds, Machines and Evolution (pp. 129–151). Cambridge University Press.
+
+Field, H. (1972). Tarski’s theory of truth. The Journal of Philosophy, 69(13), 347–375.
+
+Fodor, J. A. (1975). The language of thought. Harvard University Press.
+
+Harnad, S. (1990). The symbol grounding problem. Physica D: Nonlinear Phenomena, 42(1-3), 335–346.
+
+Heidegger, M. (1927/1962). Being and time (J. Macquarrie & E. Robinson, Trans.). Harper & Row.
+
+Kant, I. (1781/1998). Critique of pure reason (P. Guyer & A. W. Wood, Trans.). Cambridge University Press.
+
+Merleau-Ponty, M. (1945/2012). Phenomenology of perception (D. A. Landes, Trans.). Routledge.
+
+Tarski, A. (1944). The semantic conception of truth: And the foundations of semantics. Philosophy and Phenomenological Research, 4(3), 341–376.
+
+==Cognition==
+
+Barsalou, L. W. (1999). Perceptual symbol systems. Behavioral and Brain Sciences, 22(4), 577–660.
+
+Chemero, A. (2009). Radical embodied cognitive science. Review of General Psychology, 13(4), 323–330.
+
+Gibson, J. J. (1979). The ecological approach to visual perception. Houghton Mifflin.
+
+Glenberg, A. M. (1997). What memory is for: Creating meaning in the service of action. Behavioral and Brain Sciences, 20(1), 41–50.
+
+Varela, F. J., Thompson, E., & Rosch, E. (1991). The embodied mind: Cognitive science and human experience. MIT Press.
+
+==Computer Science==
+
+Marr, D. (1982). Vision: A computational investigation into the human representation and processing of visual information. MIT Press.
+
+McCarthy, J., & Hayes, P. J. (1969). Some philosophical problems from the standpoint of artificial intelligence. Machine Intelligence, 4, 463–502.
+
+Newell, A., & Simon, H. A. (1972). Human problem solving. Prentice-Hall.
+
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., … & Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30.
+
+**Secondary Sources**
+
+==Philosophy==
+
+Clark, A. (2013). Whatever next? Predictive brains, situated agents, and the future of cognitive science. Behavioral and Brain Sciences, 36(3), 181–204.
+
+Cojocariu, F. (2025). Patterns, pragmatism, and mild realism: An empirical probe. [Essay for Modern Metaphysics Class]
+
+Dreyfus, H. L. (1992). What computers still can’t do: A critique of artificial reason. MIT Press.
+
+Hohwy, J. (2013). The predictive mind. Oxford University Press.
+
+Kiverstein, J., & Miller, M. (2015). The embodied brain: Towards a radical embodied cognitive neuroscience. Frontiers in Human Neuroscience, 9, 237.
+
+Wilson, M. (2002). Six views of embodied cognition. Psychonomic Bulletin & Review, 9(4), 625–636.
+
+==Cognition==
+
+Dehaene, S., Naccache, L., Le Clec'H, G., Koechlin, E., Mueller, M., Dehaene-Lambertz, G., … & Le Bihan, D. (1998). Imaging unconscious semantic priming. Nature, 395(6702), 597–600.
+
+Friston, K. (2010). The free-energy principle: A unified brain theory? Nature Reviews Neuroscience, 11(2), 127–138.
+
+Gallese, V. (2003). The roots of empathy: The shared manifold hypothesis and the neural basis of intersubjectivity. Psychopathology, 36(4), 171–180.
+
+Libet, B., Gleason, C. A., Wright, E. W., & Pearl, D. K. (1983). Time of conscious intention to act in relation to onset of cerebral activity (readiness-potential): The unconscious initiation of a freely voluntary act. Brain, 106(3), 623–642.
+
+Morris, J. S., Öhman, A., & Dolan, R. J. (1998). Conscious and unconscious emotional learning in the human amygdala. Nature, 393(6684), 467–470.
+
+Nakamura, K., Dehaene, S., Jobert, A., Le Bihan, D., & Kouider, S. (2007). Automatic activation of motor programs by auditory perception of action sounds. NeuroImage, 37(2), 564–575.
+
+Pulvermüller, F., & Fadiga, L. (2010). Active perception: Sensorimotor circuits as a cortical basis for language. Nature Reviews Neuroscience, 11(5), 351–360.
+
+Rizzolatti, G., Fogassi, L., & Gallese, V. (2001). Neurophysiological mechanisms underlying the understanding and imitation of action. Nature Reviews Neuroscience, 2(9), 661–670.
+
+Sato, W., Kochiyama, T., Uono, S., Matsuda, K., Usui, K., Inoue, Y., & Toichi, M. (2024). Sensorimotor simulation semantics: Grounding linguistic meaning in sensory and motor experience. Nature Human Behaviour, 8, 1–15.
+
+Whalen, P. J., Rauch, S. L., Etcoff, N. L., McInerney, S. C., Lee, M. B., & Jenike, M. A. (1998). Fear and the human amygdala. Journal of Neuroscience, 18(1), 411–418.
+
+==Computer Science==
+
+Brown, T., Mann, B., Ryder, N., Subbiah, M., Kaplan, J. D., Dhariwal, P., … & others. (2020). Language models are few-shot learners. Advances in Neural Information Processing Systems, 33, 1877–1901.
+LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521(7553), 436–444.
+
+Shanahan, M. (2024). Talking about large language models. Communications of the ACM, 67(2), 68–79.
+
+
 [^1]: Incidentally, this offers a better explanation for the problem of automatic processing than most modern theories of cognition that struggle because of their serial models.
 
 [^2]: This devolves into a complicated discussion about realism and anti-realism in patterns, one started by the Dennett and Nelkin papers, but for now it helps to observe that patterns are mental events. The difficulty here is to clarify what we call "reality", once we adopt a definition, the realist/anti-realist debate settles _within that respective definition_. For me, for something to be real it is important to have _proof_ it is real, and proofs are mental objects, not natural ones. Another angle is that of _learning_: in order to recognize a pattern, some sort of learning should precede it; no learning, no pattern. But learning does not happen in the world learned about, but in our minds.
