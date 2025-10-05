@@ -280,7 +280,7 @@ Stage 4: $\mathcal{R}(a^c, a^o)$
 Repeated co-occurrence:
   $E(\{A\})$ ∧ hearing "a"
   → Hebbian: "a" wires with A patterns
-  → $\{A, a^o}$ formed
+  → $\{A, a^o\}$ formed
   → $E(\{A, a^o\})$ now possible
 
 **$\{A, a^o\}$ → $\{A, a^o, a^c\}$**: Conceptual development
