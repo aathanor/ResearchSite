@@ -24,7 +24,7 @@ _A concrete example:_ When you see your cat, what actually happens? Not in seque
 * Emotional patterns activate (affection, playfulness)
 * Auditory expectations activate (meowing, purring)
 * Linguistic patterns activate ("kitty," pet-related expressions)
-* Memory patterns activate (feeding times, favorite spots)[^12]
+* Memory patterns activate (feeding times, favorite spots)
 
 These don't link together after arising separately. They activate as one unified Pattern-Constellation. Neuroscience confirms this: language areas fire during action observation, motor areas activate when processing action verbs, emotional centers participate directly in perception. The learned patterns were never separate—they arose together during learning and remain together in recognition.
 
@@ -262,5 +262,3 @@ The solution isn't in adding new explanations but in recognizing that Pattern-Co
 [^10]: question:Asta ar fi o întrebare. Textul selectat inițial în document e salvat ca citat pentru o bună referință.:florin.cojocariu@s.unibuc.ro:1759647041304:Its interdisciplinary nature make it more of a long term project rather than a one shot paper project.
 
 [^11]: clarification:O cerere de clarificare. Toate comentariile, odată salvate, pot fi editate sau șterse cu butoanele de mai jos, Edit, Delete. Puteți șterge aceste comentarii de probă sau încerca editarea lor.:florin.cojocariu@s.unibuc.ro:1759647084313:Humans learn and act in the world through sets of co-occurring, learned multi-modal regularities. I call these Pattern-Constellations (PCs)\: attractor-like assemblies that contain perceptual, motor, linguistic, and emotional patterns.
-
-[^12]: approved:Approved:florin.cojocariu@s.unibuc.ro:1759647102355:A concrete example\: When you see your cat, what actually happens? Not in sequence, but all at once\:Visual patterns activate (shape, size, movement style) Motor patterns activate (petting gestures, approach behaviors) Emotional patterns activate (affection, playfulness) Auditory expectations activate (meowing, purring) Linguistic patterns activate ("kitty," pet-related expressions) Memory patterns activate (feeding times, favorite spots)
