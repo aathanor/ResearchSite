@@ -89,7 +89,7 @@ What do we actually mean when we say we "recognize" something? Phenomenological 
 
 We would say that a _constellation of patterns_ becomes immediately available, not just a visual template. This constellation includes sensory patterns (visual, tactile), motor patterns (petting readiness), emotional patterns (affection, wariness), and linguistic patterns (the word "cat" and its associations).
 
-Critical insight: This constellation doesn't become available _after_ recognition—it IS what we call recognition. When philosophers and cognitive scientists speak of "recognizing a cat," they're referring to this immediate availability of the entire pattern-constellation, not to a preliminary identification step that then triggers these responses.
+This constellation doesn't become available _after_ recognition—it IS what we call recognition. When philosophers and cognitive scientists speak of "recognizing a cat," they're referring to this immediate availability of the entire pattern-constellation, not to a preliminary identification step that then triggers these responses.
 
 Recognition is not the identification of a visual pattern that then triggers responses. Rather, recognition IS this immediate constellation of readiness becoming available. The recognition and the readiness are not sequential—they are the same event. This would explain the experiential immediacy: there is no process of matching followed by retrieval of appropriate responses. The constellation of readiness IS what recognition is, not what recognition produces. There's no temporal sequence of "visual input → memory search → recognition achieved." Instead, the entire constellation becomes simultaneously "close to hand," and that constellation-activation IS the recognition event.
 
