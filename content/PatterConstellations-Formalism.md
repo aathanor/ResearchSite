@@ -124,7 +124,7 @@ $\not E(\{JUSTICE\})$ ∧ $\exists(\{JUSTICE, justice^c\})$
 
 The staged examples above are not mere illustrations; they are direct instantiations of the formal primitives and transitions introduced below. Each three-stage sequence (pre-linguistic activation → label-integration → conceptual/abstract use) corresponds to the formal events and operations defined in §2: experiential activation $E(\cdot)$, linguistic integration (the $o$–mode), and conceptual/language-mediated existential use $\exists(\cdot)$ (the $c$–mode).
 
-To make this mapping explicit, §2 presents worked examples that translate the DOG and SNOW vignettes into the notation and show the minimal dynamics that stabilize Pattern-Constellations. Readers primarily interested in the conceptual argument may skim §2 on first reading; readers seeking mechanistic precision can consult those worked examples while following the formal definitions.
+To make this mapping explicit, §3 presents worked examples that translate the DOG and SNOW vignettes into the notation and show the minimal dynamics that stabilize Pattern-Constellations.
 
 # Pattern-Constellations
 
