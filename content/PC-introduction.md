@@ -214,11 +214,11 @@ This is why LLMs seem to "understand" without understanding. They're not reasoni
 
 However, the implementation of transformers violates Pattern-Recognition Unity through backpropagation training. While transformers achieve parallel pattern-constellation activation through attention mechanisms (all tokens attending to all others simultaneously), backpropagation in training reintroduces serialization: compute error, then propagate backwards layer by layer. This breaks the very unity that makes the architecture powerful (and also makes training expensive).
 
-The Hopfield Network with Hebbian Learning architecture[^19] demonstrates pure PRU learning is possible. With just 256 neurons using local, correlation-based Hebbian learning, it maintains pattern-recognition unity throughout. No sequential error propagation, no artificial separation of pattern and recognition—just continuous dynamics where learning and recognition remain unified. The constellation activation that constitute recognition are the same dynamics that drive learning.
+The Hopfield Network with Hebbian Learning architecture demonstrates pure PRU learning is possible. With just 256 neurons using local, correlation-based Hebbian learning, it maintains pattern-recognition unity throughout. No sequential error propagation, no artificial separation of pattern and recognition—just continuous dynamics where learning and recognition remain unified. The constellation activation that constitute recognition are the same dynamics that drive learning.
 
 PRU is not a claim that all systems must be implemented like biological brains or that PRU systems are uniformly superior. Rather, it proposes a family of architectures and learning rules that preserve learning—recognition continuity. Some tasks (e.g. explicit symbolic reasoning) may still benefit from serial algorithms; PRU claims that many perceptual and sensori-motor competencies are better explained as parallel, learned constellations.
 
-The principle is simple: systems that maintain PRU throughout should exhibit different capabilities than systems that break unity for training. Not necessarily better or worse, but qualitatively different[^20]—like the difference between how animals navigate space and how GPS systems compute routes.
+The principle is simple: systems that maintain PRU throughout should exhibit different capabilities than systems that break unity for training. Not necessarily better or worse, but qualitatively different—like the difference between how animals navigate space and how GPS systems compute routes.
 
 # Philosophical Dissolutions
 
@@ -349,10 +349,6 @@ Shanahan, M. (2024). Talking about large language models. Communications of the 
 [^17]: There is abundant neurosciences literature documenting these claims, with Libet et al. (1983), Sato et al. (2024) and Pulvermüller & Fadiga (2010) being some of the most well known. The neurological evidence for PRU is a connected research field but it must be said our approach is and needs to stay philosophical: PRU has important consequences in the Philosophy of Language, Reference Theory and the way we understand LLMs and AI in general.
 
 [^18]: This difference illuminates why LLMs can exhibit apparently immediate pattern-recognition. While LLMs use probabilistic mechanisms during response generation, their transformer architecture processes contextual information in parallel rather than through sequential search during the recognition phase. The way we use language in conversation (question/response) may involve similar pattern-constellation activation, where word patterns activate alongside action/feeling/sensorial patterns in integrated networks.
-
-[^19]: The Hopfield Network with Hebbian Learning architecture demonstrates pure PRU learning is possible, maintaining pattern-recognition unity throughout both learning and recognition phases.
-
-[^20]: Not necessarily better or worse, but qualitatively different.
 
 [^21]: One interesting parallel is that abstract learning (using language as abstraction) requests extremely elaborate and intensive training in humans, taking decades to complete, while practical tasks (like riding a bicycle) can be very fast by comparison. This suggests that while PRU and PCs are better models for non-verbal learning, verbal learning _does need_ a more complex, global and intensive model. This is maybe the reason transformers are good at text. However, AI is not limited to LLM and, moreover, AGI is not _only_ about language.
 
