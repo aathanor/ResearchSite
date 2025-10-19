@@ -1,4 +1,4 @@
-b---
+---
 title: "2. A Formal System for Pattern-Constellations"
 author: Florin Cojocariu
 tags: ["formalism"]
