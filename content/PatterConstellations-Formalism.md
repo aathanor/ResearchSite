@@ -9,7 +9,7 @@ date: 09.30.2025
 
 # Abstract
 
-This document attempts a unified formal system for describing pattern-constellations (PCs), their linguistic expression, and the operations that connect them. The formalism progresses from pre-linguistic pattern recognition through primitive language use to abstract conceptual structures, ultimately addressing the problem of reference.
+This document attempts a unified formal system for describing pattern-constellations (PCs), their linguistic expression, and the operations that connect them. The formalism progresses from pre-linguistic pattern recognition through primitive language use to abstract conceptual structures, ultimately addressing the problem of reference. This is a first attempt, the system is neither 
 
 Pattern Constellations are introduced and explained elsewhere; this document is focused on scaffolding a formalism around them. For the purposes here, we’ll recall that a Pattern Constellation is a stable attractor[^1] configuration in a neural network that integrates sensory, motor, emotional, social, and (once learned) linguistic patterns. Formed through Hebbian learning where co-occurring patterns wire together. Activated as a unified whole when any partial pattern triggers it. Exists as a weighted complex network structure that can be measured in NN models, not an abstract entity. PCs are formalized in §2 below.
 
