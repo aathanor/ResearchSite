@@ -19,7 +19,7 @@ The work is programmatic rather than conclusive: it develops the conceptual clai
 
 # The Hidden Structure of Recognition
 
-Humans learn and act in the world through sets of co-occurring, learned multi-modal regularities. I call these _Pattern-Constellations_ (PCs): attractor-like assemblies that contain perceptual, motor, linguistic, and emotional patterns.[^11] This terminology is essential because what we call a "pattern" (singular) is actually a constellation of multiple pattern-types that arise and function as a unity. The term captures the distributed-yet-unified neural architecture that simple "pattern" obscures. Pattern-Recognition Unity (PRU) hypothesizes that what we call "recognition" is the _parallel_ activation of a PC: perception and response are simultaneous aspects of the same dynamical event, not a serial pipeline from detection to reaction.[^12] This paper defends PRU conceptually, sketches its computational realizations, and gives empirical predictions that distinguish it from traditional pattern-matching models.
+Humans learn and act in the world through sets of co-occurring, learned multi-modal regularities. I call these _Pattern-Constellations_ (PCs): attractor-like assemblies that contain perceptual, motor, linguistic, and emotional patterns.[^11] This terminology is essential because what we call a "pattern" (singular) in cognition is actually a constellation of multiple pattern-types that arise and function as a unity. The term captures the distributed-yet-unified neural architecture that simple "pattern" obscures. Pattern-Recognition Unity (PRU) hypothesizes that what we call "recognition" is the _parallel_ activation of a PC: perception and response are simultaneous aspects of the same dynamical event, not a serial pipeline from detection to reaction.[^12] This paper defends PRU conceptually, sketches its computational realizations, and gives empirical predictions that distinguish it from traditional pattern-matching models.
 
 _A concrete example:_ When you see your cat, what actually happens? Not in sequence, but all at once:
 
@@ -81,7 +81,7 @@ Like "buyer" and "seller" are abstractions from the more fundamental transaction
 
 # The Phenomenology of Recognition
 
-Phenomenological analysis reveals something crucial about recognition's nature. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete. This immediacy suggests something qualitatively different from algorithmic matching.
+Phenomenological analysis reveals something important about recognition's nature. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete. This immediacy suggests something qualitatively different from algorithmic matching.
 
 Consider the phenomenological difference between:
 * Struggling to remember where you know someone from (effortful, temporal)
@@ -89,7 +89,7 @@ Consider the phenomenological difference between:
 
 This distinction parallels Dreyfus's analysis of expert intuition versus novice deliberation—experts don't compute through rules but respond immediately to situations through embodied skillful coping.
 
-What do we actually mean when we say we "recognize" something? Phenomenological analysis suggests that recognition involves the immediate availability of appropriate attitudes and reactions for a given situation. When I recognize a cat, what becomes immediately available includes petting gestures and approach behaviors, expectation of meowing sounds and purring, wariness of potential scratching, emotional responses (affection, playfulness, caution), linguistic associations ("kitty," "feline," proverbs about cats), and contextual expectations (litter boxes, food bowls, favorite sleeping spots). Simply said, recognition is _offering an adequate response_ to a given perception. But what does "adequate" mean? It means that the response follows a pattern linked to the perception: for the same pattern of perception there is a certain pattern of response.
+What do we actually mean when we say we "recognize" something? Phenomenological analysis proposes that recognition involves the immediate availability of appropriate attitudes and reactions for a given situation. When I recognize a cat, what becomes immediately available includes petting gestures and approach behaviors, expectation of meowing sounds and purring, wariness of potential scratching, emotional responses (affection, playfulness, caution), linguistic associations ("kitty," "feline," proverbs about cats), and contextual expectations (litter boxes, food bowls, favorite sleeping spots). Simply said, recognition is _offering an adequate response_ to a given perception. But what does "adequate" mean? It means that the response follows a pattern linked to the perception: for the same pattern of perception there is a certain pattern of response.
 
 We would say that a _constellation of patterns_ becomes immediately available, not just a visual template. This constellation includes sensory patterns (visual, tactile), motor patterns (petting readiness), emotional patterns (affection, wariness), and linguistic patterns (the word "cat" and its associations).
 
@@ -98,20 +98,6 @@ This constellation doesn't become available _after_ recognition—it IS what we 
 This is a simple idea but one that goes so much against our intuition that it deserves insisting on, before moving on. So:
 
 Recognition is not the identification of a visual pattern that then triggers responses. Rather, recognition IS this immediate constellation of readiness becoming available. The recognition and the readiness are not sequential—they are the same event. This would explain the experiential immediacy: there is no process of matching followed by retrieval of appropriate responses. The constellation of readiness IS what recognition is, not what recognition produces. There's no temporal sequence of "visual input → memory search → recognition achieved." Instead, the entire constellation becomes simultaneously "close to hand," and that constellation-activation IS the recognition event.
-
-# Understanding as Recognition
-
-This analysis extends beyond simple object recognition to complex cognition. When you finally "get" a difficult philosophical text, that moment of understanding isn't different from recognizing a cat's face—it's the same instantaneous constellation-activation, just with more complex patterns:
-
-**Understanding a philosophical argument involves:**
-* Logical structure becoming available
-* Implications and consequences activating
-* Connections to other ideas lighting up
-* Emotional/evaluative responses emerging
-* Counter-arguments and objections arising
-* Linguistic formulations becoming ready-to-hand
-
-The _structure_ is identical to simple recognition—immediate constellation-activation. The difference is complexity and content domain, not cognitive process. Understanding IS recognition of meaning-patterns, not a separate cognitive faculty.
 
 # Pattern recognition: the actual view
 
@@ -123,19 +109,9 @@ More recently, in cognition theories, pattern recognition has been defined as "t
 
 # Pattern-Recognition Unity (PRU)
 
-**The PRU Thesis**: What we call "pattern" and "recognition" are not two events—one perceptual, one responsive—but unified aspects of Pattern-Constellation activation. These Pattern Constellations (PC) are the fundamental cognitive blocks: when we learn things, PC are created.
+**The PRU Thesis**: What we call "pattern" and "recognition" are not two events—one perceptual, one responsive—but unified aspects of Pattern-Constellation activation. These Pattern Constellations (PC) are the fundamental cognitive blocks: when we learn things, PCs are created.
 
 This isn't claiming recognition is "very fast" or that pattern equals recognition. It's claiming they're unified aspects of one phenomenon, like space and time are unified in spacetime.[^16] We've been trying to explain how perception-patterns trigger reaction-patterns, not realizing they're aspects of the same constellation event.
-
-# Methodological Foundation
-
-Our approach starts with **conceptual analysis** of what recognition actually _is_, then finds neuroscience evidence that supports this analysis. This sidesteps the usual objection "but you're just describing very fast sequential processing" by arguing that sequential processing is the wrong conceptual model entirely.
-
-# Three claims about Pattern Constellations.
-
-1. _Ontological claim_: PCs are the cognitive units formed by joint learning of perception and response.
-2. _Mechanistic claim_: PCs are instantiated as distributed, recurrent assemblies or attractors whose activation patterns encode both input and action readiness.
-3. _Empirical claim_: recognition events should show early co-activation of motor/affective components together with perceptual traces; learning should reshape the same dynamics that later produce recognition (no separate training/recognition phases required).
 
 # Neural Evidence for Pattern-Constellations
 
@@ -173,7 +149,7 @@ This framework explains why practiced behaviors become "automatic"—we're reduc
 
 # Position in Current Research
 
-PRU emerges from observations about limitations in current computational approaches across multiple research programs:
+PRU and PCs may address some limitations in current computational approaches across multiple research programs:
 
 **Embodied Cognition**: Research has demonstrated "sensorimotor activation" during language processing, supporting claims about embodied grounding of cognitive processes. However, many approaches in this tradition still work with representational frameworks where embodied representations are processed by cognitive systems—what Dreyfus critiqued as retaining the computational paradigm's fundamental assumptions while merely adding "embodied" content.
 
@@ -196,7 +172,7 @@ But crucially, **your "I get it" moment IS the same instantaneous pattern-recogn
 
 # The Key-Lock Solution to AI Understanding
 
-This framework elegantly dissolves the puzzle of LLM "understanding". When an LLM produces responses that fit philosophical questions precisely, it's performing sophisticated pattern-constellation recognition (although in this case, the constellation does not involve motor and feeling patterns, just different dimensions of the linguistic landscape). The prompt is a conceptual key that activates specific regions in the model's text-pattern landscape, generating the corresponding lock—the patterns that belong in that conceptual space.
+This framework dissolves the puzzle of LLM "understanding". When an LLM produces responses that fit philosophical questions precisely, it's performing sophisticated pattern-constellation recognition (although in this case, the constellation does not involve motor and feeling patterns, just different dimensions of the linguistic landscape). The prompt is a conceptual key that activates specific regions in the model's text-pattern landscape, generating the corresponding lock—the patterns that belong in that conceptual space.
 
 The fit is what humans interpret as "understanding," but PRU suggests human understanding works the same way: recognizing where arguments fit in your constellation of conceptual patterns and activating appropriate response patterns. The sophistication of the pattern-matching creates the appearance of a fundamentally different cognitive process, when it might just be constellation-activation at scale.
 
