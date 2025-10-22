@@ -36,7 +36,7 @@ _A concrete example:_ When you see your cat, what actually happens? Not in seque
 
 These don't link together after arising separately. They activate as one unified Pattern-Constellation. What we call "recognition" is just an ensemble of patterns that co-emerges when its visual part is activated. Neuroscience confirms this: language areas fire during action observation, motor areas activate when processing action verbs, emotional centers participate directly in perception. The learned patterns were never separate—they arose together during learning and remain together in recognition. 
 
-# Pattern-Matching vs Pattern-Recognition: Serial vs Parallel
+## Pattern-Matching vs Pattern-Recognition: Serial vs Parallel
 
 Our first error is a category error: conflating two fundamentally different phenomena. The distinction is not primarily temporal but logical:
 
