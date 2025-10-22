@@ -115,8 +115,6 @@ More recently, in cognition theories, pattern recognition has been defined as "t
 
 **The PRU Thesis**: What we call "pattern" and "recognition" are not two events—one perceptual, one responsive—but unified aspects of Pattern-Constellation activation. These Pattern Constellations (PC) are the fundamental cognitive blocks: when we learn things, PCs are created. What we call "recognition" is the _parallel_ activation of a PC: perception and response are simultaneous aspects of the same dynamical event, not a serial pipeline from detection to reaction.
 
-This isn't claiming recognition is "very fast" or that pattern equals recognition. It's claiming they're unified aspects of one phenomenon, like space and time are unified in spacetime.[^16] We've been trying to explain how perception-patterns trigger reaction-patterns, not realizing they're aspects of the same constellation event.
-
 # Neural Evidence for Pattern-Constellations
 
 Neuroscience reveals that neural systems operate through constellation-activation rather than sequential processing. The most direct support comes from studies of unconscious neural processing, which consistently show that specific response circuits activate before conscious awareness of stimuli.
