@@ -135,7 +135,7 @@ In Hopfield Networks with functional specialization, we can literally observe Pa
 
 Taking an example will help. Let's consider a 256-neuron HN, where 25 of them are input neurons. At first, the remaining 231 neurons are not differentiated, and Hebbian learning happens in the same way: in training, link weights are adjusted and pruned (weight = 0), and after becoming stable, we end with a sparse network (not all nodes connected to each node). But we know that biological NNs are not uniform; there is a lot of specialization and _locality_ in brains of all types: there are motor areas, vision areas, language areas, etc. We can do the same with our HN, and create _functional groups of neurons_: the first 25 are visual neurons from above, 131 of them are motor neurons (and their output is movement), and 100 are emotional neurons (and their output is in the range "good/bad" as "pleasure/pain"). Now we have a primitive organism able to learn and react, if we endow it with some form of innate learned patterns (like those all animals born with). One such innate rule is to search pleasure (get closer to pleasure producing objects) and avoid pain (run away from pain producing objects).
 
-# Memory and Pattern Recognition
+# Memory and Pattern Constellations
 (to be done)
 
 # How Animals and LLMs Navigate Reality
