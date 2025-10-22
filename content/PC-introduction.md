@@ -113,7 +113,7 @@ More recently, in cognition theories, pattern recognition has been defined as "t
 
 # Pattern-Recognition Unity (PRU)
 
-**The PRU Thesis**: What we call "pattern" and "recognition" are not two events—one perceptual, one responsive—but unified aspects of Pattern-Constellation activation, an **atomic event**. These Pattern Constellations (PC) are the fundamental cognitive blocks: when we learn things, PCs are created. What we call "recognition" is the _parallel_ activation of a PC: perception and response are simultaneous aspects of the same dynamical event, not a serial pipeline from detection to reaction.
+**The PRU Thesis**: What we call "pattern" and "recognition" are not two events—one perceptual, one responsive—but unified aspects of Pattern-Constellation activation, one **atomic event**. These Pattern Constellations (PC) are the fundamental cognitive blocks: when we learn things, PCs are created. What we call "recognition" is the _parallel_ activation of a PC: perception and response are simultaneous aspects of the same dynamical event, not a serial pipeline from detection to reaction.
 
 # Neural Evidence for Pattern-Constellations
 
