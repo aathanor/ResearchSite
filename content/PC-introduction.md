@@ -83,7 +83,7 @@ Consider this: Can you have recognition without a pattern to recognize? No, beca
 
 Like "buyer" and "seller" are abstractions from the more fundamental transaction, "pattern" and "recognition" are abstractions from Pattern-Constellation Activation, the more fundamental event. If there is no transaction, it makes no sense to talk about a buyer and a seller. If there is no Pattern-Constellation Activation, it doesn't make sense to talk about 'pattern' and 'recognition'.
 
-# The Phenomenology of Recognition
+## The Phenomenology of Recognition
 
 Phenomenological analysis reveals something important about recognition's nature. When you see a friend's face across a crowded room, there is typically no experienced interval of processing—no conscious search through memory files, no effortful comparison operations, no step-by-step matching procedure. The recognition appears immediate and complete. This immediacy suggests something qualitatively different from algorithmic matching.
 
@@ -103,7 +103,7 @@ This is a simple idea but one that goes so much against our intuition that it de
 
 Recognition is not the identification of a visual pattern that then triggers responses. Rather, recognition IS this immediate constellation of readiness becoming available. The recognition and the readiness are not sequential—they are the same event. This would explain the experiential immediacy: there is no process of matching followed by retrieval of appropriate responses. The constellation of readiness IS what recognition is, not what recognition produces. There's no temporal sequence of "visual input → memory search → recognition achieved." Instead, the entire constellation becomes simultaneously "close to hand," and that constellation-activation IS the recognition event.
 
-# Pattern recognition: the actual view
+## Pattern recognition: the actual view
 
 The concept of "pattern" is surprisingly recent in academic literature of any kind. While its essence is discussed from antiquity, the word as we use it now gains its popularity in mathematics and early computer science.
 
