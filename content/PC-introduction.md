@@ -64,7 +64,7 @@ Our thinking imposes sequence on what isn't sequential. We experience "see cat T
 
 ## Patterns of Reaction
 
-Our second error is conceptual: what we call "pattern" typically refers to perception-side patterns (visual, auditory, tactile, intellectual). What we call "recognition" typically refers to reaction events (motor, emotional, linguistic responses). To us, to accept that someone recognizes something, a _reaction_ is needed; in fact we cannot separate "reaction" and "recognition". But in order to have proper recognition of similar objects, the reaction should be similar in every case, i.e. reaction itself follows a pattern. Perception-patterns and reaction-patterns are ALL patterns, learned together—just different types within the same constellation.
+Our second error is conceptual: what we call "pattern" typically refers to perception-side patterns (visual, auditory, tactile, intellectual). What we call "recognition" typically refers to reaction events (motor, emotional, linguistic responses). To us, to accept that someone recognizes something, a _reaction_ is needed; in fact we cannot separate "reaction" and "recognition". But to have proper recognition of similar objects, the reaction should be similar in every case, i.e. reaction itself follows a pattern. Perception-patterns and reaction-patterns are ALL patterns, learned together—just different types within the same constellation.
 
 Consider learning about hammers. Traditional models might suggest a child first acquires visual templates, then separately learns motor movements, then adds emotional associations, then attaches linguistic labels. An alternative developmental account suggests these aspects develop as integrated wholes through embodied interaction:
 
