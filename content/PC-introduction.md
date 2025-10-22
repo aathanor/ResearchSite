@@ -62,7 +62,7 @@ There is more to say on the "cause and effect" paradigm: we learn, from an early
 
 Our thinking imposes sequence on what isn't sequential. We experience "see cat THEN feel affection THEN reach to pet" because that's how serial consciousness narrates parallel events. But the cat-constellation activated whole—seeing, feeling, and reaching-readiness arose together. The sequence exists in our conscious narrative, not in the constellation activation itself. This phenomenological seriality emerges through selective inhibition: the constellation activates as a whole, but cortical inhibition can suppress motor components while allowing sensory components to reach consciousness, creating the illusion of sequence.
 
-# The Conceptual Error We've Been Making
+## Patterns of Reaction
 
 Our second error is conceptual: what we call "pattern" typically refers to perception-side patterns (visual, auditory, tactile, intellectual). What we call "recognition" typically refers to reaction events (motor, emotional, linguistic responses). To us, in order to accept that someone recognizes something, a _reaction_ is needed; in fact we cannot separate "reaction" and "recognition". But in order to have proper recognition of similar objects, the reaction should be similar in every case, i.e. reaction itself follows a pattern. Perception-patterns and reaction-patterns are ALL patterns, learned together—just different types within the same constellation.
 
