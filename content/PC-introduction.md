@@ -17,7 +17,7 @@ I defend PRU using phenomenological observation, neuroscientific evidence of ear
 
 The work is programmatic rather than conclusive: it develops the conceptual claim, sketches  models, and sets out empirical predictions about early co-activation of pattern-constellations. PRU offers a simpler, more unified framework for thinking about recognition in philosophy, cognitive science, and AI.[^10] 
 
-We proceed in two parts. Part 1 (PATTERNS) establishes the general framework: Pattern-Constellations (PCs) as integrated assemblies of perceptual, motor, emotional, and other patterns that activate simultaneously. Part 2  applies this framework to language, showing how linguistic patterns develop through embodied learning and how reference emerges through usage-based coordination rather than rule-based mapping.
+We proceed in two parts. Part 1 (PATTERNS) establishes the general framework: Pattern-Constellations (PCs) as integrated assemblies of perceptual, motor, emotional, and other patterns that activate simultaneously. Part 2 (LANGUAGE) applies this framework to language, showing how linguistic patterns develop through embodied learning and how reference emerges through usage-based coordination rather than rule-based mapping.
 
 # The Hidden Structure of Recognition
 
