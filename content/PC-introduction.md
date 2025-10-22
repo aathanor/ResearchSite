@@ -19,7 +19,9 @@ The work is programmatic rather than conclusive: it develops the conceptual clai
 
 We proceed in two parts. Part 1 (PATTERNS) establishes the general framework: Pattern-Constellations (PCs) as integrated assemblies of perceptual, motor, emotional, and other patterns that activate simultaneously. Part 2 (LANGUAGE) applies this framework to language, showing how linguistic patterns develop through embodied learning and how reference emerges through usage-based coordination rather than rule-based mapping.
 
-# The Hidden Structure of Recognition
+# PART 1: PATTERNS
+
+## The Hidden Structure of Recognition
 
 Humans learn and act in the world through sets of co-occurring, learned multi-modal regularities. I call these _Pattern-Constellations_ (PCs): attractor-like assemblies that contain perceptual, motor, linguistic, and emotional patterns.[^11] This terminology is essential because what we call a "pattern" (singular) in cognition is actually a constellation of multiple pattern-types that arise and function as a unity. The term captures the distributed-yet-unified neural architecture that simple "pattern" obscures. Pattern-Recognition Unity (PRU) hypothesizes that what we call "recognition" is the _parallel_ activation of a PC: perception and response are simultaneous aspects of the same dynamical event, not a serial pipeline from detection to reaction.[^12] This paper defends PRU conceptually, sketches its computational realizations, and gives empirical predictions that distinguish it from traditional pattern-matching models.
 
