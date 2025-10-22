@@ -15,7 +15,9 @@ I propose Pattern-Recognition Unity (PRU). On PRU, recognition is the simultaneo
 
 I defend PRU using phenomenological observation, neuroscientific evidence of early co-activation, and computational models (e.g. Hopfield-style associative networks and transformer architectures) that show how unified activations are learnable and efficient. I then show how PRU dissolves several philosophical problems: the symbol-grounding problem (words are part of sensorimotor constellations rather than disconnected symbols) and the binding problem (perceptual, motor, and affective patterns need not be stitched together post hoc).
 
-The work is programmatic rather than conclusive: it develops the conceptual claim, sketches  models, and sets out empirical predictions about early co-activation of pattern-constellations. PRU offers a simpler, more unified framework for thinking about recognition in philosophy, cognitive science, and AI.[^10]
+The work is programmatic rather than conclusive: it develops the conceptual claim, sketches  models, and sets out empirical predictions about early co-activation of pattern-constellations. PRU offers a simpler, more unified framework for thinking about recognition in philosophy, cognitive science, and AI.[^10] 
+
+We proceed in two parts. Part 1 establishes the general framework: Pattern-Constellations (PCs) as integrated assemblies of perceptual, motor, emotional, and other patterns that activate simultaneously. Part 2 applies this framework to language, showing how linguistic patterns develop through embodied learning and how reference emerges through usage-based coordination rather than rule-based mapping.
 
 # The Hidden Structure of Recognition
 
