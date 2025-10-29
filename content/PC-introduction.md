@@ -15,7 +15,7 @@ I propose Pattern-Recognition Unity (PRU). On PRU, recognition is the simultaneo
 
 I defend PRU using phenomenological observation, neuroscientific evidence of early co-activation, and computational models (e.g. Hopfield-style associative networks and transformer architectures) that show how unified activations are learnable and efficient. I then show how PRU dissolves several philosophical problems: the symbol-grounding problem (words are part of sensorimotor constellations rather than disconnected symbols) and the binding problem (perceptual, motor, and affective patterns need not be stitched together post hoc).
 
-The work is programmatic rather than conclusive: it develops the conceptual claim, sketches  models, and sets out empirical predictions about early co-activation of pattern-constellations. PRU offers a simpler, more unified framework for thinking about recognition in philosophy, cognitive science, and AI.[^10] 
+The work is programmatic rather than conclusive: it develops the conceptual claim, sketches models, and sets out empirical predictions about early co-activation of pattern-constellations. PRU offers a simpler, more unified framework for thinking about recognition in philosophy, cognitive science, and AI.
 
 We proceed in two parts. Part 1 (PATTERNS) deals mostly with pre-verbal cognition and establishes the general framework: Pattern-Constellations (PCs) as integrated assemblies of perceptual, motor, emotional, and other patterns that activate simultaneously. Part 2 (LANGUAGE) applies this framework to language, showing how linguistic patterns develop through embodied learning and how reference emerges through usage-based coordination rather than rule-based mapping.
 
@@ -34,7 +34,7 @@ _A concrete example:_ When you see your cat, what actually happens? Not in seque
 * Linguistic patterns activate ("kitty," pet-related expressions)
 * Memory patterns activate (feeding times, favorite spots)
 
-These don't link together after arising separately. They activate as one unified Pattern-Constellation. What we call "recognition" is just an ensemble of patterns that co-emerges when its visual part is activated. Neuroscience confirms this: language areas fire during action observation, motor areas activate when processing action verbs, emotional centers participate directly in perception. The learned patterns were never separate—they arose together during learning and remain together in recognition. 
+These don't link together after arising separately. They activate as one unified Pattern-Constellation. What we call "recognition" is just an ensemble of patterns that co-emerges when its visual part is activated. Neuroscience confirms this: language areas fire during action observation, motor areas activate when processing action verbs, emotional centers participate directly in perception. The learned patterns were never separate—they arose together during learning and remain together in recognition.
 
 ## Pattern-Matching vs Pattern-Recognition: Serial vs Parallel
 
@@ -331,8 +331,6 @@ Shanahan, M. (2024). Talking about large language models. Communications of the 
 [^21]: One interesting parallel is that abstract learning (using language as abstraction) requests extremely elaborate and intensive training in humans, taking decades to complete, while practical tasks (like riding a bicycle) can be very fast by comparison. This suggests that while PRU and PCs are better models for non-verbal learning, verbal learning _does need_ a more complex, global and intensive model. This is maybe the reason transformers are good at text. However, AI is not limited to LLM and, moreover, AGI is not _only_ about language.
 
 [^22]: The "causation irrationality" problem starts with Hume and gets its final blow in Russell's paper on causation. But, in the end, isn't it that causation is just some serial thinking splitting a unified event into bits, only to be able to _describe them_?
-
-[^10]: question:Asta ar fi o întrebare. Textul selectat inițial în document e salvat ca citat pentru o bună referință.:florin.cojocariu@s.unibuc.ro:1759647041304:Its interdisciplinary nature make it more of a long term project rather than a one shot paper project.
 
 [^11]: clarification:O cerere de clarificare. Toate comentariile, odată salvate, pot fi editate sau șterse cu butoanele de mai jos, Edit, Delete. Puteți șterge aceste comentarii de probă sau încerca editarea lor.:florin.cojocariu@s.unibuc.ro:1759647084313:Humans learn and act in the world through sets of co-occurring, learned multi-modal regularities. I call these Pattern-Constellations (PCs)\: attractor-like assemblies that contain perceptual, motor, linguistic, and emotional patterns.
 
