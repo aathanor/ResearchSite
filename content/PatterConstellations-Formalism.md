@@ -17,7 +17,7 @@ Pattern Constellations are introduced and explained in detail elsewhere; this do
 
 # On the Dual Modes of Word Function
 
-Say "rose" while pointing at a flower. The word labels the thing. Now say "A rose is a flower." The same word now characterizes or classifies. Same sound, different job. We call these functions object-word ($x^o$) and concept-word $x^c$
+Say "rose" while pointing at a flower. The word labels the thing. Now say "A rose is a flower." The same word now characterizes or classifies (try for the moment to make abstraction of the reference theory). Same sound, different job. I call these functions object-word ($x^o$) and concept-word $x^c$ 
 
 The object-word labels experienced things. The concept-word operates abstractly, describing types or categories (It will be defined later on as a label for language patterns). You write them the same way. You say them the same way. Only context shows which function operates.
 
