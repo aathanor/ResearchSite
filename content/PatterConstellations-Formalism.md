@@ -9,7 +9,7 @@ date: 10.28.2025
 
 # Abstract
 
-What happens when we recognize something? Standard accounts treat "pattern" and "recognition" as distinct stages: first a pattern is detected, then it is recognized and triggers a response. I argue that this sequential model is misleading. The separation exaggerates a serial logic that does not match how recognition actually occurs.
+What happens when we recognize something? Standard accounts treat "pattern" and "recognition" as distinct stages: first a pattern is detected, then it is recognized and triggers a response. I argue that this sequential model is misleading. The separation exaggerates a serial logic that does not match how recognition actually occurs.[^23]
 
 I propose Pattern-Recognition Unity (PRU). On PRU, recognition is the simultaneous activation of an integrated Pattern-Constellation—a single event in which perceptual patterns, motor readiness, affective responses, and linguistic associations co-occur. Recognizing your cat is not a visual trace followed by later reaction; it is one unified activation that includes seeing, feeling, and readiness to act.
 
@@ -312,3 +312,5 @@ Shanahan, M. (2024). Talking about large language models. Communications of the 
 [^21]: One interesting parallel is that abstract learning (using language as abstraction) requests extremely elaborate and intensive training in humans, taking decades to complete, while practical tasks (like riding a bicycle) can be very fast by comparison. This suggests that while PRU and PCs are better models for non-verbal learning, verbal learning _does need_ a more complex, global and intensive model. This is maybe the reason transformers are good at text. However, AI is not limited to LLM and, moreover, AGI is not _only_ about language.
 
 [^22]: The "causation irrationality" problem starts with Hume and gets its final blow in Russell's paper on causation. But, in the end, isn't it that causation is just some serial thinking splitting a unified event into bits, only to be able to _describe them_?
+
+[^23]: question:Asta ar fi o întrebare. Poate fi ștearsă. (click pe edit):florin.cojocariu@s.unibuc.ro:1761823715499:What happens when we recognize something? Standard accounts treat "pattern" and "recognition" as distinct stages\: first a pattern is detected, then it is recognized and triggers a response. I argue that this sequential model is misleading. The separation exaggerates a serial logic that does not match how recognition actually occurs.
