@@ -43,55 +43,56 @@ Pattern Constellations are introduced and explained in detail elsewhere; this do
 
 **Stage 1**: $\{A\}$ - Pre-linguistic
 
-Pure sensory-motor-emotional integration
-$E(\{A\})$ possible
-No linguistic component
-Example: {MOUSE} in cat's brain
+- Pure sensory-motor-emotional integration
+- $E(\{A\})$ possible
+- No linguistic component
+- Example: {MOUSE} in cat's brain
 
 **Stage 2**: $\{A, a^o\}$ - Label integrated
 
-Word "a" integrated as label through learning
-$E(\{A, a^o\})$ now occurs (experiencing with label)
-$a^o$ embedded in constellation
-Example: {DOG, $dog^o$} in child who has learned "dog"
+- Word "a" integrated as label through learning
+- $E(\{A, a^o\})$ now occurs (experiencing with label)
+- $a^o$ embedded in constellation
+- Example: {DOG, $dog^o$} in child who has learned "dog"
 
 **Stage 3**: $\{A, a^o, a^c\}$ - Dual function
 
 Same word operates in two modes:
 - $a^o$: label mode (grounded, sensory-integrated)
 - $a^c$: concept mode (abstract, LPC operations)
-Both $E(\{A, a^o\})$ and $\exists(\{A, a^c\})$ possible
-Example: $\{DOG, dog^o, dog^c\}$ in language-competent speaker
+
+- Both $E(\{A, a^o\})$ and $\exists(\{A, a^c\})$ possible
+- Example: $\{DOG, dog^o, dog^c\}$ in language-competent speaker
 
 **Stage 4**: $\mathcal{R}(a^c, a^o)$ - Reference proper
 
-Explicit coordination between modes
-Answers "What does a refer to?"
-Meta-linguistic capability
-Presupposes Stage 3 development
+* Explicit coordination between modes
+* Answers "What does a refer to?"
+* Meta-linguistic capability
+* Presupposes Stage 3 development
 
 ## Example Constellations
 
 **{DOG} → {DOG, $dog^o$} → {DOG, $dog^o$, $dog^c$}**:
 
 Stage 1 - Pre-linguistic {DOG}:
-  Visual: four-legged, furry, tail
-  Auditory: barking, panting
-  Tactile: soft fur, warm
-  Motor: petting, playing
-  Emotional: affection, excitement
-  $E({DOG\})$ occurs in pre-linguistic child/animal
+*   Visual: four-legged, furry, tail
+*   Auditory: barking, panting
+*   Tactile: soft fur, warm
+*   Motor: petting, playing
+*   Emotional: affection, excitement
+*   $E({DOG\})$ occurs in pre-linguistic child/animal
 
 Stage 2 - Label integrated {DOG, $dog^o$}:
-  [All DOG patterns] + 
-  Linguistic: "dog"^o integrated
-  $E(\{DOG, dog^o\})$ occurs when seeing dog
+*   [All DOG patterns] + 
+*   Linguistic: "dog"^o integrated
+*   $E(\{DOG, dog^o\})$ occurs when seeing dog
 
 Stage 3 - Conceptual function {DOG, $dog^o$, $dog^c$}:
-  [All above] +
-  Linguistic: $dog^c$ for abstract use
-  $\exists(\{DOG, dog^c\})$ when talking about dogs abstractly
-  "Dogs are animals" uses $dog^c$
+*   [All above] +
+*   Linguistic: $dog^c$ for abstract use
+*   $\exists(\{DOG, dog^c\})$ when talking about dogs abstractly
+*   "Dogs are animals" uses $dog^c$
 
 **{SNOW} → {SNOW, $snow^o$} → {SNOW, $snow^o$, $snow^c$}**:
 
