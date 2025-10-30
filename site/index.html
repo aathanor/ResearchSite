@@ -1634,24 +1634,39 @@
         loadDocuments(); 
         document.querySelector('#lens-selector button:first-child')?.classList.add('active');
         });
+        // Race condition guard
+        let buildLeftPanelInProgress = false;
+        
         // Build left panel with documents from GitHub - using tags-based organization
         async function buildLeftPanel() {
-            console.log('buildLeftPanel started - tags-based approach');
-            const leftPanel = document.querySelector('.left-panel');
-            const treeDiv = document.getElementById('document-tree');
-            if (!treeDiv) {
-                console.error('Element #document-tree not found');
+            // Prevent race condition from multiple simultaneous calls
+            if (buildLeftPanelInProgress) {
+                console.log('buildLeftPanel already in progress, skipping duplicate call');
                 return;
             }
-            leftPanel.querySelectorAll('.doc-category, .error-message').forEach(el => el.remove());
-            treeDiv.innerHTML = '';
+            
+            buildLeftPanelInProgress = true;
+            console.log('buildLeftPanel started - tags-based approach');
             
             try {
+                const leftPanel = document.querySelector('.left-panel');
+                const treeDiv = document.getElementById('document-tree');
+                if (!treeDiv) {
+                    console.error('Element #document-tree not found');
+                    buildLeftPanelInProgress = false;
+                    return;
+                }
+                
+                // Clear existing content
+                leftPanel.querySelectorAll('.doc-category, .error-message').forEach(el => el.remove());
+                treeDiv.innerHTML = '';
+                
                 console.log('Fetching docsData...');
                 const docsData = await loadDocuments();
                 console.log('docsData received:', docsData);
                 if (!docsData || !docsData.documents) {
                     treeDiv.innerHTML = '<div class="error-message">No documents found - check console for details</div>';
+                    buildLeftPanelInProgress = false;
                     return;
                 }
                 
@@ -1659,6 +1674,7 @@
                 console.log('documents:', documents);
                 if (Object.keys(documents).length === 0) {
                     treeDiv.innerHTML = '<div class="error-message">No documents available</div>';
+                    buildLeftPanelInProgress = false;
                     return;
                 }
 
@@ -1703,6 +1719,7 @@
 
                 // Group documents by their broad category tags
                 const documentsByCategory = {};
+                const addedDocIds = new Set(); // Track which documents have been added to prevent duplicates
                 
                 // Mapping from specific tags to broad categories
                 const tagToCategoryMap = {
@@ -1731,6 +1748,12 @@
                 };
                 
                 Object.entries(filteredDocs).forEach(([docId, doc]) => {
+                    // Skip if already added (prevents duplicates)
+                    if (addedDocIds.has(docId)) {
+                        console.log('Skipping duplicate document:', docId);
+                        return;
+                    }
+                    
                     const docTags = doc.tags || [];
                     let assignedCategory = null;
                     
@@ -1761,6 +1784,7 @@
                         documentsByCategory[assignedCategory] = [];
                     }
                     documentsByCategory[assignedCategory].push(doc);
+                    addedDocIds.add(docId); // Mark as added
                 });
 
                 console.log('Documents grouped by category:', documentsByCategory);
@@ -1821,6 +1845,9 @@
             } catch (error) {
                 console.error('Error building left panel:', error);
                 treeDiv.innerHTML = `<div class="error-message">Error loading documents<br><small style="font-size:10px;">${error.message}</small></div>`;
+            } finally {
+                // Always release the guard
+                buildLeftPanelInProgress = false;
             }
         }
 
@@ -2679,6 +2706,9 @@
                 const result = await response.json();
                 console.log('Comment saved to GitHub successfully:', result);
                 
+                // Invalidate cache to force refresh on next load
+                globalData = null;
+                
                 return true; // Indicate save success
                 
             } catch (error) {
@@ -2766,6 +2796,9 @@
                 const result = await response.json();
                 console.log('Comment updated in GitHub successfully:', result);
                 
+                // Invalidate cache to force refresh on next load
+                globalData = null;
+                
                 return true;
                 
             } catch (error) {
@@ -2831,6 +2864,9 @@
                 
                 const result = await response.json();
                 console.log('Comment deleted from GitHub successfully:', result);
+                
+                // Invalidate cache to force refresh on next load
+                globalData = null;
                 
                 return true;
                 
