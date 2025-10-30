@@ -15,6 +15,18 @@ Pattern Constellations are introduced and explained in detail elsewhere; this do
 
 **Core philosophical commitment**: Pattern-recognition events are atomic and pre-linguistic. Language emerges as a coordination mechanism for these events, not as a bridge to mind-independent reality.
 
+# On the Dual Modes of Word Function
+
+Say "rose" while pointing at a flower. The word labels the thing. Now say "A rose is a flower." The same word now characterizes or classifies. Same sound, different job. We call these functions object-word ($x^o$) and concept-word $x^c$
+
+The object-word labels experienced things. The concept-word operates abstractly, describing types or categories (It will be defined later on as a label for language patterns). You write them the same way. You say them the same way. Only context shows which function operates.
+
+This split matches how children learn words. An infant hears "dog" while seeing, touching, smelling dogs. The sound wires into that whole experiential pattern—what the dog looks like, feels like, does (Pruden et al., 2006; Seidl et al., 2024). The word starts as a label, pure $x^o$
+
+Later the child hears "dogs are animals," "where is the dog?", "acts like a dog." The word now works when no dog is present. It categorizes. It compares. The abstract function $x^c$ emerges. This happens across languages: label first, concept later, grounded before abstract, $x^o$ before $x^c$.
+
+The split shows up in sentence embedding spaces too. Literal uses cluster in tight manifolds. Abstract uses scatter wide. Different functions, different geometric signatures. (It may be very well that LLMs developed this geometric representation in order to encode two different uses)
+
 # Pattern-Constellations
 
 ## Definition
