@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Diagnostic</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .document { 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            margin: 10px 0; 
+            background: #f5f5f5;
+        }
+        .duplicate { 
+            background: #ffeeee; 
+            border-color: #ff0000;
+        }
+        pre { 
+            background: white; 
+            padding: 10px; 
+            overflow-x: auto;
+        }
+        h2 { color: #333; }
+        .stats {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Document List API Diagnostic</h1>
+    <button onclick="loadData()">Load API Data</button>
+    <button onclick="checkDuplicates()">Check for Duplicates</button>
+    
+    <div class="stats" id="stats"></div>
+    <div id="output"></div>
+
+    <script>
+        let apiData = null;
+
+        async function loadData() {
+            document.getElementById('output').innerHTML = '<p>Loading...</p>';
+            
+            try {
+                const response = await fetch('/api/list-documents');
+                apiData = await response.json();
+                
+                displayData();
+            } catch (error) {
+                document.getElementById('output').innerHTML = 
+                    `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        function displayData() {
+            if (!apiData || !apiData.documents) {
+                document.getElementById('output').innerHTML = '<p>No data loaded</p>';
+                return;
+            }
+
+            const docs = apiData.documents;
+            const docIds = Object.keys(docs);
+            
+            // Stats
+            document.getElementById('stats').innerHTML = `
+                <strong>Total Documents:</strong> ${docIds.length}<br>
+                <strong>API Response Size:</strong> ${JSON.stringify(apiData).length} bytes
+            `;
+
+            // List all documents
+            let html = '<h2>All Documents in API Response:</h2>';
+            
+            docIds.sort().forEach(docId => {
+                const doc = docs[docId];
+                html += `
+                    <div class="document">
+                        <strong>ID:</strong> ${docId}<br>
+                        <strong>Title:</strong> ${doc.title || 'N/A'}<br>
+                        <strong>Status:</strong> ${doc.status || 'N/A'}<br>
+                        <strong>Lens:</strong> ${JSON.stringify(doc.lens || [])}<br>
+                        <strong>Tags:</strong> ${JSON.stringify(doc.tags || [])}<br>
+                        <strong>Node:</strong> ${doc.node || 'N/A'}<br>
+                        <details>
+                            <summary>Full Data</summary>
+                            <pre>${JSON.stringify(doc, null, 2)}</pre>
+                        </details>
+                    </div>
+                `;
+            });
+
+            document.getElementById('output').innerHTML = html;
+        }
+
+        function checkDuplicates() {
+            if (!apiData || !apiData.documents) {
+                alert('Load data first');
+                return;
+            }
+
+            const docs = apiData.documents;
+            const docIds = Object.keys(docs);
+            const titleMap = {};
+            const duplicates = [];
+
+            // Check for documents with same title
+            docIds.forEach(docId => {
+                const title = docs[docId].title || docId;
+                if (!titleMap[title]) {
+                    titleMap[title] = [];
+                }
+                titleMap[title].push(docId);
+            });
+
+            // Find duplicates
+            Object.entries(titleMap).forEach(([title, ids]) => {
+                if (ids.length > 1) {
+                    duplicates.push({ title, ids });
+                }
+            });
+
+            if (duplicates.length === 0) {
+                alert('No duplicate titles found in API response');
+            } else {
+                let html = '<h2 style="color: red;">DUPLICATES FOUND IN API:</h2>';
+                duplicates.forEach(dup => {
+                    html += `
+                        <div class="document duplicate">
+                            <strong>Title:</strong> ${dup.title}<br>
+                            <strong>IDs:</strong> ${dup.ids.join(', ')}<br>
+                            ${dup.ids.map(id => `
+                                <details>
+                                    <summary>${id}</summary>
+                                    <pre>${JSON.stringify(docs[id], null, 2)}</pre>
+                                </details>
+                            `).join('')}
+                        </div>
+                    `;
+                });
+                document.getElementById('output').innerHTML = html;
+            }
+        }
+    </script>
+</body>
+</html>
