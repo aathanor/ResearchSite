@@ -269,9 +269,9 @@ Tarski's framework is complete once we understand what reference actually is. No
 
 First, what does "snow" refer to? Answer: $\mathcal\{R\}(snow^c, snow^o)$
 
-$\mathcal\{R\}(snow^c, snow^o)$ where $snow^o \in \\{SNOW, snow^o, snow^c\\}$
+$\mathcal\{R\}(snow^c, snow^o)$ where $snow^o \in \{SNOW, snow^o, snow^c\}$
 
-$\\{SNOW\\}$ formed through $E(\\{SNOW, snow^o\\})$ events:
+$\{SNOW\}$ formed through $E(\{SNOW, snow^o\})$ events:
 - Visual: white, crystalline, reflective
 - Tactile: cold, wet, granular
 - Motor: scooping, throwing, building
@@ -280,16 +280,15 @@ $\\{SNOW\\}$ formed through $E(\\{SNOW, snow^o\\})$ events:
 
 When $\mathcal\{R\}(snow^c, snow^o)$ operates:
 - $snow^c$ (∃ realm) coordinates with $snow^o$ (E realm grounding)
-- $snow^o$ activates entire $\\{SNOW\\}$ constellation
-- All sensory patterns from $E(\\{SNOW, snow^o\\})$ become active
+- $snow^o$ activates entire $\{SNOW\}$ constellation
+- All sensory patterns from $E(\{SNOW, snow^o\})$ become active
 - This is the grounding
 
 So "Snow is white" is true iff snow is white can be written as:
 
-$$\mathcal\{P\}(white^c, snow^c) \iff white^o \in \\{SNOW\\}$$
+$$\mathcal\{P\}(white^c, snow^c) \iff white^o \in \{SNOW\}$$
 
-$white^o$ is, however, a special "object" like all properties: while it has direct phenomenological perception (and in this sense is object) its manifestation isn't bounded by time or space.
-
+$white^o$ is, however, a special "object" like all properties: while it has direct phenomenological perception (and in this sense is object) its manifestation isn't bounded by time or space. This is to be dealt with separately.
 
 [^1]: Analysis of how sentences with the same word distribute in a LLM _sentence embedding space_, shows that sentences where the word is used in its object-word mode (literal, ostention etc) group more tightly in some sort of "rod", while concept-word sentences disperse widely from them. (an LPC projection of embeddings in 2D or 3D subspace)
 [^2]: In Hopfield Networks with Hebbian learning simulations, any learned pattern-constellation $\{A\}$ is, in fact, a low-energy state of the _entire network_, no matter how we define groups of different function neurons.
