@@ -137,7 +137,7 @@ PC response: Intentionality itself is $E(\{A\})$ event unified with its object, 
 
 ## Fodor's Language of Thought
 
-Fodor's LOT exemplifies what PC rejects: internal symbolic tokens requiring connection to external properties. His atomistic semantics—primitive concepts getting content through bare causal connections—generates precisely the 'hooking' relation creating Field's regress.
+Fodor’s LOT provides a clear case of what PC opposes: a system of internal symbolic tokens whose content is fixed by primitive links to external properties. His atomistic semantics—on which basic concepts get their content directly from lawlike causal/informational connections plus asymmetric dependence—reproduces, at the level of mental representation, the very sort of primitive “hooking” relation that Field criticizes in Tarskian truth-theoretic accounts, and hence invites the same regress.
 
 PC alternative: No internal symbols needing external connections. Instead, $\{A, a^o, a^c\}$ constellations where $a^o$ grounds through $E(\{A, a^o\})$ events and $a^c$ enables $\exists(\{A, a^c\})$ operations.
 
