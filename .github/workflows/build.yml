@@ -21,6 +21,13 @@ jobs:
       - run: npm ci
       
       - run: npm run build
+
+      - name: List available Cloudflare Pages projects
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project list
       
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v4
