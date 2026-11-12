@@ -1452,9 +1452,7 @@
                 return globalData;
             }
             try {
-                const response = await fetch('/api/list-documents', {
-                    credentials: 'same-origin'
-                });
+                const response = await fetch('/api/list-documents');
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 globalData = await response.json();
                 console.log('Loaded data:', globalData);
@@ -1568,9 +1566,7 @@
             
             try {
                 console.log('Trying /api/user...');
-                const res = await fetch('/api/user', {
-                    credentials: 'same-origin'
-                });
+                const res = await fetch('/api/user');
                 console.log('Response status:', res.status);
                 
                 if (res.ok) {
@@ -1975,7 +1971,6 @@
                 
                 const response = await fetch(`/api/get-content?filename=${encodeURIComponent(filename)}`, {
                     method: 'GET',
-                    credentials: 'same-origin',
                     headers: {
                         'Cache-Control': 'no-cache'
                     }
@@ -2691,7 +2686,6 @@
                 
                 const response = await fetch('/api/save-comment', {
                     method: 'POST',
-                    credentials: 'same-origin',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         docId: currentDocument.id,
@@ -2783,7 +2777,6 @@
                 
                 const response = await fetch('/api/save-comment', {
                     method: 'POST',
-                    credentials: 'same-origin',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         docId: currentDocument.id,
@@ -2854,7 +2847,6 @@
                 
                 const response = await fetch('/api/save-comment', {
                     method: 'POST',
-                    credentials: 'same-origin',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         docId: currentDocument.id,
