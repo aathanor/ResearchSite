@@ -22,26 +22,10 @@ jobs:
       
       - run: npm run build
 
-      - name: List available Cloudflare Pages projects
-        id: list-pages-projects
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages project list --json
-
-      - name: Resolve production Pages project
-        id: resolve-pages-project
-        env:
-          PROJECTS_JSON: ${{ steps.list-pages-projects.outputs.command-output }}
-        run: |
-          PROJECT_NAME="$(node -e 'const projects = JSON.parse(process.env.PROJECTS_JSON); const project = projects.find(({ "Project Domains": domains }) => domains.split(", ").includes("pcf.antimaterie.ro")); if (!project) { console.error("No Pages project serves pcf.antimaterie.ro"); process.exit(1); } process.stdout.write(project["Project Name"]);')"
-          echo "project_name=${PROJECT_NAME}" >> "$GITHUB_OUTPUT"
-      
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy site --project-name=${{ steps.resolve-pages-project.outputs.project_name }}
+          command: pages deploy site --project-name=research-workspace
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
